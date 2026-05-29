@@ -574,13 +574,16 @@ st.header("4️⃣ 🎚️ Sensitivity sul livello di consumo")
 st.markdown(
     """
 <div class="desc-box">
-Lo slider parte dal <b>consumo reale totale del mese</b>. Se cambi il consumo:
+Lo slider parte dal <b>consumo reale totale del mese</b>. Cambiando il consumo:
 <ul>
-  <li>il <b>Mercato</b> ricalcola la quota fissa unitaria diluita sul nuovo consumo
-  (offerte con quota fissa diventano più convenienti su consumi alti);</li>
-  <li>la <b>Convenzione</b> si rapporta in modo proporzionale: <code>prezzo × consumo_origine
-  / consumo_inserito</code>.</li>
+  <li>il <b>Mercato</b> ricalcola la <b>quota fissa</b> annua per POD diluita sul nuovo
+  consumo (offerte con quota fissa alta diventano più convenienti su grandi volumi);</li>
+  <li>la <b>Convenzione</b> resta <b>costante</b>: la materia prima è composta da
+  Generazione e Perdite di rete, entrambe espresse in €/MWh e indicizzate al PUN/PSV
+  all'ingrosso, quindi il prezzo unitario non dipende dal volume del singolo cliente.</li>
 </ul>
+Il grafico mostra come, all'aumentare del consumo, il Mercato si avvicina alla
+Convenzione (la quota fissa pesa meno per kWh), e viceversa.
 </div>
 """,
     unsafe_allow_html=True,
@@ -671,16 +674,10 @@ st.caption(
     unsafe_allow_html=True,
 )
 
-# Calcolo per CIASCUNA delle 4 fasce, poi aggrego BT<=3+BT4.5-40 -> BT<=40 (3 categorie)
-def _conv_scalata(r, fatt):
-    cons_o = float(r["consumo_mese"])
-    cons_n = cons_o * fatt
-    if not cons_n:
-        return 0.0
-    return float(r["materia_prima_conv"]) * cons_o / cons_n
-
-
-_conv_4 = {r["tipologia"]: _conv_scalata(r, fatt_ele) for _, r in df_ele.iterrows()}
+# Convenzione: prezzo unitario costante (la materia prima Gen+Perdite e' indicizzata
+# al PUN ed e' espressa in €/MWh, non dipende dal consumo del singolo cliente).
+# Mercato: interpolato sul fattore di consumo (perche' ha quota fissa €/anno per POD).
+_conv_4 = {r["tipologia"]: float(r["materia_prima_conv"]) for _, r in df_ele.iterrows()}
 _merc_4 = {r["tipologia"]: interp_sens(f"ELE|{r['tipologia']}", fatt_ele,
                                         fallback_value=float(r["benchmark_mercato"]))
            for _, r in df_ele.iterrows()}
@@ -733,13 +730,12 @@ usi_gas = df_gas["tipologia"].tolist()
 y_conv_g_sc = []
 y_merc_g_sc = []
 for _, r in df_gas.iterrows():
-    cons_o = float(r["consumo_mese"])
-    cons_n = cons_o * fatt_gas
-    p_conv_sc = (float(r["materia_prima_conv"]) * cons_o / cons_n
-                 if cons_n else 0)
-    y_conv_g_sc.append(p_conv_sc)
+    # Convenzione costante: la materia prima del gas e' un prezzo unitario c€/Smc
+    # (indicizzato al PSV), non dipende dal consumo del cliente.
+    y_conv_g_sc.append(float(r["materia_prima_conv"]))
     key = f"GAS|{r['tipologia']}"
-    y_merc_g_sc.append(interp_sens(key, fatt_gas))
+    y_merc_g_sc.append(interp_sens(key, fatt_gas,
+                                    fallback_value=float(r["benchmark_mercato"])))
 
 st.plotly_chart(
     bar_gruppi([_short_gas(t) for t in usi_gas],
