@@ -361,7 +361,7 @@ gas_row = df_gen[df_gen["commodity"] == "GAS"].iloc[0]
 
 def bar_confronto_v2(val_conv, val_merc, color_conv, color_merc, titolo,
                      label_conv, label_merc, unita):
-    """Bar chart con legenda a destra e delta evidenziato."""
+    """Bar chart con legenda IN BASSO, barre piu' larghe, delta evidenziato."""
     delta = val_merc - val_conv
     delta_pct = (delta / val_conv * 100) if val_conv else 0
     color_delta = "#B4495C" if delta > 0 else "#2F855A"
@@ -370,26 +370,28 @@ def bar_confronto_v2(val_conv, val_merc, color_conv, color_merc, titolo,
         x=[label_conv], y=[val_conv], name=label_conv,
         marker=dict(color=color_conv, line=dict(color="#FFFFFF", width=2)),
         text=[f"<b>{val_conv:.2f}</b>"], textposition="outside",
-        textfont=dict(size=15, color=C_TEXT_DARK), width=0.5,
+        textfont=dict(size=15, color=C_TEXT_DARK), width=0.65,
     ))
     fig.add_trace(go.Bar(
         x=[label_merc], y=[val_merc], name=label_merc,
         marker=dict(color=color_merc, line=dict(color="#FFFFFF", width=2)),
         text=[f"<b>{val_merc:.2f}</b>"], textposition="outside",
-        textfont=dict(size=15, color=C_TEXT_DARK), width=0.5,
+        textfont=dict(size=15, color=C_TEXT_DARK), width=0.65,
     ))
     fig.update_layout(
         title=dict(text=titolo, font=dict(size=16, color=C_TEXT_DARK)),
         showlegend=True,
         legend=dict(
-            orientation="v", x=1.02, xanchor="left", y=0.5, yanchor="middle",
+            orientation="h", x=0.5, xanchor="center",
+            y=-0.18, yanchor="top",
             bgcolor="#F8FAFC", bordercolor="#CBD5E1", borderwidth=1,
             font=dict(size=11),
         ),
-        height=420, plot_bgcolor="#FFFFFF", paper_bgcolor="#FFFFFF",
+        height=460, plot_bgcolor="#FFFFFF", paper_bgcolor="#FFFFFF",
         yaxis=dict(title=unita, gridcolor="#E5E7EB", zerolinecolor="#E5E7EB"),
-        xaxis=dict(showticklabels=False),
-        margin=dict(t=80, b=40, l=60, r=180),
+        xaxis=dict(showticklabels=False, range=[-0.6, 1.6]),
+        bargap=0.18,
+        margin=dict(t=80, b=110, l=60, r=40),
         annotations=[
             dict(
                 x=0.5, y=1.13, xref="paper", yref="paper",
@@ -572,22 +574,47 @@ Lo slider parte dal <b>consumo reale totale del mese</b>. Se cambi il consumo:
 # --------------- 4.1 Elettrico ---------------
 st.subheader(f"4.1 {ICON_ELE} Elettrico (kWh)")
 cons_ele_real = meta["consumo_ele_totale_kwh"]
-ce_max = int(cons_ele_real * 6)
-ce_min = int(cons_ele_real * 0.1)
-col_in_e, col_sl_e = st.columns([1, 2])
-with col_in_e:
-    cons_ele_sel = st.number_input(
-        "Consumo mensile ELE (kWh)",
-        min_value=ce_min, max_value=ce_max, value=int(cons_ele_real), step=10_000,
-        key="num_ele",
-    )
-with col_sl_e:
-    cons_ele_sel = st.slider(
-        " ", min_value=ce_min, max_value=ce_max, value=int(cons_ele_sel),
-        step=10_000, key="sl_ele", label_visibility="collapsed",
-    )
 
-fatt_ele = cons_ele_sel / cons_ele_real
+
+def _consumo_widget(label, real, step, key_prefix, max_mult=6):
+    """Coppia number_input + slider sincronizzati con session_state, valori
+    sempre allineati allo step per evitare StreamlitAPIException."""
+    vmin = int(round(real * 0.1 / step) * step)
+    vmax = int(round(real * max_mult / step) * step)
+    vmin = max(vmin, step)
+    real_aligned = int(round(real / step) * step)
+    sk = f"_cons_{key_prefix}"
+    if sk not in st.session_state:
+        st.session_state[sk] = real_aligned
+
+    def _from_num():
+        v = int(round(st.session_state[f"num_{key_prefix}"] / step) * step)
+        st.session_state[sk] = max(vmin, min(vmax, v))
+
+    def _from_sl():
+        st.session_state[sk] = int(st.session_state[f"sl_{key_prefix}"])
+
+    cols = st.columns([1, 2])
+    with cols[0]:
+        st.number_input(
+            label, min_value=vmin, max_value=vmax,
+            value=st.session_state[sk], step=step,
+            key=f"num_{key_prefix}", on_change=_from_num,
+        )
+    with cols[1]:
+        st.slider(
+            " ", min_value=vmin, max_value=vmax,
+            value=st.session_state[sk], step=step,
+            key=f"sl_{key_prefix}", on_change=_from_sl,
+            label_visibility="collapsed",
+        )
+    return st.session_state[sk]
+
+
+cons_ele_sel = _consumo_widget(
+    "Consumo mensile ELE (kWh)", cons_ele_real, step=10_000, key_prefix="ele",
+)
+fatt_ele = cons_ele_sel / cons_ele_real if cons_ele_real else 1.0
 st.caption(
     f"Consumo selezionato: <span class='num-evidenza'>{cons_ele_sel:,.0f} kWh</span> "
     f"({fatt_ele:.2f}× rispetto al consumo reale di {cons_ele_real:,.0f} kWh)",
@@ -641,22 +668,10 @@ st.plotly_chart(
 # --------------- 4.2 Gas ---------------
 st.subheader(f"4.2 {ICON_GAS} Gas (Smc)")
 cons_gas_real = meta["consumo_gas_totale_smc"]
-cg_max = int(cons_gas_real * 6)
-cg_min = max(1, int(cons_gas_real * 0.1))
-col_in_g, col_sl_g = st.columns([1, 2])
-with col_in_g:
-    cons_gas_sel = st.number_input(
-        "Consumo mensile GAS (Smc)",
-        min_value=cg_min, max_value=cg_max, value=int(cons_gas_real), step=1_000,
-        key="num_gas",
-    )
-with col_sl_g:
-    cons_gas_sel = st.slider(
-        " ", min_value=cg_min, max_value=cg_max, value=int(cons_gas_sel),
-        step=1_000, key="sl_gas", label_visibility="collapsed",
-    )
-
-fatt_gas = cons_gas_sel / cons_gas_real
+cons_gas_sel = _consumo_widget(
+    "Consumo mensile GAS (Smc)", cons_gas_real, step=1_000, key_prefix="gas",
+)
+fatt_gas = cons_gas_sel / cons_gas_real if cons_gas_real else 1.0
 st.caption(
     f"Consumo selezionato: <span class='num-evidenza'>{cons_gas_sel:,.0f} Smc</span> "
     f"({fatt_gas:.2f}× rispetto al consumo reale di {cons_gas_real:,.0f} Smc)",
@@ -715,31 +730,87 @@ d'uso (gas) si ordinano in modo crescente tutti i prezzi ricostruiti delle offer
 raccolte sul mercato e si selezionano le <b>10 più convenienti</b>. La loro media
 aritmetica costituisce il valore di benchmark di mercato esposto nei grafici.</li>
 </ol>
-
-<h4>📊 Offerte raccolte</h4>
-<p>Nel mese di <b>{mese_label(meta['mese'])}</b> sono state raccolte e
-analizzate complessivamente <span class="num-evidenza">{meta['n_offerte_totali']}
-offerte indicizzate</span> attive sul mercato libero italiano, provenienti sia dai
-siti istituzionali dei fornitori sia dai principali portali comparatori.</p>
-
-<h4>🏢 Fornitori monitorati</h4>
-<p>Sono stati estratti i corrispettivi di spread e quota fissa pubblicati dai siti
-istituzionali dei seguenti fornitori operanti sul mercato libero italiano:
 """,
     unsafe_allow_html=True,
 )
 
-# Lista fornitori MONITORATI in forma descrittiva
-nomi_monitorati = [f["nome"] for f in D["fornitori"]]
-testo_monitorati = ", ".join(nomi_monitorati[:-1]) + " e " + nomi_monitorati[-1] + "."
-st.markdown(f"<p>{testo_monitorati}</p>", unsafe_allow_html=True)
+# --- Lista fornitori CON / SENZA offerte (derivata dalle 29 offerte univoche) ---
+fornitori_con  = D.get("fornitori_con_offerte")
+fornitori_senza = D.get("fornitori_senza_offerte")
 
-st.markdown("<h4>🚫 Fornitori non monitorati</h4>", unsafe_allow_html=True)
+# Fallback se il data.json non ha ancora questi campi (formato v4 o precedente)
+if fornitori_con is None or fornitori_senza is None:
+    _alias = {
+        "AGSM / Magis Energia": ["agsm", "magis"], "A2A Energia": ["a2a"],
+        "Axpo Italia": ["axpo"], "Dolomiti Energia": ["dolomiti"],
+        "Edison Energia": ["edison"], "Engie Italia": ["engie"],
+        "Eni Plenitude": ["plenitude", "eni "], "Hera Comm": ["hera"],
+        "Iren Mercato": ["iren"], "Repower Italia": ["repower"],
+    }
+    _txt = " | ".join(str(o.get("offerta", "")) for o in D.get("offerte_tutte", [])).lower()
+    fornitori_con = [n for n, a in _alias.items() if any(x in _txt for x in a)]
+    fornitori_senza = [f["nome"] for f in D.get("fornitori", []) if f["nome"] not in fornitori_con]
+
+# Data di estrazione (fallback alla mtime del data.json se non presente)
+data_estr_str = D.get("meta", {}).get("data_estrazione")
+if not data_estr_str:
+    import os
+    try:
+        ts = os.path.getmtime(Path(__file__).parent / "data" / "data.json")
+        data_estr_str = pd.Timestamp(ts, unit="s").strftime("%Y-%m-%d")
+    except Exception:
+        data_estr_str = ""
+data_estr_it = ""
+if data_estr_str:
+    try:
+        d = pd.Timestamp(data_estr_str)
+        data_estr_it = d.strftime("%d/%m/%Y")
+    except Exception:
+        data_estr_it = data_estr_str
+
+# Costruisco il testo descrittivo dei fornitori (senza bullet points, in linea)
+testo_con = ""
+if fornitori_con:
+    if len(fornitori_con) == 1:
+        testo_con = fornitori_con[0]
+    else:
+        testo_con = ", ".join(fornitori_con[:-1]) + " e " + fornitori_con[-1]
+
+testo_senza = ""
+if fornitori_senza:
+    if len(fornitori_senza) == 1:
+        testo_senza = fornitori_senza[0]
+    else:
+        testo_senza = ", ".join(fornitori_senza[:-1]) + " e " + fornitori_senza[-1]
+
+# Tutto dentro il footer-block (continuazione)
+st.markdown(
+    f"""
+<h4>📊 Offerte raccolte</h4>
+<p>Nel mese di <b>{mese_label(meta['mese'])}</b> sono state raccolte e analizzate
+complessivamente <span class="num-evidenza">{meta['n_offerte_totali']} offerte
+indicizzate</span> attive sul mercato libero italiano, provenienti sia dai siti
+istituzionali dei fornitori sia dai principali portali comparatori.
+{f"<br><i>Ultima estrazione: <b>{data_estr_it}</b></i>" if data_estr_it else ""}</p>
+
+<h4>🏢 Fornitori monitorati</h4>
+<p>I fornitori per cui è stato possibile rilevare almeno una delle
+{meta['n_offerte_totali']} offerte raccolte sono
+{testo_con if testo_con else "<i>nessuno (rigenera i dati)</i>"}.
+{("Non è stato possibile rilevare alcuna offerta indicizzata sul mercato per "
+  + testo_senza + ", nonostante l'inclusione nel monitoraggio automatico.")
+ if testo_senza else ""}</p>
+
+<h4>🚫 Fornitori non monitorabili</h4>
+""",
+    unsafe_allow_html=True,
+)
+
 non_mon = D.get("fornitori_non_monitorati", [])
 if non_mon:
     parti = []
     for f in non_mon:
-        parti.append(f"<b>{f['nome']}</b>: {f['motivo']}")
+        parti.append(f"<b>{f['nome']}</b> ({f['motivo']})")
     st.markdown(
         "<p>Per i seguenti fornitori non è stato possibile completare il monitoraggio "
         "automatico delle offerte: " + "; ".join(parti) + ".</p>",
