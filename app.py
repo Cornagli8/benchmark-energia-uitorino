@@ -567,74 +567,91 @@ st.plotly_chart(
 
 
 # ------------------------------------------------------------------
-# SEZIONE 4 — Sensitivity sul consumo (4.1 ELE + 4.2 GAS)
+# SEZIONE 4 — Simulatore "per singola utenza"
 # ------------------------------------------------------------------
-st.header("4️⃣ 🎚️ Sensitivity sul livello di consumo")
+st.header("4️⃣ 🎚️ Simulatore sul consumo per singola utenza")
 
 st.markdown(
     """
 <div class="desc-box">
-Lo slider parte dal <b>consumo reale totale del mese</b>. Cambiando il consumo:
+Gioca con il <b>consumo medio per POD/PDR</b> e con il <b>numero di utenze</b> per
+vedere come cambia il benchmark di mercato:
 <ul>
-  <li>il <b>Mercato</b> ricalcola la <b>quota fissa</b> annua per POD diluita sul nuovo
-  consumo (offerte con quota fissa alta diventano più convenienti su grandi volumi);</li>
-  <li>la <b>Convenzione</b> resta <b>costante</b>: la materia prima è composta da
-  Generazione e Perdite di rete, entrambe espresse in €/MWh e indicizzate al PUN/PSV
-  all'ingrosso, quindi il prezzo unitario non dipende dal volume del singolo cliente.</li>
+  <li>il <b>Mercato</b> ricalcola la quota fissa annua per POD/PDR diluita sul nuovo
+  consumo. Più aumenti il consumo singolo, meno pesa la quota fissa → prezzo unitario
+  più basso.</li>
+  <li>la <b>Convenzione</b> resta <b>costante</b>: la materia prima è indicizzata
+  al PUN/PSV all'ingrosso (€/MWh, c€/Smc) e non dipende dal volume del cliente.</li>
 </ul>
-Il grafico mostra come, all'aumentare del consumo, il Mercato si avvicina alla
-Convenzione (la quota fissa pesa meno per kWh), e viceversa.
+<i>Per l'elettrico, il numero di POD BT e MT influenza il benchmark Mercato
+<b>solo</b> nel calcolo del mix delle perdite di rete (10% BT, 3,8% MT).</i>
 </div>
 """,
     unsafe_allow_html=True,
 )
 
-# --------------- 4.1 Elettrico ---------------
-st.subheader(f"4.1 {ICON_ELE} Elettrico (kWh)")
-cons_ele_real = meta["consumo_ele_totale_kwh"]
+
+# --- Helper: ricalcola benchmark Mercato in tempo reale dalle offerte_anonime ---
+offerte_anon = D.get("offerte_anonime", [])
 
 
-def _fmt_thousands(n: int) -> str:
+def _benchmark_mercato_singola(commodity: str, base_price: float,
+                               cons_singolo: float, coeff_perdita: float,
+                               top_n: int = 10):
+    """Calcola il benchmark Mercato per UN tipo di utenza (BT, MT, o GAS aggregato).
+    base_price: PUN (€/kWh) per ELE, PSV (€/Smc) per gas.
+    cons_singolo: consumo medio mensile per POD/PDR (kWh o Smc).
+    coeff_perdita: 0.10 (BT), 0.038 (MT), 0 (gas).
+    Ritorna prezzo medio top-N in €/MWh (ELE) o c€/Smc (gas).
+    """
+    if cons_singolo <= 0 or not offerte_anon:
+        return None
+    prezzi = []
+    for o in offerte_anon:
+        if o["commodity"] != commodity:
+            continue
+        spread = float(o["spread"])
+        quota = float(o["quota_eur_anno"])
+        # quota fissa annua diluita sul consumo annuo singolo = quota/12 / cons_mese
+        quota_unit = (quota / 12.0) / cons_singolo if cons_singolo else 0.0
+        p = base_price + spread + (base_price + spread) * coeff_perdita + quota_unit
+        prezzi.append(p)
+    if not prezzi:
+        return None
+    prezzi.sort()
+    top = prezzi[:min(top_n, len(prezzi))]
+    media = sum(top) / len(top)
+    return media * (1000 if commodity == "ELE" else 100)
+
+# --------------- Helper formattazione + widget ---------------
+def _fmt_thousands(n) -> str:
     """Formatta un intero con separatore migliaia stile italiano (punti)."""
     return f"{int(n):,}".replace(",", ".")
 
 
-def _consumo_widget(label, real, step, key_prefix, unit, max_mult=6):
-    """Coppia number_input + slider SINCRONIZZATI via session_state.
-    Visualizza il valore corrente con separatore migliaia (stile italiano).
-    Tutti i valori sono garantiti multipli di step e dentro [vmin, vmax]."""
-    if not real or real <= 0:
-        st.info(f"{label}: consumo reale non disponibile, slider disabilitato.")
-        return 0
-
-    vmin = max(step, int(round(real * 0.1 / step) * step))
-    vmax = max(vmin + step, int(round(real * max_mult / step) * step))
-    real_aligned = int(round(real / step) * step)
-    real_aligned = max(vmin, min(vmax, real_aligned))
-
-    sk = f"_cons_{key_prefix}"
-    cur = st.session_state.get(sk, real_aligned)
-    cur = int(round(cur / step) * step)
-    cur = max(vmin, min(vmax, cur))
+def _slider_intero(label, vmin, vmax, default, step, key_prefix, unit=""):
+    """number_input + slider sincronizzati via session_state, con caption migliaia."""
+    if vmax <= vmin:
+        vmax = vmin + step
+    default = max(vmin, min(vmax, int(round(default / step) * step)))
+    sk = f"_v_{key_prefix}"
+    cur = st.session_state.get(sk, default)
+    cur = max(vmin, min(vmax, int(round(cur / step) * step)))
     st.session_state[sk] = cur
 
     nkey = f"num_{key_prefix}"
     skey = f"sl_{key_prefix}"
 
-    # Sincronizzazione bidirezionale tramite callback
     def _from_num():
-        v = int(round(st.session_state[nkey] / step) * step)
-        v = max(vmin, min(vmax, v))
+        v = max(vmin, min(vmax, int(round(st.session_state[nkey] / step) * step)))
         st.session_state[sk] = v
-        st.session_state[skey] = v   # aggiorna anche lo slider
+        st.session_state[skey] = v
 
     def _from_sl():
-        v = int(round(st.session_state[skey] / step) * step)
-        v = max(vmin, min(vmax, v))
+        v = max(vmin, min(vmax, int(round(st.session_state[skey] / step) * step)))
         st.session_state[sk] = v
-        st.session_state[nkey] = v   # aggiorna anche il number_input
+        st.session_state[nkey] = v
 
-    # Inizializzo le 2 chiavi se non presenti, cosi' partono allineate
     if nkey not in st.session_state:
         st.session_state[nkey] = cur
     if skey not in st.session_state:
@@ -642,107 +659,148 @@ def _consumo_widget(label, real, step, key_prefix, unit, max_mult=6):
 
     cols = st.columns([1, 2])
     with cols[0]:
-        st.number_input(
-            label, min_value=vmin, max_value=vmax, step=step,
-            key=nkey, on_change=_from_num,
-        )
+        st.number_input(label, min_value=vmin, max_value=vmax, step=step,
+                        key=nkey, on_change=_from_num)
     with cols[1]:
-        st.slider(
-            " ", min_value=vmin, max_value=vmax, step=step,
-            key=skey, on_change=_from_sl,
-            label_visibility="collapsed",
+        st.slider(" ", min_value=vmin, max_value=vmax, step=step,
+                  key=skey, on_change=_from_sl, label_visibility="collapsed")
+    if unit:
+        st.markdown(
+            f"<div style='text-align:right; color:#1F2937; font-size:.92rem;'>"
+            f"<b>{_fmt_thousands(st.session_state[sk])} {unit}</b></div>",
+            unsafe_allow_html=True,
         )
-    # Valore corrente sotto i widget, con separatore migliaia
-    val_cur = st.session_state[sk]
-    st.markdown(
-        f"<div style='text-align:right; color:#1F2937; font-size:.95rem; "
-        f"margin-top:.2rem;'>Consumo selezionato: "
-        f"<b>{_fmt_thousands(val_cur)} {unit}</b></div>",
-        unsafe_allow_html=True,
+    return st.session_state[sk]
+
+
+# Default: medie reali per POD/PDR del mese selezionato
+cons_ele_tot = float(meta.get("consumo_ele_totale_kwh", 0))
+cons_gas_tot = float(meta.get("consumo_gas_totale_smc", 0))
+
+n_bt_real = int(df_conf[(df_conf["commodity"] == "ELE")
+                        & (df_conf["tipologia"].str.startswith("BT", na=False))]["n_utenze"].sum())
+n_mt_real = int(df_conf[(df_conf["commodity"] == "ELE")
+                        & (df_conf["tipologia"] == "MT")]["n_utenze"].sum())
+cons_bt_tot_real = float(df_conf[(df_conf["commodity"] == "ELE")
+                                  & (df_conf["tipologia"].str.startswith("BT", na=False))]["consumo_mese"].sum())
+cons_mt_tot_real = float(df_conf[(df_conf["commodity"] == "ELE")
+                                  & (df_conf["tipologia"] == "MT")]["consumo_mese"].sum())
+cons_bt_pod_real = int(round(cons_bt_tot_real / n_bt_real)) if n_bt_real else 2000
+cons_mt_pod_real = int(round(cons_mt_tot_real / n_mt_real)) if n_mt_real else 40000
+
+n_pdr_real = int(df_conf[df_conf["commodity"] == "GAS"]["n_utenze"].sum())
+cons_pdr_real = int(round(cons_gas_tot / n_pdr_real)) if n_pdr_real else 2500
+
+
+# =================================================================
+# 4.1 Elettrico — 4 slider (n_BT, cons_BT, n_MT, cons_MT) -> 2 barre
+# =================================================================
+st.subheader(f"4.1 {ICON_ELE} Elettrico — simulatore per singola utenza")
+
+cE1, cE2 = st.columns(2)
+with cE1:
+    st.markdown("**Utenze BT**")
+    n_bt = _slider_intero("Numero POD BT", vmin=1, vmax=2000,
+                           default=n_bt_real, step=1, key_prefix="n_bt")
+    cons_bt_pod = _slider_intero("Consumo medio per POD BT (kWh/mese)",
+                                  vmin=100, vmax=200_000, default=cons_bt_pod_real,
+                                  step=100, key_prefix="cons_bt_pod", unit="kWh/POD")
+with cE2:
+    st.markdown("**Utenze MT**")
+    n_mt = _slider_intero("Numero POD MT", vmin=1, vmax=500,
+                           default=max(1, n_mt_real), step=1, key_prefix="n_mt")
+    cons_mt_pod = _slider_intero("Consumo medio per POD MT (kWh/mese)",
+                                  vmin=1_000, vmax=500_000, default=cons_mt_pod_real,
+                                  step=1_000, key_prefix="cons_mt_pod", unit="kWh/POD")
+
+cons_bt_tot = n_bt * cons_bt_pod
+cons_mt_tot = n_mt * cons_mt_pod
+st.caption(
+    f"<span style='color:#6B7280;'>Consumo totale simulato: "
+    f"BT <b>{_fmt_thousands(cons_bt_tot)} kWh</b> + "
+    f"MT <b>{_fmt_thousands(cons_mt_tot)} kWh</b> = "
+    f"<b>{_fmt_thousands(cons_bt_tot + cons_mt_tot)} kWh</b> totali "
+    f"({n_bt} POD BT, {n_mt} POD MT).</span>",
+    unsafe_allow_html=True,
+)
+
+# Calcolo Mercato in tempo reale: top10 BT, top10 MT, poi media ponderata sui consumi
+pun_val = float(meta.get("PUN_eur_kWh", 0))
+mp_conv_bt_unico = float(meta.get("mp_conv_BT", 0))   # €/MWh, fisso
+mp_conv_mt_unico = float(meta.get("mp_conv_MT", 0))
+
+bench_bt = _benchmark_mercato_singola("ELE", pun_val, cons_bt_pod,
+                                       coeff_perdita=meta.get("coeff_perdita_BT", 0.10))
+bench_mt = _benchmark_mercato_singola("ELE", pun_val, cons_mt_pod,
+                                       coeff_perdita=meta.get("coeff_perdita_MT", 0.038))
+
+# Convenzione aggregata: media ponderata BT/MT sui consumi simulati
+conv_ele_agg = (
+    (mp_conv_bt_unico * cons_bt_tot + mp_conv_mt_unico * cons_mt_tot)
+    / max(cons_bt_tot + cons_mt_tot, 1)
+)
+# Mercato aggregato: media ponderata dei benchmark BT/MT sui consumi simulati
+if bench_bt is not None and bench_mt is not None:
+    merc_ele_agg = (
+        (bench_bt * cons_bt_tot + bench_mt * cons_mt_tot)
+        / max(cons_bt_tot + cons_mt_tot, 1)
     )
-    return val_cur
-
-
-cons_ele_sel = _consumo_widget(
-    "Consumo mensile ELE (kWh)", cons_ele_real, step=10_000,
-    key_prefix="ele", unit="kWh",
-)
-fatt_ele = cons_ele_sel / cons_ele_real if cons_ele_real else 1.0
-st.caption(
-    f"<span style='color:#6B7280;'>Fattore vs consumo reale: <b>{fatt_ele:.2f}×</b> "
-    f"(reale: {_fmt_thousands(cons_ele_real)} kWh)</span>",
-    unsafe_allow_html=True,
-)
-
-# Convenzione: prezzo unitario costante (la materia prima Gen+Perdite e' indicizzata
-# al PUN ed e' espressa in €/MWh, non dipende dal consumo del singolo cliente).
-# Mercato: interpolato sul fattore di consumo (perche' ha quota fissa €/anno per POD).
-_conv_4 = {r["tipologia"]: float(r["materia_prima_conv"]) for _, r in df_ele.iterrows()}
-_merc_4 = {r["tipologia"]: interp_sens(f"ELE|{r['tipologia']}", fatt_ele,
-                                        fallback_value=float(r["benchmark_mercato"]))
-           for _, r in df_ele.iterrows()}
-_cons_4 = {r["tipologia"]: float(r["consumo_mese"]) for _, r in df_ele.iterrows()}
-
-# Aggrego BT<=3 + BT4.5-40 -> BT<=40 con media pesata sui consumi originali
-cons_bt_low_tot = _cons_4.get("BT <=3 kW", 0) + _cons_4.get("BT 4.5-40 kW", 0)
-if cons_bt_low_tot:
-    bt_low_conv_sc = (
-        _conv_4.get("BT <=3 kW", 0) * _cons_4.get("BT <=3 kW", 0)
-        + _conv_4.get("BT 4.5-40 kW", 0) * _cons_4.get("BT 4.5-40 kW", 0)
-    ) / cons_bt_low_tot
-    bt_low_merc_sc = (
-        _merc_4.get("BT <=3 kW", 0) * _cons_4.get("BT <=3 kW", 0)
-        + _merc_4.get("BT 4.5-40 kW", 0) * _cons_4.get("BT 4.5-40 kW", 0)
-    ) / cons_bt_low_tot
 else:
-    bt_low_conv_sc = bt_low_merc_sc = 0.0
-
-cat_ele_3 = ["BT <=40 kW", "BT >40 kW", "MT"]
-y_conv_e_sc = [bt_low_conv_sc,
-               _conv_4.get("BT >40 kW", 0),
-               _conv_4.get("MT", 0)]
-y_merc_e_sc = [bt_low_merc_sc,
-               _merc_4.get("BT >40 kW", 0),
-               _merc_4.get("MT", 0)]
+    merc_ele_agg = bench_bt or bench_mt or 0
 
 st.plotly_chart(
-    bar_gruppi(cat_ele_3, y_conv_e_sc, y_merc_e_sc,
+    bar_gruppi(["Elettrico (aggregato)"], [conv_ele_agg], [merc_ele_agg or 0],
                C_CONV_ELE, C_MERC_ELE, LABEL_CONV_ELE, LABEL_MERC_ELE, "€/MWh",
-               height=420),
+               height=400),
     use_container_width=True,
 )
-
-# --------------- 4.2 Gas ---------------
-st.subheader(f"4.2 {ICON_GAS} Gas (Smc)")
-cons_gas_real = meta["consumo_gas_totale_smc"]
-cons_gas_sel = _consumo_widget(
-    "Consumo mensile GAS (Smc)", cons_gas_real, step=1_000,
-    key_prefix="gas", unit="Smc",
-)
-fatt_gas = cons_gas_sel / cons_gas_real if cons_gas_real else 1.0
 st.caption(
-    f"<span style='color:#6B7280;'>Fattore vs consumo reale: <b>{fatt_gas:.2f}×</b> "
-    f"(reale: {_fmt_thousands(cons_gas_real)} Smc)</span>",
+    f"<span style='color:#6B7280;'>"
+    f"Benchmark Mercato BT: <b>{bench_bt:.2f} €/MWh</b> · "
+    f"Benchmark Mercato MT: <b>{bench_mt:.2f} €/MWh</b> · "
+    f"Media ponderata sui consumi simulati: <b>{merc_ele_agg:.2f} €/MWh</b></span>"
+    if (bench_bt and bench_mt) else "",
     unsafe_allow_html=True,
 )
 
-usi_gas = df_gas["tipologia"].tolist()
-y_conv_g_sc = []
-y_merc_g_sc = []
-for _, r in df_gas.iterrows():
-    # Convenzione costante: la materia prima del gas e' un prezzo unitario c€/Smc
-    # (indicizzato al PSV), non dipende dal consumo del cliente.
-    y_conv_g_sc.append(float(r["materia_prima_conv"]))
-    key = f"GAS|{r['tipologia']}"
-    y_merc_g_sc.append(interp_sens(key, fatt_gas,
-                                    fallback_value=float(r["benchmark_mercato"])))
+
+# =================================================================
+# 4.2 Gas — 2 slider (n_PDR, cons_PDR) -> 2 barre
+# =================================================================
+st.subheader(f"4.2 {ICON_GAS} Gas — simulatore per singola utenza")
+
+cG1, cG2 = st.columns(2)
+with cG1:
+    n_pdr = _slider_intero("Numero PDR", vmin=1, vmax=1000,
+                            default=max(1, n_pdr_real), step=1, key_prefix="n_pdr")
+with cG2:
+    cons_pdr = _slider_intero("Consumo medio per PDR (Smc/mese)",
+                               vmin=50, vmax=50_000, default=cons_pdr_real,
+                               step=50, key_prefix="cons_pdr", unit="Smc/PDR")
+
+cons_gas_tot_sim = n_pdr * cons_pdr
+st.caption(
+    f"<span style='color:#6B7280;'>Consumo totale simulato: "
+    f"<b>{_fmt_thousands(cons_gas_tot_sim)} Smc</b> ({n_pdr} PDR).</span>",
+    unsafe_allow_html=True,
+)
+
+# Convenzione aggregata GAS = media ponderata sui consumi reali del mese (fissa)
+psv_val = float(meta.get("PSV_eur_Smc", 0))
+conv_gas_agg = float(df_gen[df_gen["commodity"] == "GAS"]["MP_convenzione"].iloc[0])
+bench_gas = _benchmark_mercato_singola("GAS", psv_val, cons_pdr, coeff_perdita=0.0)
 
 st.plotly_chart(
-    bar_gruppi([_short_gas(t) for t in usi_gas],
-               y_conv_g_sc, y_merc_g_sc,
+    bar_gruppi(["Gas (aggregato)"], [conv_gas_agg], [bench_gas or 0],
                C_CONV_GAS, C_MERC_GAS, LABEL_CONV_GAS, LABEL_MERC_GAS, "c€/Smc",
-               height=420),
+               height=400),
     use_container_width=True,
+)
+st.caption(
+    f"<span style='color:#6B7280;'>"
+    f"Benchmark Mercato gas a {_fmt_thousands(cons_pdr)} Smc/PDR: "
+    f"<b>{bench_gas:.2f} c€/Smc</b></span>" if bench_gas else "",
+    unsafe_allow_html=True,
 )
 
 

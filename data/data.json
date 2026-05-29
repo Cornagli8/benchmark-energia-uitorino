@@ -939,5 +939,137 @@
       "nome": "bolletta-energia.it",
       "url": "https://bolletta-energia.it/comparazione/offerte-business-luce-gas"
     }
+  ],
+  "offerte_anonime": [
+    {
+      "commodity": "ELE",
+      "spread": 0.0108,
+      "quota_eur_anno": 192.0
+    },
+    {
+      "commodity": "ELE",
+      "spread": 0.0132,
+      "quota_eur_anno": 160.0
+    },
+    {
+      "commodity": "ELE",
+      "spread": 0.0176,
+      "quota_eur_anno": 150.0
+    },
+    {
+      "commodity": "ELE",
+      "spread": 0.0198,
+      "quota_eur_anno": 180.0
+    },
+    {
+      "commodity": "ELE",
+      "spread": 0.019998,
+      "quota_eur_anno": 180.0
+    },
+    {
+      "commodity": "ELE",
+      "spread": 0.025,
+      "quota_eur_anno": 144.0
+    },
+    {
+      "commodity": "ELE",
+      "spread": 0.0253,
+      "quota_eur_anno": 192.0
+    },
+    {
+      "commodity": "ELE",
+      "spread": 0.05,
+      "quota_eur_anno": 171.0
+    },
+    {
+      "commodity": "GAS",
+      "spread": 0.05,
+      "quota_eur_anno": 171.0
+    },
+    {
+      "commodity": "ELE",
+      "spread": 0.055,
+      "quota_eur_anno": 181.92
+    },
+    {
+      "commodity": "GAS",
+      "spread": 0.07,
+      "quota_eur_anno": 193.20000000000002
+    },
+    {
+      "commodity": "ELE",
+      "spread": 0.07,
+      "quota_eur_anno": 193.20000000000002
+    },
+    {
+      "commodity": "GAS",
+      "spread": 0.08,
+      "quota_eur_anno": 160.0
+    },
+    {
+      "commodity": "GAS",
+      "spread": 0.11,
+      "quota_eur_anno": 180.0
+    },
+    {
+      "commodity": "ELE",
+      "spread": 0.11,
+      "quota_eur_anno": 180.0
+    },
+    {
+      "commodity": "GAS",
+      "spread": 0.11,
+      "quota_eur_anno": 180.0
+    },
+    {
+      "commodity": "GAS",
+      "spread": 0.115,
+      "quota_eur_anno": 192.0
+    },
+    {
+      "commodity": "GAS",
+      "spread": 0.115,
+      "quota_eur_anno": 150.0
+    },
+    {
+      "commodity": "ELE",
+      "spread": 0.12,
+      "quota_eur_anno": 192.0
+    },
+    {
+      "commodity": "GAS",
+      "spread": 0.14,
+      "quota_eur_anno": 180.0
+    },
+    {
+      "commodity": "ELE",
+      "spread": 0.14,
+      "quota_eur_anno": 180.0
+    },
+    {
+      "commodity": "GAS",
+      "spread": 0.14,
+      "quota_eur_anno": 180.0
+    },
+    {
+      "commodity": "GAS",
+      "spread": 0.16,
+      "quota_eur_anno": 180.0
+    },
+    {
+      "commodity": "ELE",
+      "spread": 0.16,
+      "quota_eur_anno": 180.0
+    },
+    {
+      "commodity": "GAS",
+      "spread": 0.3,
+      "quota_eur_anno": 181.92
+    },
+    {
+      "commodity": "GAS",
+      "spread": 0.4,
+      "quota_eur_anno": 180.0
+    }
   ]
 }
