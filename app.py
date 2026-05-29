@@ -211,30 +211,47 @@ logo_files = {
     "ui":      loghi_dir / "logo_ui.png",
     "mmgas":   loghi_dir / "logo_mmgas.png",
 }
-have_logos = all(p.exists() for p in logo_files.values())
 
-if have_logos:
-    c1, c2, c3 = st.columns([1, 1, 1])
-    c1.image(str(logo_files["mmpower"]), width=160)
-    c2.image(str(logo_files["ui"]),      width=160)
-    c3.image(str(logo_files["mmgas"]),   width=160)
-else:
-    st.markdown(
-        """
-<div class="logo-row">
-  <div class="logo-pill mmpower">⚡ MMPOWER</div>
-  <div class="logo-pill ui-torino">UNIONE INDUSTRIALI TORINO</div>
-  <div class="logo-pill mmgas">🔥 MMGAS</div>
-</div>
-""",
-        unsafe_allow_html=True,
-    )
+# Caricamento INDIPENDENTE: se uno dei loghi manca uso il placeholder solo per quello
+cl1, cl2, cl3 = st.columns([1, 1, 1])
+LOGO_WIDTH = 180
+
+
+def _logo_or_placeholder(col, key, placeholder_html):
+    p = logo_files[key]
+    if p.exists():
+        # vbox: immagine centrata verticalmente
+        with col:
+            col.markdown(
+                "<div style='display:flex;justify-content:center;align-items:center;"
+                "min-height:90px;'>",
+                unsafe_allow_html=True,
+            )
+            col.image(str(p), width=LOGO_WIDTH)
+            col.markdown("</div>", unsafe_allow_html=True)
+    else:
+        col.markdown(
+            f"<div style='display:flex;justify-content:center;align-items:center;"
+            f"min-height:90px;'>{placeholder_html}</div>",
+            unsafe_allow_html=True,
+        )
+
+
+_logo_or_placeholder(cl1, "mmpower",
+                     '<div class="logo-pill mmpower">⚡ MMPOWER</div>')
+_logo_or_placeholder(cl2, "ui",
+                     '<div class="logo-pill ui-torino">UNIONE INDUSTRIALI TORINO</div>')
+_logo_or_placeholder(cl3, "mmgas",
+                     '<div class="logo-pill mmgas">🔥 MMGAS</div>')
+
+# Se mancano i loghi UI e/o MMGAS, suggerimento operativo (solo se serve)
+mancanti = [k for k, p in logo_files.items() if not p.exists()]
+if mancanti:
     st.caption(
         "<div style='text-align:center; color:#9CA3AF; font-size:.78rem;'>"
-        "💡 Per sostituire i placeholder con i loghi reali, salva i file "
-        "<code>logo_mmpower.png</code>, <code>logo_ui.png</code>, "
-        "<code>logo_mmgas.png</code> nella cartella <code>pubblica_grafici/</code>."
-        "</div>",
+        "💡 Per sostituire i placeholder, salva "
+        + ", ".join(f"<code>logo_{k}.png</code>" for k in mancanti)
+        + " nella cartella <code>pubblica_grafici/</code>.</div>",
         unsafe_allow_html=True,
     )
 
@@ -389,72 +406,66 @@ def bar_gruppi(x_labels, y_conv, y_merc, color_conv, color_merc,
 # ------------------------------------------------------------------
 st.header(f"2️⃣ {ICON_ELE} Per fascia di potenza (Elettrico)")
 
-st.markdown(
-    f"""
-<div class="desc-box">
-Dettaglio per <b>fascia di potenza impegnata</b>. La materia prima della Convenzione
-varia in base alla classe di tensione del POD: tutte le sottofasce <b>BT</b> condividono
-lo stesso prezzo (Generazione {meta['generazione_BT']:.2f} + Perdite {meta['perdite_BT']:.2f}
-= <b>{meta['mp_conv_BT']:.2f} €/MWh</b>); la classe <b>MT</b> ha Generazione {meta['generazione_MT']:.2f}
-+ Perdite {meta['perdite_MT']:.2f} = <b>{meta['mp_conv_MT']:.2f} €/MWh</b>.
-Le 10 migliori offerte di mercato sono invece ricalcolate per ciascuna fascia, perché
-la <b>quota fissa</b> dell'offerta pesa diversamente sul consumo medio per fascia.
-</div>
-""",
-    unsafe_allow_html=True,
-)
-
-vista = st.radio(
-    "Vista:",
-    ["4 fasce (BT≤3 / BT 4.5-40 / BT>40 / MT)",
-     "3 categorie aggregate (BT≤40 / BT>40 / MT)"],
-    horizontal=True, key="vista_ele",
-)
-
+# Prepara df_ele ordinato secondo ORDINE_ELE
 df_ele = df_conf[df_conf["commodity"] == "ELE"].copy()
 df_ele["_order"] = df_ele["tipologia"].apply(
     lambda t: ORDINE_ELE.index(t) if t in ORDINE_ELE else 99)
 df_ele = df_ele.sort_values("_order").reset_index(drop=True)
 
-if vista.startswith("4 fasce"):
-    fig_g2 = bar_gruppi(
-        df_ele["tipologia"].tolist(),
-        df_ele["materia_prima_conv"].tolist(),
-        df_ele["benchmark_mercato"].tolist(),
-        C_CONV_ELE, C_MERC_ELE, LABEL_CONV_ELE, LABEL_MERC_ELE, "€/MWh",
-    )
-    st.plotly_chart(fig_g2, use_container_width=True)
 
-else:
-    # Aggrego BT≤3 + BT 4.5-40 in BT≤40 con media ponderata sui consumi
-    bt_low = df_ele[df_ele["tipologia"].isin(["BT <=3 kW", "BT 4.5-40 kW"])]
-    bt_high = df_ele[df_ele["tipologia"] == "BT >40 kW"]
-    mt = df_ele[df_ele["tipologia"] == "MT"]
+def _wmean(s, w):
+    w = w.loc[s.index]
+    return (s * w).sum() / w.sum() if w.sum() else 0.0
 
-    def _wmean(s, w):
-        w = w.loc[s.index]
-        return (s * w).sum() / w.sum() if w.sum() else 0.0
 
-    bt_low_conv = _wmean(bt_low["materia_prima_conv"], bt_low["consumo_mese"])
-    bt_low_merc = _wmean(bt_low["benchmark_mercato"], bt_low["consumo_mese"])
+# Aggrega BT≤3 + BT 4.5-40 -> BT≤40 con media ponderata sui consumi
+bt_low = df_ele[df_ele["tipologia"].isin(["BT <=3 kW", "BT 4.5-40 kW"])]
+bt_high = df_ele[df_ele["tipologia"] == "BT >40 kW"]
+mt_row = df_ele[df_ele["tipologia"] == "MT"]
 
-    cat = ["BT <=40 kW", "BT >40 kW", "MT"]
-    y_c = [bt_low_conv,
-           float(bt_high["materia_prima_conv"].iloc[0]),
-           float(mt["materia_prima_conv"].iloc[0])]
-    y_m = [bt_low_merc,
-           float(bt_high["benchmark_mercato"].iloc[0]),
-           float(mt["benchmark_mercato"].iloc[0])]
-    st.plotly_chart(bar_gruppi(cat, y_c, y_m, C_CONV_ELE, C_MERC_ELE,
-                                LABEL_CONV_ELE, LABEL_MERC_ELE, "€/MWh"),
-                    use_container_width=True)
-    cons_low_3 = float(df_ele[df_ele["tipologia"] == "BT <=3 kW"]["consumo_mese"].iloc[0])
-    cons_low_40 = float(df_ele[df_ele["tipologia"] == "BT 4.5-40 kW"]["consumo_mese"].iloc[0])
-    st.caption(
-        f"Aggregazione BT ≤40 kW = media ponderata sui consumi: "
-        f"(prezzo_BT≤3 × {cons_low_3:,.0f} kWh + prezzo_BT4.5–40 × {cons_low_40:,.0f} kWh) / "
-        f"({cons_low_3 + cons_low_40:,.0f} kWh)"
-    )
+bt_low_conv = _wmean(bt_low["materia_prima_conv"], bt_low["consumo_mese"])
+bt_low_merc = _wmean(bt_low["benchmark_mercato"], bt_low["consumo_mese"])
+
+cons_low_3 = float(df_ele[df_ele["tipologia"] == "BT <=3 kW"]["consumo_mese"].sum())
+cons_low_40 = float(df_ele[df_ele["tipologia"] == "BT 4.5-40 kW"]["consumo_mese"].sum())
+
+st.markdown(
+    f"""
+<div class="desc-box">
+Dettaglio per <b>fascia di potenza impegnata</b>. La materia prima della Convenzione
+è calcolata per ciascuna delle quattro fasce di potenza presenti nel report della
+fornitura delle aziende convenzionate (media ponderata sui consumi dei POD di ogni
+fascia). Per chiarezza espositiva, le due fasce BT ≤3 kW e BT 4,5–40 kW sono qui
+<b>aggregate in BT ≤40 kW</b> usando una media ponderata sui consumi:<br>
+<code>prezzo_BT≤40 = (prezzo_BT≤3 × consumo_BT≤3 + prezzo_BT4.5–40 × consumo_BT4.5–40) /
+(consumo_BT≤3 + consumo_BT4.5–40)</code>.<br>
+Anche il <b>Top 10 di mercato</b> è ricalcolato per ciascuna categoria, perché la quota fissa
+dell'offerta pesa diversamente sul consumo medio di ognuna.
+</div>
+""",
+    unsafe_allow_html=True,
+)
+
+cat = ["BT <=40 kW", "BT >40 kW", "MT"]
+y_c = [bt_low_conv,
+       float(bt_high["materia_prima_conv"].iloc[0]) if len(bt_high) else 0,
+       float(mt_row["materia_prima_conv"].iloc[0]) if len(mt_row) else 0]
+y_m = [bt_low_merc,
+       float(bt_high["benchmark_mercato"].iloc[0]) if len(bt_high) else 0,
+       float(mt_row["benchmark_mercato"].iloc[0]) if len(mt_row) else 0]
+
+st.plotly_chart(
+    bar_gruppi(cat, y_c, y_m, C_CONV_ELE, C_MERC_ELE,
+               LABEL_CONV_ELE, LABEL_MERC_ELE, "€/MWh"),
+    use_container_width=True,
+)
+
+st.caption(
+    f"Aggregazione BT ≤40 kW: prezzo_BT≤3 × {cons_low_3:,.0f} kWh + "
+    f"prezzo_BT4,5–40 × {cons_low_40:,.0f} kWh, diviso il totale "
+    f"{cons_low_3 + cons_low_40:,.0f} kWh = <b>{bt_low_conv:.2f} €/MWh</b> per "
+    f"la Convenzione.",
+)
 
 
 # ------------------------------------------------------------------
@@ -533,23 +544,45 @@ st.caption(
     unsafe_allow_html=True,
 )
 
-# Per ciascuna fascia ELE: ricalcolo Mercato (interpolato) e Convenzione (scalata)
-fasce_ele = df_ele["tipologia"].tolist()
-y_conv_e_sc = []
-y_merc_e_sc = []
-for _, r in df_ele.iterrows():
-    # Convenzione scalata: prezzo * consumo_origine / consumo_inserito (per fascia)
-    cons_o_fascia = float(r["consumo_mese"])
-    # scalo il consumo della fascia con lo stesso fattore globale (omotetia)
-    cons_n_fascia = cons_o_fascia * fatt_ele
-    p_conv_sc = (float(r["materia_prima_conv"]) * cons_o_fascia / cons_n_fascia
-                 if cons_n_fascia else 0)
-    y_conv_e_sc.append(p_conv_sc)
-    key = f"ELE|{r['tipologia']}"
-    y_merc_e_sc.append(interp_sens(key, fatt_ele))
+# Calcolo per CIASCUNA delle 4 fasce, poi aggrego BT<=3+BT4.5-40 -> BT<=40 (3 categorie)
+def _conv_scalata(r, fatt):
+    cons_o = float(r["consumo_mese"])
+    cons_n = cons_o * fatt
+    if not cons_n:
+        return 0.0
+    return float(r["materia_prima_conv"]) * cons_o / cons_n
+
+
+_conv_4 = {r["tipologia"]: _conv_scalata(r, fatt_ele) for _, r in df_ele.iterrows()}
+_merc_4 = {r["tipologia"]: interp_sens(f"ELE|{r['tipologia']}", fatt_ele,
+                                        fallback_value=float(r["benchmark_mercato"]))
+           for _, r in df_ele.iterrows()}
+_cons_4 = {r["tipologia"]: float(r["consumo_mese"]) for _, r in df_ele.iterrows()}
+
+# Aggrego BT<=3 + BT4.5-40 -> BT<=40 con media pesata sui consumi originali
+cons_bt_low_tot = _cons_4.get("BT <=3 kW", 0) + _cons_4.get("BT 4.5-40 kW", 0)
+if cons_bt_low_tot:
+    bt_low_conv_sc = (
+        _conv_4.get("BT <=3 kW", 0) * _cons_4.get("BT <=3 kW", 0)
+        + _conv_4.get("BT 4.5-40 kW", 0) * _cons_4.get("BT 4.5-40 kW", 0)
+    ) / cons_bt_low_tot
+    bt_low_merc_sc = (
+        _merc_4.get("BT <=3 kW", 0) * _cons_4.get("BT <=3 kW", 0)
+        + _merc_4.get("BT 4.5-40 kW", 0) * _cons_4.get("BT 4.5-40 kW", 0)
+    ) / cons_bt_low_tot
+else:
+    bt_low_conv_sc = bt_low_merc_sc = 0.0
+
+cat_ele_3 = ["BT <=40 kW", "BT >40 kW", "MT"]
+y_conv_e_sc = [bt_low_conv_sc,
+               _conv_4.get("BT >40 kW", 0),
+               _conv_4.get("MT", 0)]
+y_merc_e_sc = [bt_low_merc_sc,
+               _merc_4.get("BT >40 kW", 0),
+               _merc_4.get("MT", 0)]
 
 st.plotly_chart(
-    bar_gruppi(fasce_ele, y_conv_e_sc, y_merc_e_sc,
+    bar_gruppi(cat_ele_3, y_conv_e_sc, y_merc_e_sc,
                C_CONV_ELE, C_MERC_ELE, LABEL_CONV_ELE, LABEL_MERC_ELE, "€/MWh",
                height=420),
     use_container_width=True,
