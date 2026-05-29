@@ -137,36 +137,49 @@ if D is None:
     )
     st.stop()
 
-meta = D["meta"]
-df_conf = pd.DataFrame(D["confronto"])
-df_gen = pd.DataFrame(D["generale"])
-sens = D["sensitivity"]
+# Backward compatibility: se il data.json è in formato vecchio (no multi-mese),
+# lo trasformiamo on-the-fly in formato v4 (mesi_disponibili / dati_per_mese)
+if "dati_per_mese" not in D:
+    _mese = D.get("meta", {}).get("mese_riferimento", "2026-03")
+    D = {
+        "version": 0,
+        "meta": {
+            "mese_default": _mese,
+            "coeff_perdita_BT": D.get("meta", {}).get("coeff_perdita_BT", 0.10),
+            "coeff_perdita_MT": D.get("meta", {}).get("coeff_perdita_MT", 0.038),
+            "top_n": D.get("meta", {}).get("top_n", 10),
+            "n_offerte_totali": D.get("meta", {}).get("n_offerte_totali", 0),
+        },
+        "mesi_disponibili": [_mese],
+        "dati_per_mese": {_mese: {
+            "meta_mese": {
+                "mese": _mese,
+                "PUN_eur_kWh": D.get("meta", {}).get("PUN_eur_kWh", 0),
+                "PSV_eur_Smc": D.get("meta", {}).get("PSV_eur_Smc", 0),
+                "generazione_BT": D.get("meta", {}).get("generazione_BT", 0),
+                "perdite_BT":     D.get("meta", {}).get("perdite_BT", 0),
+                "mp_conv_BT":     D.get("meta", {}).get("mp_conv_BT", 0),
+                "generazione_MT": D.get("meta", {}).get("generazione_MT", 0),
+                "perdite_MT":     D.get("meta", {}).get("perdite_MT", 0),
+                "mp_conv_MT":     D.get("meta", {}).get("mp_conv_MT", 0),
+                "consumo_ele_totale_kwh": D.get("meta", {}).get("consumo_ele_totale_kwh", 0),
+                "consumo_gas_totale_smc": D.get("meta", {}).get("consumo_gas_totale_smc", 0),
+                "n_offerte_totali": D.get("meta", {}).get("n_offerte_totali", 0),
+            },
+            "confronto": D.get("confronto", []),
+            "generale":  D.get("generale", []),
+            "sensitivity": D.get("sensitivity", {"fattori": [1.0], "per_fascia": {}}),
+        }},
+        "offerte_tutte": D.get("offerte_tutte", []),
+        "fornitori": D.get("fornitori", []),
+        "fornitori_non_monitorati": D.get("fornitori_non_monitorati", []),
+        "portali": D.get("portali", []),
+    }
 
-if len(df_conf) == 0 or meta.get("n_offerte_totali", 0) == 0:
-    st.warning(
-        "⚠️ **Dati non ancora caricati.** Il file `data/data.json` è in stato "
-        "placeholder. Esegui la cella 5.6 del notebook e fai `git push`."
-    )
+mesi_disp = D["mesi_disponibili"]
+if not mesi_disp:
+    st.warning("⚠️ Nessun mese disponibile nel file dati.")
     st.stop()
-
-# Fallback per campi nuovi quando si legge un data.json di versione precedente
-if "mp_conv_BT" not in meta:
-    # Stima dalla media dei record ELE del confronto
-    df_ele_tmp = df_conf[df_conf["commodity"] == "ELE"]
-    bt_vals = df_ele_tmp[df_ele_tmp["tipologia"].str.startswith("BT", na=False)]["materia_prima_conv"]
-    mt_vals = df_ele_tmp[df_ele_tmp["tipologia"] == "MT"]["materia_prima_conv"]
-    meta["mp_conv_BT"] = float(bt_vals.mean()) if len(bt_vals) else 0.0
-    meta["mp_conv_MT"] = float(mt_vals.mean()) if len(mt_vals) else 0.0
-    meta["generazione_BT"] = meta.get("generazione_conv_ele_eur_MWh", 0.0)
-    meta["perdite_BT"] = meta["mp_conv_BT"] - meta["generazione_BT"]
-    meta["generazione_MT"] = meta.get("generazione_conv_ele_eur_MWh", 0.0)
-    meta["perdite_MT"] = meta["mp_conv_MT"] - meta["generazione_MT"]
-
-if "consumo_ele_totale_kwh" not in meta:
-    df_ele_tmp = df_conf[df_conf["commodity"] == "ELE"]
-    df_gas_tmp = df_conf[df_conf["commodity"] == "GAS"]
-    meta["consumo_ele_totale_kwh"] = float(df_ele_tmp["consumo_mese"].sum())
-    meta["consumo_gas_totale_smc"] = float(df_gas_tmp["consumo_mese"].sum())
 
 
 # ------------------------------------------------------------------
@@ -257,34 +270,71 @@ if mancanti:
 
 st.title("Benchmark Materia Prima Gas&Power")
 
-# Riquadro periodo di osservazione
-mesi_disp = D.get("mesi_disponibili", [meta["mese_riferimento"]])
-col_periodo, col_dropdown = st.columns([2, 1])
-with col_periodo:
+# --- Dropdown SELEZIONE MESE (in alto, governa tutti i grafici) ---
+mese_default = D.get("meta", {}).get("mese_default", mesi_disp[-1])
+if mese_default not in mesi_disp:
+    mese_default = mesi_disp[-1]
+
+col_sel_lbl, col_sel_drop, col_sel_fill = st.columns([1, 2, 2])
+with col_sel_lbl:
     st.markdown(
-        f"""
-<div class="periodo-box">
-  <span class="periodo-label">📅 Periodo di osservazione</span>
-  <span class="periodo-value">{mese_label(meta['mese_riferimento'])}</span>
-  <span class="periodo-meta">
-    PUN monorario {meta['PUN_eur_kWh']:.4f} €/kWh · PSV {meta['PSV_eur_Smc']:.4f} €/Smc
-  </span>
-</div>
-""",
+        "<div style='padding-top:.55rem; font-weight:700; color:#1F2937;'>"
+        "📅 Mese di osservazione:</div>",
         unsafe_allow_html=True,
     )
-with col_dropdown:
+with col_sel_drop:
     if len(mesi_disp) > 1:
-        st.selectbox("Cambia mese", mesi_disp,
-                     index=mesi_disp.index(meta["mese_riferimento"]),
-                     key="mese_sel", help="Seleziona un altro mese di osservazione")
+        mese_sel = st.selectbox(
+            "Mese", mesi_disp, index=mesi_disp.index(mese_default),
+            format_func=mese_label, key="mese_sel", label_visibility="collapsed",
+        )
     else:
-        st.caption(
-            "<div style='padding-top:1.4rem; color:#9CA3AF; font-size:.85rem;'>"
-            "🗓️ <i>Dropdown mese disponibile non appena saranno caricati più mesi.</i>"
-            "</div>",
+        mese_sel = mese_default
+        st.markdown(
+            f"<div style='padding-top:.55rem;color:#6B7280;'>"
+            f"{mese_label(mese_sel)} <span style='color:#9CA3AF;font-size:.85rem;'>"
+            f"(unico mese disponibile)</span></div>",
             unsafe_allow_html=True,
         )
+
+# --- Estrai i dati del mese selezionato ---
+dati_mese = D["dati_per_mese"][mese_sel]
+meta = dati_mese["meta_mese"]
+df_conf = pd.DataFrame(dati_mese["confronto"])
+df_gen = pd.DataFrame(dati_mese["generale"])
+sens = dati_mese["sensitivity"]
+meta["n_offerte_totali"] = meta.get("n_offerte_totali") or D["meta"].get("n_offerte_totali", 0)
+meta["coeff_perdita_BT"] = D["meta"].get("coeff_perdita_BT", 0.10)
+meta["coeff_perdita_MT"] = D["meta"].get("coeff_perdita_MT", 0.038)
+
+if len(df_conf) == 0:
+    st.warning(f"⚠️ Nessun dato per il mese {mese_label(mese_sel)}.")
+    st.stop()
+
+# --- Riquadro PERIODO DI OSSERVAZIONE (PUN + PSV su 2 righe, grassetto verde) ---
+st.markdown(
+    f"""
+<div class="periodo-box">
+  <div style="display:flex; flex-direction:column; flex:1;">
+    <span class="periodo-label">📅 Periodo di osservazione</span>
+    <span class="periodo-value">{mese_label(meta['mese'])}</span>
+  </div>
+  <div style="display:flex; flex-direction:column; gap:.15rem; text-align:right;
+              border-left:1px solid #CBD5E1; padding-left:1.2rem;">
+    <span style="color:#16A34A; font-weight:600;">
+      <span style="color:#6B7280;font-weight:500;">PUN monorario</span>
+      &nbsp;<b>{meta['PUN_eur_kWh']:.4f} €/kWh</b>
+    </span>
+    <span style="color:#16A34A; font-weight:600;">
+      <span style="color:#6B7280;font-weight:500;">PSV</span>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <b>{meta['PSV_eur_Smc']:.4f} €/Smc</b>
+    </span>
+  </div>
+</div>
+""",
+    unsafe_allow_html=True,
+)
 
 
 # ------------------------------------------------------------------
@@ -667,7 +717,7 @@ aritmetica costituisce il valore di benchmark di mercato esposto nei grafici.</l
 </ol>
 
 <h4>📊 Offerte raccolte</h4>
-<p>Nel mese di <b>{mese_label(meta['mese_riferimento'])}</b> sono state raccolte e
+<p>Nel mese di <b>{mese_label(meta['mese'])}</b> sono state raccolte e
 analizzate complessivamente <span class="num-evidenza">{meta['n_offerte_totali']}
 offerte indicizzate</span> attive sul mercato libero italiano, provenienti sia dai
 siti istituzionali dei fornitori sia dai principali portali comparatori.</p>
@@ -779,7 +829,7 @@ st.markdown(
 <hr style="margin-top:2rem;">
 <p style="text-align:center; color:#9CA3AF; font-size:.85rem;">
 Unione Industriali Torino · Gas &amp; Power · Dashboard generata dal notebook
-<code>Benchmark Confronto.ipynb</code> — periodo di osservazione {mese_label(meta['mese_riferimento'])}
+<code>Benchmark Confronto.ipynb</code> — periodo di osservazione {mese_label(meta['mese'])}
 </p>
 """,
     unsafe_allow_html=True,
