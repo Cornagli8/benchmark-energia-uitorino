@@ -46,6 +46,18 @@ ORDINE_ELE_TEST = ["BT <=40 kW", "BT >40 kW", "MT"]
 ORDINE_GAS = ["Acqua Calda", "Riscaldamento + Acqua Calda",
               "Riscaldamento", "Uso Tecnologico + Riscaldamento"]
 
+# Etichette abbreviate per leggibilita' grafici GAS (orizzontali, no diagonale)
+GAS_LABEL_SHORT = {
+    "Acqua Calda": "Acqua Calda",
+    "Riscaldamento + Acqua Calda": "Risc. + Acqua Calda",
+    "Riscaldamento": "Riscaldamento",
+    "Uso Tecnologico + Riscaldamento": "Uso Tec. + Risc.",
+}
+
+
+def _short_gas(t):
+    return GAS_LABEL_SHORT.get(t, t)
+
 
 # ------------------------------------------------------------------
 # CSS
@@ -431,7 +443,7 @@ with col_gas:
 # Grafico a barre raggruppate (riusato in §2, §3, §4)
 # ------------------------------------------------------------------
 def bar_gruppi(x_labels, y_conv, y_merc, color_conv, color_merc,
-               label_conv, label_merc, unita, height=460):
+               label_conv, label_merc, unita, height=480, xtickangle=0):
     fig = go.Figure()
     fig.add_trace(go.Bar(
         name=label_conv, x=x_labels, y=y_conv,
@@ -449,11 +461,16 @@ def bar_gruppi(x_labels, y_conv, y_merc, color_conv, color_merc,
         barmode="group", height=height,
         plot_bgcolor="#FFFFFF", paper_bgcolor="#FFFFFF",
         yaxis=dict(title=unita, gridcolor="#E5E7EB"),
-        xaxis=dict(title=""), bargap=0.25, bargroupgap=0.08,
-        legend=dict(orientation="v", x=1.02, xanchor="left", y=0.5,
-                    yanchor="middle", bgcolor="#F8FAFC",
-                    bordercolor="#CBD5E1", borderwidth=1, font=dict(size=11)),
-        margin=dict(t=50, b=60, l=60, r=200),
+        xaxis=dict(title="", tickangle=xtickangle), bargap=0.25, bargroupgap=0.08,
+        # Legenda in basso al centro su UNA SOLA RIGA (i 2 valori non vanno a capo)
+        legend=dict(
+            orientation="h", x=0.5, xanchor="center",
+            y=-0.22, yanchor="top",
+            bgcolor="#F8FAFC", bordercolor="#CBD5E1", borderwidth=1,
+            font=dict(size=11), itemwidth=30,
+            entrywidth=0, entrywidthmode="fraction",
+        ),
+        margin=dict(t=40, b=120, l=60, r=40),
     )
     return fig
 
@@ -541,7 +558,7 @@ df_gas["_order"] = df_gas["tipologia"].apply(
 df_gas = df_gas.sort_values("_order").reset_index(drop=True)
 
 st.plotly_chart(
-    bar_gruppi(df_gas["tipologia"].tolist(),
+    bar_gruppi([_short_gas(t) for t in df_gas["tipologia"].tolist()],
                df_gas["materia_prima_conv"].tolist(),
                df_gas["benchmark_mercato"].tolist(),
                C_CONV_GAS, C_MERC_GAS, LABEL_CONV_GAS, LABEL_MERC_GAS, "c€/Smc"),
@@ -574,56 +591,83 @@ st.subheader(f"4.1 {ICON_ELE} Elettrico (kWh)")
 cons_ele_real = meta["consumo_ele_totale_kwh"]
 
 
-def _consumo_widget(label, real, step, key_prefix, max_mult=6):
-    """Coppia number_input + slider sincronizzati. Tutti i valori sono garantiti
-    multipli di step e dentro [vmin, vmax] per evitare StreamlitValueBelowMinError."""
+def _fmt_thousands(n: int) -> str:
+    """Formatta un intero con separatore migliaia stile italiano (punti)."""
+    return f"{int(n):,}".replace(",", ".")
+
+
+def _consumo_widget(label, real, step, key_prefix, unit, max_mult=6):
+    """Coppia number_input + slider SINCRONIZZATI via session_state.
+    Visualizza il valore corrente con separatore migliaia (stile italiano).
+    Tutti i valori sono garantiti multipli di step e dentro [vmin, vmax]."""
     if not real or real <= 0:
         st.info(f"{label}: consumo reale non disponibile, slider disabilitato.")
         return 0
+
     vmin = max(step, int(round(real * 0.1 / step) * step))
     vmax = max(vmin + step, int(round(real * max_mult / step) * step))
     real_aligned = int(round(real / step) * step)
-    real_aligned = max(vmin, min(vmax, real_aligned))  # clamp dentro range
+    real_aligned = max(vmin, min(vmax, real_aligned))
 
     sk = f"_cons_{key_prefix}"
-    # Inizializza/clamp anche se la session_state era impostata su un valore vecchio
     cur = st.session_state.get(sk, real_aligned)
     cur = int(round(cur / step) * step)
     cur = max(vmin, min(vmax, cur))
     st.session_state[sk] = cur
 
+    nkey = f"num_{key_prefix}"
+    skey = f"sl_{key_prefix}"
+
+    # Sincronizzazione bidirezionale tramite callback
     def _from_num():
-        v = int(round(st.session_state[f"num_{key_prefix}"] / step) * step)
-        st.session_state[sk] = max(vmin, min(vmax, v))
+        v = int(round(st.session_state[nkey] / step) * step)
+        v = max(vmin, min(vmax, v))
+        st.session_state[sk] = v
+        st.session_state[skey] = v   # aggiorna anche lo slider
 
     def _from_sl():
-        v = int(st.session_state[f"sl_{key_prefix}"])
-        st.session_state[sk] = max(vmin, min(vmax, v))
+        v = int(round(st.session_state[skey] / step) * step)
+        v = max(vmin, min(vmax, v))
+        st.session_state[sk] = v
+        st.session_state[nkey] = v   # aggiorna anche il number_input
+
+    # Inizializzo le 2 chiavi se non presenti, cosi' partono allineate
+    if nkey not in st.session_state:
+        st.session_state[nkey] = cur
+    if skey not in st.session_state:
+        st.session_state[skey] = cur
 
     cols = st.columns([1, 2])
     with cols[0]:
         st.number_input(
-            label, min_value=vmin, max_value=vmax,
-            value=cur, step=step,
-            key=f"num_{key_prefix}", on_change=_from_num,
+            label, min_value=vmin, max_value=vmax, step=step,
+            key=nkey, on_change=_from_num,
         )
     with cols[1]:
         st.slider(
-            " ", min_value=vmin, max_value=vmax,
-            value=cur, step=step,
-            key=f"sl_{key_prefix}", on_change=_from_sl,
+            " ", min_value=vmin, max_value=vmax, step=step,
+            key=skey, on_change=_from_sl,
             label_visibility="collapsed",
         )
-    return st.session_state[sk]
+    # Valore corrente sotto i widget, con separatore migliaia
+    val_cur = st.session_state[sk]
+    st.markdown(
+        f"<div style='text-align:right; color:#1F2937; font-size:.95rem; "
+        f"margin-top:.2rem;'>Consumo selezionato: "
+        f"<b>{_fmt_thousands(val_cur)} {unit}</b></div>",
+        unsafe_allow_html=True,
+    )
+    return val_cur
 
 
 cons_ele_sel = _consumo_widget(
-    "Consumo mensile ELE (kWh)", cons_ele_real, step=10_000, key_prefix="ele",
+    "Consumo mensile ELE (kWh)", cons_ele_real, step=10_000,
+    key_prefix="ele", unit="kWh",
 )
 fatt_ele = cons_ele_sel / cons_ele_real if cons_ele_real else 1.0
 st.caption(
-    f"Consumo selezionato: <span class='num-evidenza'>{cons_ele_sel:,.0f} kWh</span> "
-    f"({fatt_ele:.2f}× rispetto al consumo reale di {cons_ele_real:,.0f} kWh)",
+    f"<span style='color:#6B7280;'>Fattore vs consumo reale: <b>{fatt_ele:.2f}×</b> "
+    f"(reale: {_fmt_thousands(cons_ele_real)} kWh)</span>",
     unsafe_allow_html=True,
 )
 
@@ -675,12 +719,13 @@ st.plotly_chart(
 st.subheader(f"4.2 {ICON_GAS} Gas (Smc)")
 cons_gas_real = meta["consumo_gas_totale_smc"]
 cons_gas_sel = _consumo_widget(
-    "Consumo mensile GAS (Smc)", cons_gas_real, step=1_000, key_prefix="gas",
+    "Consumo mensile GAS (Smc)", cons_gas_real, step=1_000,
+    key_prefix="gas", unit="Smc",
 )
 fatt_gas = cons_gas_sel / cons_gas_real if cons_gas_real else 1.0
 st.caption(
-    f"Consumo selezionato: <span class='num-evidenza'>{cons_gas_sel:,.0f} Smc</span> "
-    f"({fatt_gas:.2f}× rispetto al consumo reale di {cons_gas_real:,.0f} Smc)",
+    f"<span style='color:#6B7280;'>Fattore vs consumo reale: <b>{fatt_gas:.2f}×</b> "
+    f"(reale: {_fmt_thousands(cons_gas_real)} Smc)</span>",
     unsafe_allow_html=True,
 )
 
@@ -697,7 +742,8 @@ for _, r in df_gas.iterrows():
     y_merc_g_sc.append(interp_sens(key, fatt_gas))
 
 st.plotly_chart(
-    bar_gruppi(usi_gas, y_conv_g_sc, y_merc_g_sc,
+    bar_gruppi([_short_gas(t) for t in usi_gas],
+               y_conv_g_sc, y_merc_g_sc,
                C_CONV_GAS, C_MERC_GAS, LABEL_CONV_GAS, LABEL_MERC_GAS, "c€/Smc",
                height=420),
     use_container_width=True,
@@ -740,24 +786,24 @@ aritmetica costituisce il valore di benchmark di mercato esposto nei grafici.</l
     unsafe_allow_html=True,
 )
 
-# --- Lista fornitori CON / SENZA offerte (derivata dalle 29 offerte univoche) ---
+# --- Lista fornitori CON / SENZA offerte ---
 fornitori_con  = D.get("fornitori_con_offerte")
 fornitori_senza = D.get("fornitori_senza_offerte")
-
-# Fallback se il data.json non ha ancora questi campi (formato v4 o precedente)
+# Fallback per data.json di versione precedente
 if fornitori_con is None or fornitori_senza is None:
     _alias = {
         "AGSM / Magis Energia": ["agsm", "magis"], "A2A Energia": ["a2a"],
         "Axpo Italia": ["axpo"], "Dolomiti Energia": ["dolomiti"],
-        "Edison Energia": ["edison"], "Engie Italia": ["engie"],
-        "Eni Plenitude": ["plenitude", "eni "], "Hera Comm": ["hera"],
-        "Iren Mercato": ["iren"], "Repower Italia": ["repower"],
+        "Edison Energia": ["edison"], "Enel Energia": ["enel"],
+        "Engie Italia": ["engie"], "Eni Plenitude": ["plenitude", "eni "],
+        "Hera Comm": ["hera"], "Iren Mercato": ["iren"],
+        "Repower Italia": ["repower"], "Sorgenia": ["sorgenia"],
     }
     _txt = " | ".join(str(o.get("offerta", "")) for o in D.get("offerte_tutte", [])).lower()
     fornitori_con = [n for n, a in _alias.items() if any(x in _txt for x in a)]
     fornitori_senza = [f["nome"] for f in D.get("fornitori", []) if f["nome"] not in fornitori_con]
 
-# Data di estrazione (fallback alla mtime del data.json se non presente)
+# Data di estrazione (fallback alla mtime del data.json)
 data_estr_str = D.get("meta", {}).get("data_estrazione")
 if not data_estr_str:
     import os
@@ -769,66 +815,45 @@ if not data_estr_str:
 data_estr_it = ""
 if data_estr_str:
     try:
-        d = pd.Timestamp(data_estr_str)
-        data_estr_it = d.strftime("%d/%m/%Y")
+        data_estr_it = pd.Timestamp(data_estr_str).strftime("%d/%m/%Y")
     except Exception:
         data_estr_it = data_estr_str
 
-# Costruisco il testo descrittivo dei fornitori (senza bullet points, in linea)
-testo_con = ""
-if fornitori_con:
-    if len(fornitori_con) == 1:
-        testo_con = fornitori_con[0]
-    else:
-        testo_con = ", ".join(fornitori_con[:-1]) + " e " + fornitori_con[-1]
+# Conteggi offerte ELE/GAS
+n_off_tot = meta.get("n_offerte_totali") or D.get("meta", {}).get("n_offerte_totali", 0)
+n_off_ele = D.get("meta", {}).get("n_offerte_ele")
+n_off_gas = D.get("meta", {}).get("n_offerte_gas")
+if n_off_ele is None or n_off_gas is None:
+    _ot = D.get("offerte_tutte", [])
+    n_off_ele = sum(1 for o in _ot if o.get("commodity") == "ELE")
+    n_off_gas = sum(1 for o in _ot if o.get("commodity") == "GAS")
 
-testo_senza = ""
-if fornitori_senza:
-    if len(fornitori_senza) == 1:
-        testo_senza = fornitori_senza[0]
-    else:
-        testo_senza = ", ".join(fornitori_senza[:-1]) + " e " + fornitori_senza[-1]
 
-# Tutto dentro il footer-block (continuazione)
+def _elenco_virgole(lst):
+    if not lst: return ""
+    if len(lst) == 1: return lst[0]
+    return ", ".join(lst[:-1]) + " e " + lst[-1]
+
+
+testo_con = _elenco_virgole(fornitori_con)
+testo_senza = _elenco_virgole(fornitori_senza)
+
+# Continuazione DENTRO il footer-block (apertura div + sezioni 1-4 sono sopra)
 st.markdown(
     f"""
 <h4>📊 Offerte raccolte</h4>
-<p>Nel mese di <b>{mese_label(meta['mese'])}</b> sono state raccolte e analizzate
-complessivamente <span class="num-evidenza">{meta['n_offerte_totali']} offerte
-indicizzate</span> attive sul mercato libero italiano, provenienti sia dai siti
-istituzionali dei fornitori sia dai principali portali comparatori.
-{f"<br><i>Ultima estrazione: <b>{data_estr_it}</b></i>" if data_estr_it else ""}</p>
+<p>In data <b>{data_estr_it or '—'}</b> sono state raccolte e analizzate
+complessivamente <span class="num-evidenza">{n_off_tot} offerte indicizzate</span>
+attive sul mercato libero italiano, provenienti sia dai siti istituzionali dei
+fornitori sia dai principali portali comparatori, di cui
+<b>{n_off_ele}</b> per l'energia elettrica e <b>{n_off_gas}</b> per il gas.</p>
 
 <h4>🏢 Fornitori monitorati</h4>
-<p>I fornitori per cui è stato possibile rilevare almeno una delle
-{meta['n_offerte_totali']} offerte raccolte sono
+<p>I fornitori per cui è stato possibile rilevare almeno una delle {n_off_tot}
+offerte raccolte sono
 {testo_con if testo_con else "<i>nessuno (rigenera i dati)</i>"}.
-{("Non è stato possibile rilevare alcuna offerta indicizzata sul mercato per "
-  + testo_senza + ", nonostante l'inclusione nel monitoraggio automatico.")
- if testo_senza else ""}</p>
-
-<h4>🚫 Fornitori non monitorabili</h4>
-""",
-    unsafe_allow_html=True,
-)
-
-non_mon = D.get("fornitori_non_monitorati", [])
-if non_mon:
-    parti = []
-    for f in non_mon:
-        parti.append(f"<b>{f['nome']}</b> ({f['motivo']})")
-    st.markdown(
-        "<p>Per i seguenti fornitori non è stato possibile completare il monitoraggio "
-        "automatico delle offerte: " + "; ".join(parti) + ".</p>",
-        unsafe_allow_html=True,
-    )
-
-st.markdown(
-    """
-<p style="margin-top:1rem; color:#6B7280; font-size:.88rem;">
-Fonte prezzi all'ingrosso: <a href="https://www.arera.it/dati-e-statistiche/dettaglio/prezzi-finali-energia-elettrica-per-i-consumatori-domestici-tipo" target="_blank">ARERA — PLACET</a>
-(PUN monorario per l'elettrico, PSV per il gas).
-</p>
+{("Sono stati monitorati ma non è stato possibile rilevare alcuna offerta "
+  "indicizzata sul mercato per " + testo_senza + ".") if testo_senza else ""}</p>
 
 </div>
 """,
@@ -841,65 +866,59 @@ Fonte prezzi all'ingrosso: <a href="https://www.arera.it/dati-e-statistiche/dett
 # ------------------------------------------------------------------
 st.header("🔗 Bibliografia")
 
+
+def _link_lista(items):
+    """Trasforma una lista di {nome,url} in HTML 'A, B e C' con i nomi linkati."""
+    parts = [f'<a href="{x["url"]}" target="_blank">{x["nome"]}</a>' for x in items]
+    if not parts: return ""
+    if len(parts) == 1: return parts[0]
+    return ", ".join(parts[:-1]) + " e " + parts[-1]
+
+
+# 1) ARERA come PRIMA voce
+arera_url = ("https://www.arera.it/dati-e-statistiche/dettaglio/prezzi-finali-"
+             "energia-elettrica-per-i-consumatori-domestici-tipo")
 st.markdown(
-    "<p style='color:#6B7280;'>Riferimenti per la verifica e l'aggiornamento "
-    "manuale di offerte e corrispettivi.</p>",
+    f"""
+<p><b>Fonte prezzi all'ingrosso:</b>
+<a href="{arera_url}" target="_blank">ARERA — PLACET</a>
+(PUN monorario per l'energia elettrica, PSV per il gas).</p>
+
+<p><b>Portali comparatori monitorati:</b><br>
+{_link_lista(D.get("portali", []))}.</p>
+
+<p><b>Siti istituzionali dei fornitori monitorati:</b><br>
+{_link_lista(D.get("fornitori", []))}.</p>
+""",
     unsafe_allow_html=True,
 )
 
-st.markdown("**Portali comparatori**", unsafe_allow_html=True)
-for p in D["portali"]:
+# 2) PDF riservato delle offerte (download, no tabella inline)
+pdf_path = Path(__file__).parent / (D.get("meta", {}).get("pdf_offerte_path")
+                                     or "offerte_riservate.pdf")
+st.markdown("<br><b>📄 Elenco completo delle offerte raccolte</b>",
+            unsafe_allow_html=True)
+if pdf_path.exists():
+    pdf_bytes = pdf_path.read_bytes()
     st.markdown(
-        f'<span class="forn-pill"><a href="{p["url"]}" target="_blank">{p["nome"]} ↗</a></span>',
+        "<p style='color:#6B7280; font-size:.92rem;'>Il dettaglio delle offerte "
+        "indicizzate raccolte è disponibile in un documento PDF <b>riservato</b>, "
+        "protetto da password. Per ottenere la password contattare l'Unione "
+        "Industriali Torino — Gas & Power.</p>",
         unsafe_allow_html=True,
     )
-
-st.markdown("<br>**Fornitori monitorati (siti istituzionali)**", unsafe_allow_html=True)
-for f in D["fornitori"]:
-    st.markdown(
-        f'<span class="forn-pill"><a href="{f["url"]}" target="_blank">{f["nome"]} ↗</a></span>',
-        unsafe_allow_html=True,
+    st.download_button(
+        label="🔒 Scarica il PDF riservato delle offerte",
+        data=pdf_bytes,
+        file_name="offerte_indicizzate_riservate.pdf",
+        mime="application/pdf",
+        type="primary",
     )
-
-st.markdown("<br>**Fornitori non monitorati (siti istituzionali)**", unsafe_allow_html=True)
-for f in D.get("fornitori_non_monitorati", []):
-    st.markdown(
-        f'<span class="forn-pill"><a href="{f["url"]}" target="_blank">{f["nome"]} ↗</a></span>',
-        unsafe_allow_html=True,
+else:
+    st.info(
+        "Il PDF riservato delle offerte non è ancora stato generato. "
+        "Esegui la cella **5.6** del notebook per produrlo."
     )
-
-# Offerte raccolte, raggruppate per commodity
-offerte = D.get("offerte_tutte", [])
-if offerte:
-    df_off = pd.DataFrame(offerte)
-    st.markdown(
-        f"<br>**Offerte indicizzate raccolte ({len(df_off)})**",
-        unsafe_allow_html=True,
-    )
-    tab_e, tab_g = st.tabs([f"{ICON_ELE} ELE ({(df_off['commodity']=='ELE').sum()})",
-                            f"{ICON_GAS} GAS ({(df_off['commodity']=='GAS').sum()})"])
-    with tab_e:
-        sub = df_off[df_off["commodity"] == "ELE"].copy()
-        sub = sub.sort_values("offerta").reset_index(drop=True)
-        sub.index = sub.index + 1
-        st.dataframe(
-            sub[["offerta", "fonte", "spread", "quota_eur_anno"]]
-                .rename(columns={"offerta": "Offerta", "fonte": "Fonte raccolta",
-                                  "spread": "Spread €/kWh",
-                                  "quota_eur_anno": "Quota fissa €/anno"}),
-            use_container_width=True,
-        )
-    with tab_g:
-        sub = df_off[df_off["commodity"] == "GAS"].copy()
-        sub = sub.sort_values("offerta").reset_index(drop=True)
-        sub.index = sub.index + 1
-        st.dataframe(
-            sub[["offerta", "fonte", "spread", "quota_eur_anno"]]
-                .rename(columns={"offerta": "Offerta", "fonte": "Fonte raccolta",
-                                  "spread": "Spread €/Smc",
-                                  "quota_eur_anno": "Quota fissa €/anno"}),
-            use_container_width=True,
-        )
 
 st.markdown(
     f"""
