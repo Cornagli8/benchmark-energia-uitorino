@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<title>Benchmark Materia Prima Energetica — UI Torino</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+         max-width: 880px; margin: 2rem auto; padding: 0 1.2rem; color:#1f2937; }
+  h1 { color:#0f172a; border-bottom: 3px solid #2563eb; padding-bottom:.4rem; }
+  h2 { margin-top: 2rem; color:#1e40af; }
+  .card { border:1px solid #e5e7eb; border-radius: 10px; padding:1.1rem 1.3rem;
+          margin: 1rem 0; background:#fafafa; }
+  a.btn { display:inline-block; padding:.55rem 1rem; background:#2563eb; color:#fff;
+          border-radius: 6px; text-decoration:none; font-weight:600; margin-top:.5rem; }
+  a.btn:hover { background:#1d4ed8; }
+  .meta { color:#6b7280; font-size:.92rem; }
+  footer { margin-top: 3rem; color:#9ca3af; font-size:.85rem; text-align:center; }
+</style>
+</head>
+<body>
+  <h1>Benchmark Materia Prima Energetica</h1>
+  <p class="meta">Confronto tra Convenzioni MMPOWER / MMGAS (UI Torino) e benchmark del mercato.
+  Mese di riferimento: <b>marzo 2026</b>. I prezzi includono Generazione + Perdite di rete
+  per il lato Convenzione; per il Mercato la materia prima è ricostruita come
+  (PUN/PSV + spread + quota fissa unitaria) maggiorata delle perdite di rete
+  (10% BT, 3,8% MT per l'elettrico).</p>
+
+  <h2>Grafici interattivi</h2>
+
+  <div class="card">
+    <h3>1. Confronto GENERALE</h3>
+    <p>Dropdown per scegliere <b>Elettrico</b> o <b>Gas</b> + <b>slider</b> per simulare
+    diversi livelli di consumo (0,25× → 4× rispetto al consumo reale di marzo 2026).</p>
+    <a class="btn" href="grafico_confronto_generale.html">Apri grafico generale →</a>
+  </div>
+
+  <div class="card">
+    <h3>2. Confronto per TIPOLOGIA</h3>
+    <p>Due grafici separati:
+      <ul>
+        <li>Elettrico per <b>fascia di potenza</b> (BT ≤3 kW, BT 4,5–40 kW, BT &gt;40 kW, MT)</li>
+        <li>Gas per <b>tipologia d'uso</b> (4 categorie)</li>
+      </ul>
+      Dropdown su ciascun grafico per filtrare la singola fascia/uso.</p>
+    <a class="btn" href="grafico_confronto_tipologie.html">Apri grafico per tipologia →</a>
+  </div>
+
+  <footer>
+    UI Torino · Gas &amp; Power · Generato automaticamente dal notebook
+    <code>Benchmark Confronto.ipynb</code>
+  </footer>
+</body>
+</html>
