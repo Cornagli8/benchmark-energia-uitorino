@@ -1,731 +1,1063 @@
 {
+  "version": 5,
+  "data_estrazione": "2026-05-29",
   "meta": {
-    "mese_riferimento": "2026-03",
-    "PUN_eur_kWh": 0.1434,
-    "PSV_eur_Smc": 0.557699,
-    "generazione_conv_ele_eur_MWh": 146.5057767253901,
-    "perdite_conv_ele_eur_MWh": 10.48048232442919,
+    "mese_default": "2026-03",
     "coeff_perdita_BT": 0.1,
     "coeff_perdita_MT": 0.038,
     "top_n": 10,
     "n_offerte_totali": 29
   },
-  "confronto": [
-    {
-      "commodity": "ELE",
-      "tipologia": "BT <=3 kW",
-      "unita_mp": "€/MWh",
-      "materia_prima_conv": 156.99,
-      "benchmark_mercato": 247.84,
-      "delta_mercato_vs_conv": 90.85,
-      "delta_%": 57.9,
-      "consumo_mese": 70285.0,
-      "n_utenze": 335,
-      "n_offerte_usate": 10
-    },
-    {
-      "commodity": "ELE",
-      "tipologia": "BT 4.5-40 kW",
-      "unita_mp": "€/MWh",
-      "materia_prima_conv": 156.99,
-      "benchmark_mercato": 189.24,
-      "delta_mercato_vs_conv": 32.25,
-      "delta_%": 20.5,
-      "consumo_mese": 198498.0,
-      "n_utenze": 143,
-      "n_offerte_usate": 10
-    },
-    {
-      "commodity": "ELE",
-      "tipologia": "BT >40 kW",
-      "unita_mp": "€/MWh",
-      "materia_prima_conv": 156.99,
-      "benchmark_mercato": 180.31,
-      "delta_mercato_vs_conv": 23.32,
-      "delta_%": 14.9,
-      "consumo_mese": 1057858.0,
-      "n_utenze": 110,
-      "n_offerte_usate": 10
-    },
-    {
-      "commodity": "ELE",
-      "tipologia": "MT",
-      "unita_mp": "€/MWh",
-      "materia_prima_conv": 156.99,
-      "benchmark_mercato": 169.09,
-      "delta_mercato_vs_conv": 12.1,
-      "delta_%": 7.7,
-      "consumo_mese": 1279074.0,
-      "n_utenze": 32,
-      "n_offerte_usate": 10
-    },
-    {
-      "commodity": "GAS",
-      "tipologia": "Acqua Calda",
-      "unita_mp": "c€/Smc",
-      "materia_prima_conv": 62.67,
-      "benchmark_mercato": 71.07,
-      "delta_mercato_vs_conv": 8.39,
-      "delta_%": 13.4,
-      "consumo_mese": 1339.0,
-      "n_utenze": 4,
-      "n_offerte_usate": 10
-    },
-    {
-      "commodity": "GAS",
-      "tipologia": "Riscaldamento",
-      "unita_mp": "c€/Smc",
-      "materia_prima_conv": 61.06,
-      "benchmark_mercato": 67.24,
-      "delta_mercato_vs_conv": 6.19,
-      "delta_%": 10.1,
-      "consumo_mese": 133866.0,
-      "n_utenze": 52,
-      "n_offerte_usate": 10
-    },
-    {
-      "commodity": "GAS",
-      "tipologia": "Riscaldamento + Acqua Calda",
-      "unita_mp": "c€/Smc",
-      "materia_prima_conv": 62.19,
-      "benchmark_mercato": 69.55,
-      "delta_mercato_vs_conv": 7.36,
-      "delta_%": 11.8,
-      "consumo_mese": 10733.0,
-      "n_utenze": 21,
-      "n_offerte_usate": 10
-    },
-    {
-      "commodity": "GAS",
-      "tipologia": "Uso Tecnologico + Riscaldamento",
-      "unita_mp": "c€/Smc",
-      "materia_prima_conv": 60.76,
-      "benchmark_mercato": 67.03,
-      "delta_mercato_vs_conv": 6.26,
-      "delta_%": 10.3,
-      "consumo_mese": 94744.0,
-      "n_utenze": 23,
-      "n_offerte_usate": 10
-    }
+  "mesi_disponibili": [
+    "2026-01",
+    "2026-02",
+    "2026-03"
   ],
-  "generale": [
-    {
-      "commodity": "ELE",
-      "unita": "€/MWh",
-      "MP_convenzione": 156.99,
-      "benchmark_mercato": 196.62,
-      "criterio": "media semplice 4 fasce (BT/MT equo)",
-      "delta": 39.63,
-      "delta_%": 25.2
+  "dati_per_mese": {
+    "2026-01": {
+      "meta_mese": {
+        "mese": "2026-01",
+        "PUN_eur_kWh": 0.132665,
+        "PSV_eur_Smc": 0.403934,
+        "generazione_BT": 140.6815090031482,
+        "perdite_BT": 14.06812363331577,
+        "mp_conv_BT": 154.74963263646396,
+        "generazione_MT": 142.2339075793999,
+        "perdite_MT": 5.958944555070627,
+        "mp_conv_MT": 148.1928521344705,
+        "consumo_ele_totale_kwh": 2952042.0,
+        "consumo_gas_totale_smc": 478750.0,
+        "n_offerte_totali": 29
+      },
+      "confronto": [
+        {
+          "commodity": "ELE",
+          "tipologia": "BT <=3 kW",
+          "generazione_conv": 135.55636291103892,
+          "perdite_conv": 13.555166125263575,
+          "materia_prima_conv": 149.11,
+          "unita_mp": "€/MWh",
+          "consumo_mese": 70188.0,
+          "n_utenze": 335,
+          "benchmark_mercato": 236.12,
+          "n_offerte_usate": 10,
+          "delta_mercato_vs_conv": 87.01,
+          "delta_%": 58.4
+        },
+        {
+          "commodity": "ELE",
+          "tipologia": "BT 4.5-40 kW",
+          "generazione_conv": 140.5415012482315,
+          "perdite_conv": 14.0542637785555,
+          "materia_prima_conv": 154.6,
+          "unita_mp": "€/MWh",
+          "consumo_mese": 255161.0,
+          "n_utenze": 144,
+          "benchmark_mercato": 175.17,
+          "n_offerte_usate": 10,
+          "delta_mercato_vs_conv": 20.57,
+          "delta_%": 13.3
+        },
+        {
+          "commodity": "ELE",
+          "tipologia": "BT >40 kW",
+          "generazione_conv": 140.97192275379092,
+          "perdite_conv": 14.097161430946658,
+          "materia_prima_conv": 155.07,
+          "unita_mp": "€/MWh",
+          "consumo_mese": 1361672.0,
+          "n_utenze": 110,
+          "benchmark_mercato": 168.17,
+          "n_offerte_usate": 10,
+          "delta_mercato_vs_conv": 13.1,
+          "delta_%": 8.4
+        },
+        {
+          "commodity": "ELE",
+          "tipologia": "MT",
+          "generazione_conv": 142.23390757939987,
+          "perdite_conv": 5.9589445550706275,
+          "materia_prima_conv": 148.19,
+          "unita_mp": "€/MWh",
+          "consumo_mese": 1265021.0,
+          "n_utenze": 32,
+          "benchmark_mercato": 157.95,
+          "n_offerte_usate": 10,
+          "delta_mercato_vs_conv": 9.76,
+          "delta_%": 6.6
+        },
+        {
+          "commodity": "GAS",
+          "tipologia": "Acqua Calda",
+          "generazione_conv": NaN,
+          "perdite_conv": NaN,
+          "materia_prima_conv": 46.07,
+          "unita_mp": "c€/Smc",
+          "consumo_mese": 2113.0,
+          "n_utenze": 4,
+          "benchmark_mercato": 54.08,
+          "n_offerte_usate": 10,
+          "delta_mercato_vs_conv": 8.01,
+          "delta_%": 17.4
+        },
+        {
+          "commodity": "GAS",
+          "tipologia": "Riscaldamento",
+          "generazione_conv": NaN,
+          "perdite_conv": NaN,
+          "materia_prima_conv": 45.17,
+          "unita_mp": "c€/Smc",
+          "consumo_mese": 263728.0,
+          "n_utenze": 52,
+          "benchmark_mercato": 51.58,
+          "n_offerte_usate": 10,
+          "delta_mercato_vs_conv": 6.41,
+          "delta_%": 14.2
+        },
+        {
+          "commodity": "GAS",
+          "tipologia": "Riscaldamento + Acqua Calda",
+          "generazione_conv": NaN,
+          "perdite_conv": NaN,
+          "materia_prima_conv": 45.72,
+          "unita_mp": "c€/Smc",
+          "consumo_mese": 20013.0,
+          "n_utenze": 21,
+          "benchmark_mercato": 52.84,
+          "n_offerte_usate": 10,
+          "delta_mercato_vs_conv": 7.12,
+          "delta_%": 15.6
+        },
+        {
+          "commodity": "GAS",
+          "tipologia": "Uso Tecnologico + Riscaldamento",
+          "generazione_conv": NaN,
+          "perdite_conv": NaN,
+          "materia_prima_conv": 44.89,
+          "unita_mp": "c€/Smc",
+          "consumo_mese": 192896.0,
+          "n_utenze": 23,
+          "benchmark_mercato": 51.47,
+          "n_offerte_usate": 10,
+          "delta_mercato_vs_conv": 6.58,
+          "delta_%": 14.6
+        }
+      ],
+      "generale": [
+        {
+          "commodity": "ELE",
+          "unita": "€/MWh",
+          "MP_convenzione": 151.74,
+          "benchmark_mercato": 184.35,
+          "criterio": "media semplice 4 fasce (BT/MT equo)",
+          "delta": 32.61,
+          "delta_%": 21.5
+        },
+        {
+          "commodity": "GAS",
+          "unita": "c€/Smc",
+          "MP_convenzione": 45.08,
+          "benchmark_mercato": 51.6,
+          "criterio": "media ponderata sui consumi",
+          "delta": 6.52,
+          "delta_%": 14.5
+        }
+      ],
+      "sensitivity": {
+        "fattori": [
+          0.1,
+          0.25,
+          0.5,
+          0.75,
+          1.0,
+          1.25,
+          1.5,
+          2.0,
+          2.5,
+          3.0,
+          4.0,
+          6.0
+        ],
+        "per_fascia": {
+          "ELE|BT 4.5-40 kW": [
+            248.733,
+            199.691,
+            183.344,
+            177.894,
+            175.17,
+            173.535,
+            172.445,
+            171.083,
+            170.266,
+            169.721,
+            169.04,
+            168.359
+          ],
+          "ELE|BT <=3 kW": [
+            852.635,
+            442.882,
+            305.251,
+            259.166,
+            236.124,
+            222.298,
+            213.081,
+            201.56,
+            194.647,
+            190.039,
+            184.278,
+            178.518
+          ],
+          "ELE|BT >40 kW": [
+            178.696,
+            171.676,
+            169.336,
+            168.556,
+            168.166,
+            167.932,
+            167.776,
+            167.581,
+            167.464,
+            167.386,
+            167.289,
+            167.191
+          ],
+          "ELE|MT": [
+            161.247,
+            159.049,
+            158.317,
+            158.072,
+            157.95,
+            157.877,
+            157.828,
+            157.767,
+            157.73,
+            157.706,
+            157.675,
+            157.645
+          ],
+          "GAS|Acqua Calda": [
+            79.156,
+            62.438,
+            56.866,
+            55.008,
+            54.08,
+            53.522,
+            53.151,
+            52.687,
+            52.408,
+            52.222,
+            51.99,
+            51.758
+          ],
+          "GAS|Riscaldamento": [
+            54.195,
+            52.454,
+            51.874,
+            51.68,
+            51.584,
+            51.526,
+            51.487,
+            51.439,
+            51.409,
+            51.39,
+            51.366,
+            51.342
+          ],
+          "GAS|Riscaldamento + Acqua Calda": [
+            66.738,
+            57.471,
+            54.382,
+            53.353,
+            52.838,
+            52.529,
+            52.323,
+            52.066,
+            51.911,
+            51.808,
+            51.68,
+            51.551
+          ],
+          "GAS|Uso Tecnologico + Riscaldamento": [
+            53.048,
+            51.995,
+            51.644,
+            51.527,
+            51.469,
+            51.434,
+            51.41,
+            51.381,
+            51.364,
+            51.352,
+            51.337,
+            51.323
+          ]
+        }
+      }
     },
-    {
-      "commodity": "GAS",
-      "unita": "c€/Smc",
-      "MP_convenzione": 61.0,
-      "benchmark_mercato": 67.28,
-      "criterio": "media ponderata sui consumi",
-      "delta": 6.28,
-      "delta_%": 10.3
+    "2026-02": {
+      "meta_mese": {
+        "mese": "2026-02",
+        "PUN_eur_kWh": 0.114405,
+        "PSV_eur_Smc": 0.376788,
+        "generazione_BT": 119.5623546249,
+        "perdite_BT": 11.95609994636716,
+        "mp_conv_BT": 131.51845457126717,
+        "generazione_MT": 120.0574022553218,
+        "perdite_MT": 5.04017122736835,
+        "mp_conv_MT": 125.09757348269015,
+        "consumo_ele_totale_kwh": 2650542.0,
+        "consumo_gas_totale_smc": 322499.0,
+        "n_offerte_totali": 29
+      },
+      "confronto": [
+        {
+          "commodity": "ELE",
+          "tipologia": "BT <=3 kW",
+          "generazione_conv": 117.19306540583135,
+          "perdite_conv": 11.71489361702128,
+          "materia_prima_conv": 128.91,
+          "unita_mp": "€/MWh",
+          "consumo_mese": 63450.0,
+          "n_utenze": 335,
+          "benchmark_mercato": 223.38,
+          "n_offerte_usate": 10,
+          "delta_mercato_vs_conv": 94.47,
+          "delta_%": 73.3
+        },
+        {
+          "commodity": "ELE",
+          "tipologia": "BT 4.5-40 kW",
+          "generazione_conv": 119.41100080391588,
+          "perdite_conv": 11.941004942417742,
+          "materia_prima_conv": 131.35,
+          "unita_mp": "€/MWh",
+          "consumo_mese": 210221.0,
+          "n_utenze": 144,
+          "benchmark_mercato": 156.83,
+          "n_offerte_usate": 10,
+          "delta_mercato_vs_conv": 25.48,
+          "delta_%": 19.4
+        },
+        {
+          "commodity": "ELE",
+          "tipologia": "BT >40 kW",
+          "generazione_conv": 119.7248431530147,
+          "perdite_conv": 11.972583334299735,
+          "materia_prima_conv": 131.7,
+          "unita_mp": "€/MWh",
+          "consumo_mese": 1120997.0,
+          "n_utenze": 110,
+          "benchmark_mercato": 148.33,
+          "n_offerte_usate": 10,
+          "delta_mercato_vs_conv": 16.63,
+          "delta_%": 12.6
+        },
+        {
+          "commodity": "ELE",
+          "tipologia": "MT",
+          "generazione_conv": 120.0574022553218,
+          "perdite_conv": 5.04017122736835,
+          "materia_prima_conv": 125.1,
+          "unita_mp": "€/MWh",
+          "consumo_mese": 1255874.0,
+          "n_utenze": 32,
+          "benchmark_mercato": 139.0,
+          "n_offerte_usate": 10,
+          "delta_mercato_vs_conv": 13.9,
+          "delta_%": 11.1
+        },
+        {
+          "commodity": "GAS",
+          "tipologia": "Acqua Calda",
+          "generazione_conv": NaN,
+          "perdite_conv": NaN,
+          "materia_prima_conv": 43.58,
+          "unita_mp": "c€/Smc",
+          "consumo_mese": 1727.0,
+          "n_utenze": 4,
+          "benchmark_mercato": 51.99,
+          "n_offerte_usate": 10,
+          "delta_mercato_vs_conv": 8.41,
+          "delta_%": 19.3
+        },
+        {
+          "commodity": "GAS",
+          "tipologia": "Riscaldamento",
+          "generazione_conv": NaN,
+          "perdite_conv": NaN,
+          "materia_prima_conv": 42.47,
+          "unita_mp": "c€/Smc",
+          "consumo_mese": 182914.0,
+          "n_utenze": 52,
+          "benchmark_mercato": 49.0,
+          "n_offerte_usate": 10,
+          "delta_mercato_vs_conv": 6.53,
+          "delta_%": 15.4
+        },
+        {
+          "commodity": "GAS",
+          "tipologia": "Riscaldamento + Acqua Calda",
+          "generazione_conv": NaN,
+          "perdite_conv": NaN,
+          "materia_prima_conv": 43.25,
+          "unita_mp": "c€/Smc",
+          "consumo_mese": 13543.0,
+          "n_utenze": 21,
+          "benchmark_mercato": 50.86,
+          "n_offerte_usate": 10,
+          "delta_mercato_vs_conv": 7.61,
+          "delta_%": 17.6
+        },
+        {
+          "commodity": "GAS",
+          "tipologia": "Uso Tecnologico + Riscaldamento",
+          "generazione_conv": NaN,
+          "perdite_conv": NaN,
+          "materia_prima_conv": 42.18,
+          "unita_mp": "c€/Smc",
+          "consumo_mese": 124315.0,
+          "n_utenze": 23,
+          "benchmark_mercato": 48.85,
+          "n_offerte_usate": 10,
+          "delta_mercato_vs_conv": 6.67,
+          "delta_%": 15.8
+        }
+      ],
+      "generale": [
+        {
+          "commodity": "ELE",
+          "unita": "€/MWh",
+          "MP_convenzione": 129.26,
+          "benchmark_mercato": 166.89,
+          "criterio": "media semplice 4 fasce (BT/MT equo)",
+          "delta": 37.62,
+          "delta_%": 29.1
+        },
+        {
+          "commodity": "GAS",
+          "unita": "c€/Smc",
+          "MP_convenzione": 42.4,
+          "benchmark_mercato": 49.04,
+          "criterio": "media ponderata sui consumi",
+          "delta": 6.64,
+          "delta_%": 15.7
+        }
+      ],
+      "sensitivity": {
+        "fattori": [
+          0.1,
+          0.25,
+          0.5,
+          0.75,
+          1.0,
+          1.25,
+          1.5,
+          2.0,
+          2.5,
+          3.0,
+          4.0,
+          6.0
+        ],
+        "per_fascia": {
+          "ELE|BT 4.5-40 kW": [
+            246.12,
+            186.594,
+            166.752,
+            160.138,
+            156.831,
+            154.847,
+            153.524,
+            151.871,
+            150.879,
+            150.217,
+            149.391,
+            148.564
+          ],
+          "ELE|BT <=3 kW": [
+            905.071,
+            451.805,
+            299.847,
+            248.868,
+            223.379,
+            208.085,
+            197.889,
+            185.144,
+            177.498,
+            172.4,
+            166.027,
+            159.655
+          ],
+          "ELE|BT >40 kW": [
+            161.122,
+            152.595,
+            149.753,
+            148.805,
+            148.331,
+            148.047,
+            147.858,
+            147.621,
+            147.479,
+            147.384,
+            147.266,
+            147.147
+          ],
+          "ELE|MT": [
+            142.32,
+            140.106,
+            139.368,
+            139.122,
+            138.999,
+            138.925,
+            138.876,
+            138.814,
+            138.777,
+            138.753,
+            138.722,
+            138.691
+          ],
+          "GAS|Acqua Calda": [
+            82.669,
+            62.215,
+            55.397,
+            53.124,
+            51.988,
+            51.306,
+            50.851,
+            50.283,
+            49.942,
+            49.715,
+            49.431,
+            49.147
+          ],
+          "GAS|Riscaldamento": [
+            52.763,
+            50.252,
+            49.416,
+            49.137,
+            48.997,
+            48.914,
+            48.858,
+            48.788,
+            48.746,
+            48.718,
+            48.683,
+            48.649
+          ],
+          "GAS|Riscaldamento + Acqua Calda": [
+            71.401,
+            57.708,
+            53.143,
+            51.622,
+            50.861,
+            50.405,
+            50.1,
+            49.72,
+            49.492,
+            49.34,
+            49.149,
+            48.959
+          ],
+          "GAS|Uso Tecnologico + Riscaldamento": [
+            51.302,
+            49.668,
+            49.123,
+            48.942,
+            48.851,
+            48.797,
+            48.76,
+            48.715,
+            48.688,
+            48.67,
+            48.647,
+            48.624
+          ]
+        }
+      }
+    },
+    "2026-03": {
+      "meta_mese": {
+        "mese": "2026-03",
+        "PUN_eur_kWh": 0.1434,
+        "PSV_eur_Smc": 0.557699,
+        "generazione_BT": 146.409993359168,
+        "perdite_BT": 14.6409390332426,
+        "mp_conv_BT": 161.0509323924106,
+        "generazione_MT": 146.6051221430504,
+        "perdite_MT": 6.165303962085071,
+        "mp_conv_MT": 152.77042610513547,
+        "consumo_ele_totale_kwh": 2605715.0,
+        "consumo_gas_totale_smc": 240682.0,
+        "n_offerte_totali": 29
+      },
+      "confronto": [
+        {
+          "commodity": "ELE",
+          "tipologia": "BT <=3 kW",
+          "generazione_conv": 146.11552962936614,
+          "perdite_conv": 14.61108344596998,
+          "materia_prima_conv": 160.73,
+          "unita_mp": "€/MWh",
+          "consumo_mese": 70285.0,
+          "n_utenze": 335,
+          "benchmark_mercato": 247.84,
+          "n_offerte_usate": 10,
+          "delta_mercato_vs_conv": 87.11,
+          "delta_%": 54.2
+        },
+        {
+          "commodity": "ELE",
+          "tipologia": "BT 4.5-40 kW",
+          "generazione_conv": 146.25507561789036,
+          "perdite_conv": 14.625336275428467,
+          "materia_prima_conv": 160.88,
+          "unita_mp": "€/MWh",
+          "consumo_mese": 198498.0,
+          "n_utenze": 143,
+          "benchmark_mercato": 189.24,
+          "n_offerte_usate": 10,
+          "delta_mercato_vs_conv": 28.36,
+          "delta_%": 17.6
+        },
+        {
+          "commodity": "ELE",
+          "tipologia": "BT >40 kW",
+          "generazione_conv": 146.45862677221328,
+          "perdite_conv": 14.645850388237365,
+          "materia_prima_conv": 161.1,
+          "unita_mp": "€/MWh",
+          "consumo_mese": 1057858.0,
+          "n_utenze": 110,
+          "benchmark_mercato": 180.31,
+          "n_offerte_usate": 10,
+          "delta_mercato_vs_conv": 19.21,
+          "delta_%": 11.9
+        },
+        {
+          "commodity": "ELE",
+          "tipologia": "MT",
+          "generazione_conv": 146.60512214305035,
+          "perdite_conv": 6.165303962085071,
+          "materia_prima_conv": 152.77,
+          "unita_mp": "€/MWh",
+          "consumo_mese": 1279074.0,
+          "n_utenze": 32,
+          "benchmark_mercato": 169.09,
+          "n_offerte_usate": 10,
+          "delta_mercato_vs_conv": 16.32,
+          "delta_%": 10.7
+        },
+        {
+          "commodity": "GAS",
+          "tipologia": "Acqua Calda",
+          "generazione_conv": NaN,
+          "perdite_conv": NaN,
+          "materia_prima_conv": 62.67,
+          "unita_mp": "c€/Smc",
+          "consumo_mese": 1339.0,
+          "n_utenze": 4,
+          "benchmark_mercato": 71.07,
+          "n_offerte_usate": 10,
+          "delta_mercato_vs_conv": 8.39,
+          "delta_%": 13.4
+        },
+        {
+          "commodity": "GAS",
+          "tipologia": "Riscaldamento",
+          "generazione_conv": NaN,
+          "perdite_conv": NaN,
+          "materia_prima_conv": 61.06,
+          "unita_mp": "c€/Smc",
+          "consumo_mese": 133866.0,
+          "n_utenze": 52,
+          "benchmark_mercato": 67.24,
+          "n_offerte_usate": 10,
+          "delta_mercato_vs_conv": 6.19,
+          "delta_%": 10.1
+        },
+        {
+          "commodity": "GAS",
+          "tipologia": "Riscaldamento + Acqua Calda",
+          "generazione_conv": NaN,
+          "perdite_conv": NaN,
+          "materia_prima_conv": 62.19,
+          "unita_mp": "c€/Smc",
+          "consumo_mese": 10733.0,
+          "n_utenze": 21,
+          "benchmark_mercato": 69.55,
+          "n_offerte_usate": 10,
+          "delta_mercato_vs_conv": 7.36,
+          "delta_%": 11.8
+        },
+        {
+          "commodity": "GAS",
+          "tipologia": "Uso Tecnologico + Riscaldamento",
+          "generazione_conv": NaN,
+          "perdite_conv": NaN,
+          "materia_prima_conv": 60.76,
+          "unita_mp": "c€/Smc",
+          "consumo_mese": 94744.0,
+          "n_utenze": 23,
+          "benchmark_mercato": 67.03,
+          "n_offerte_usate": 10,
+          "delta_mercato_vs_conv": 6.26,
+          "delta_%": 10.3
+        }
+      ],
+      "generale": [
+        {
+          "commodity": "ELE",
+          "unita": "€/MWh",
+          "MP_convenzione": 158.87,
+          "benchmark_mercato": 196.62,
+          "criterio": "media semplice 4 fasce (BT/MT equo)",
+          "delta": 37.75,
+          "delta_%": 23.8
+        },
+        {
+          "commodity": "GAS",
+          "unita": "c€/Smc",
+          "MP_convenzione": 61.0,
+          "benchmark_mercato": 67.28,
+          "criterio": "media ponderata sui consumi",
+          "delta": 6.28,
+          "delta_%": 10.3
+        }
+      ],
+      "sensitivity": {
+        "fattori": [
+          0.1,
+          0.25,
+          0.5,
+          0.75,
+          1.0,
+          1.25,
+          1.5,
+          2.0,
+          2.5,
+          3.0,
+          4.0,
+          6.0
+        ],
+        "per_fascia": {
+          "ELE|BT 4.5-40 kW": [
+            283.144,
+            220.541,
+            199.673,
+            192.717,
+            189.239,
+            187.152,
+            185.761,
+            184.022,
+            182.978,
+            182.283,
+            181.413,
+            180.544
+          ],
+          "ELE|BT <=3 kW": [
+            863.501,
+            454.314,
+            316.869,
+            270.847,
+            247.837,
+            234.03,
+            224.826,
+            213.321,
+            206.418,
+            201.815,
+            196.063,
+            190.31
+          ],
+          "ELE|BT >40 kW": [
+            193.865,
+            184.829,
+            181.817,
+            180.813,
+            180.311,
+            180.01,
+            179.809,
+            179.558,
+            179.407,
+            179.307,
+            179.181,
+            179.056
+          ],
+          "ELE|MT": [
+            172.35,
+            170.176,
+            169.451,
+            169.21,
+            169.089,
+            169.017,
+            168.968,
+            168.908,
+            168.872,
+            168.847,
+            168.817,
+            168.787
+          ],
+          "GAS|Acqua Calda": [
+            110.638,
+            84.257,
+            75.464,
+            72.532,
+            71.067,
+            70.187,
+            69.601,
+            68.868,
+            68.429,
+            68.136,
+            67.769,
+            67.403
+          ],
+          "GAS|Riscaldamento": [
+            72.387,
+            68.957,
+            67.813,
+            67.432,
+            67.242,
+            67.127,
+            67.051,
+            66.956,
+            66.899,
+            66.86,
+            66.813,
+            66.765
+          ],
+          "GAS|Riscaldamento + Acqua Calda": [
+            95.468,
+            78.189,
+            72.429,
+            70.51,
+            69.55,
+            68.974,
+            68.59,
+            68.11,
+            67.822,
+            67.63,
+            67.39,
+            67.15
+          ],
+          "GAS|Uso Tecnologico + Riscaldamento": [
+            70.243,
+            68.099,
+            67.385,
+            67.146,
+            67.027,
+            66.956,
+            66.908,
+            66.849,
+            66.813,
+            66.789,
+            66.759,
+            66.729
+          ]
+        }
+      }
     }
-  ],
-  "sensitivity": {
-    "fattori": [
-      0.25,
-      0.5,
-      0.75,
-      1.0,
-      1.25,
-      1.5,
-      2.0,
-      2.5,
-      3.0,
-      4.0
-    ],
-    "ELE": [
-      257.465,
-      216.952,
-      203.397,
-      196.619,
-      192.552,
-      189.841,
-      186.452,
-      184.419,
-      183.063,
-      181.369
-    ],
-    "GAS": [
-      69.116,
-      67.893,
-      67.485,
-      67.281,
-      67.159,
-      67.078,
-      66.976,
-      66.915,
-      66.874,
-      66.823
-    ]
   },
-  "top10": [
+  "offerte_tutte": [
     {
-      "commodity": "ELE",
-      "tipologia": "BT 4.5-40 kW",
       "fonte": "Selectra",
+      "commodity": "ELE",
       "offerta": "E.ON  Dinamica Click ECO Luce",
-      "prezzo": 181.147
+      "spread": 0.0108,
+      "quota_eur_anno": 192.0
     },
     {
-      "commodity": "ELE",
-      "tipologia": "BT 4.5-40 kW",
       "fonte": "Fornitori",
+      "commodity": "ELE",
       "offerta": "Magis Energia Proxima Small Luce",
-      "prezzo": 181.865
+      "spread": 0.0132,
+      "quota_eur_anno": 160.0
     },
     {
-      "commodity": "ELE",
-      "tipologia": "BT 4.5-40 kW",
       "fonte": "Fornitori",
+      "commodity": "ELE",
       "offerta": "Dolomiti Energia PUN-Ta Small Premium Luce",
-      "prezzo": 186.105
+      "spread": 0.0176,
+      "quota_eur_anno": 150.0
     },
     {
-      "commodity": "ELE",
-      "tipologia": "BT 4.5-40 kW",
       "fonte": "Selectra",
+      "commodity": "ELE",
       "offerta": "Iren  Tua Azienda Luce Variabile",
-      "prezzo": 190.326
+      "spread": 0.0198,
+      "quota_eur_anno": 180.0
     },
     {
-      "commodity": "ELE",
-      "tipologia": "BT 4.5-40 kW",
       "fonte": "Fornitori",
+      "commodity": "ELE",
       "offerta": "Iren Tua Azienda Luce Variabile",
-      "prezzo": 190.326
+      "spread": 0.0198,
+      "quota_eur_anno": 180.0
     },
     {
-      "commodity": "ELE",
-      "tipologia": "BT 4.5-40 kW",
       "fonte": "Fornitori",
+      "commodity": "ELE",
       "offerta": "A2A Smart Business Luce",
-      "prezzo": 190.544
+      "spread": 0.019998,
+      "quota_eur_anno": 180.0
     },
     {
-      "commodity": "ELE",
-      "tipologia": "BT 4.5-40 kW",
       "fonte": "Selectra",
+      "commodity": "ELE",
       "offerta": "A2A Energia  Smart Business Luce",
-      "prezzo": 190.546
+      "spread": 0.02,
+      "quota_eur_anno": 180.0
     },
     {
-      "commodity": "ELE",
-      "tipologia": "BT 4.5-40 kW",
       "fonte": "luce-gas.it",
+      "commodity": "ELE",
       "offerta": "A2A Energia Smart Business Luce",
-      "prezzo": 190.546
+      "spread": 0.02,
+      "quota_eur_anno": 180.0
     },
     {
-      "commodity": "ELE",
-      "tipologia": "BT 4.5-40 kW",
       "fonte": "Selectra",
+      "commodity": "ELE",
       "offerta": "Enel Energia  Flex Business Luce",
-      "prezzo": 193.885
+      "spread": 0.025,
+      "quota_eur_anno": 144.0
     },
     {
-      "commodity": "ELE",
-      "tipologia": "BT 4.5-40 kW",
       "fonte": "Fornitori",
+      "commodity": "ELE",
       "offerta": "Eni Plenitude Trend Business Luce",
-      "prezzo": 197.097
+      "spread": 0.0253,
+      "quota_eur_anno": 192.0
     },
     {
-      "commodity": "ELE",
-      "tipologia": "BT <=3 kW",
       "fonte": "Fornitori",
-      "offerta": "Magis Energia Proxima Small Luce",
-      "prezzo": 235.811
+      "commodity": "ELE",
+      "offerta": "Edison World Business / Placet Variabile Luce",
+      "spread": 0.05,
+      "quota_eur_anno": 171.0
     },
     {
-      "commodity": "ELE",
-      "tipologia": "BT <=3 kW",
       "fonte": "Fornitori",
-      "offerta": "Dolomiti Energia PUN-Ta Small Premium Luce",
-      "prezzo": 236.679
+      "commodity": "GAS",
+      "offerta": "Edison World Business / Placet Variabile Gas",
+      "spread": 0.05,
+      "quota_eur_anno": 171.0
     },
     {
-      "commodity": "ELE",
-      "tipologia": "BT <=3 kW",
-      "fonte": "Selectra",
-      "offerta": "Enel Energia  Flex Business Luce",
-      "prezzo": 242.436
-    },
-    {
-      "commodity": "ELE",
-      "tipologia": "BT <=3 kW",
-      "fonte": "Selectra",
-      "offerta": "E.ON  Dinamica Click ECO Luce",
-      "prezzo": 245.881
-    },
-    {
-      "commodity": "ELE",
-      "tipologia": "BT <=3 kW",
-      "fonte": "Selectra",
-      "offerta": "Iren  Tua Azienda Luce Variabile",
-      "prezzo": 251.015
-    },
-    {
-      "commodity": "ELE",
-      "tipologia": "BT <=3 kW",
       "fonte": "Fornitori",
-      "offerta": "Iren Tua Azienda Luce Variabile",
-      "prezzo": 251.015
+      "commodity": "ELE",
+      "offerta": "Magis Energia Luce Placet Variabile",
+      "spread": 0.055,
+      "quota_eur_anno": 181.92
     },
     {
-      "commodity": "ELE",
-      "tipologia": "BT <=3 kW",
-      "fonte": "Fornitori",
-      "offerta": "A2A Smart Business Luce",
-      "prezzo": 251.232
-    },
-    {
-      "commodity": "ELE",
-      "tipologia": "BT <=3 kW",
       "fonte": "Selectra",
-      "offerta": "A2A Energia  Smart Business Luce",
-      "prezzo": 251.235
+      "commodity": "GAS",
+      "offerta": "Dinamica Click ECO GAs di E.ON",
+      "spread": 0.07,
+      "quota_eur_anno": 193.20000000000002
     },
     {
-      "commodity": "ELE",
-      "tipologia": "BT <=3 kW",
       "fonte": "luce-gas.it",
-      "offerta": "A2A Energia Smart Business Luce",
-      "prezzo": 251.235
+      "commodity": "ELE",
+      "offerta": "E.ON Dinamica Click ECO GAs",
+      "spread": 0.07,
+      "quota_eur_anno": 193.20000000000002
     },
     {
-      "commodity": "ELE",
-      "tipologia": "BT <=3 kW",
       "fonte": "Fornitori",
-      "offerta": "Eni Plenitude Trend Business Luce",
-      "prezzo": 261.831
+      "commodity": "GAS",
+      "offerta": "Magis Energia Proxima Small Gas",
+      "spread": 0.08,
+      "quota_eur_anno": 160.0
     },
     {
-      "commodity": "ELE",
-      "tipologia": "BT >40 kW",
-      "fonte": "Selectra",
-      "offerta": "E.ON  Dinamica Click ECO Luce",
-      "prezzo": 171.284
-    },
-    {
-      "commodity": "ELE",
-      "tipologia": "BT >40 kW",
       "fonte": "Fornitori",
-      "offerta": "Magis Energia Proxima Small Luce",
-      "prezzo": 173.646
+      "commodity": "GAS",
+      "offerta": "A2A Smart Business Gas",
+      "spread": 0.11,
+      "quota_eur_anno": 180.0
     },
     {
-      "commodity": "ELE",
-      "tipologia": "BT >40 kW",
-      "fonte": "Fornitori",
-      "offerta": "Dolomiti Energia PUN-Ta Small Premium Luce",
-      "prezzo": 178.4
-    },
-    {
-      "commodity": "ELE",
-      "tipologia": "BT >40 kW",
-      "fonte": "Selectra",
-      "offerta": "Iren  Tua Azienda Luce Variabile",
-      "prezzo": 181.08
-    },
-    {
-      "commodity": "ELE",
-      "tipologia": "BT >40 kW",
-      "fonte": "Fornitori",
-      "offerta": "Iren Tua Azienda Luce Variabile",
-      "prezzo": 181.08
-    },
-    {
-      "commodity": "ELE",
-      "tipologia": "BT >40 kW",
-      "fonte": "Fornitori",
-      "offerta": "A2A Smart Business Luce",
-      "prezzo": 181.298
-    },
-    {
-      "commodity": "ELE",
-      "tipologia": "BT >40 kW",
-      "fonte": "Selectra",
-      "offerta": "A2A Energia  Smart Business Luce",
-      "prezzo": 181.3
-    },
-    {
-      "commodity": "ELE",
-      "tipologia": "BT >40 kW",
       "fonte": "luce-gas.it",
-      "offerta": "A2A Energia Smart Business Luce",
-      "prezzo": 181.3
+      "commodity": "ELE",
+      "offerta": "A2A Energia Smart Business Gas",
+      "spread": 0.11,
+      "quota_eur_anno": 180.0
     },
     {
-      "commodity": "ELE",
-      "tipologia": "BT >40 kW",
       "fonte": "Selectra",
-      "offerta": "Enel Energia  Flex Business Luce",
-      "prezzo": 186.488
+      "commodity": "GAS",
+      "offerta": "Smart Business Gas di A2A Energia",
+      "spread": 0.11,
+      "quota_eur_anno": 180.0
     },
     {
-      "commodity": "ELE",
-      "tipologia": "BT >40 kW",
       "fonte": "Fornitori",
-      "offerta": "Eni Plenitude Trend Business Luce",
-      "prezzo": 187.234
+      "commodity": "GAS",
+      "offerta": "Eni Plenitude Trend Business Gas",
+      "spread": 0.115,
+      "quota_eur_anno": 192.0
     },
     {
-      "commodity": "ELE",
-      "tipologia": "MT",
-      "fonte": "Selectra",
-      "offerta": "E.ON  Dinamica Click ECO Luce",
-      "prezzo": 160.46
-    },
-    {
-      "commodity": "ELE",
-      "tipologia": "MT",
       "fonte": "Fornitori",
-      "offerta": "Magis Energia Proxima Small Luce",
-      "prezzo": 162.884
+      "commodity": "GAS",
+      "offerta": "Dolomiti Energia PUN-Ta Gas",
+      "spread": 0.115,
+      "quota_eur_anno": 150.0
     },
     {
-      "commodity": "ELE",
-      "tipologia": "MT",
-      "fonte": "Fornitori",
-      "offerta": "Dolomiti Energia PUN-Ta Small Premium Luce",
-      "prezzo": 167.431
-    },
-    {
-      "commodity": "ELE",
-      "tipologia": "MT",
-      "fonte": "Selectra",
-      "offerta": "Iren  Tua Azienda Luce Variabile",
-      "prezzo": 169.777
-    },
-    {
-      "commodity": "ELE",
-      "tipologia": "MT",
-      "fonte": "Fornitori",
-      "offerta": "Iren Tua Azienda Luce Variabile",
-      "prezzo": 169.777
-    },
-    {
-      "commodity": "ELE",
-      "tipologia": "MT",
-      "fonte": "Fornitori",
-      "offerta": "A2A Smart Business Luce",
-      "prezzo": 169.982
-    },
-    {
-      "commodity": "ELE",
-      "tipologia": "MT",
-      "fonte": "Selectra",
-      "offerta": "A2A Energia  Smart Business Luce",
-      "prezzo": 169.984
-    },
-    {
-      "commodity": "ELE",
-      "tipologia": "MT",
       "fonte": "luce-gas.it",
-      "offerta": "A2A Energia Smart Business Luce",
-      "prezzo": 169.984
-    },
-    {
       "commodity": "ELE",
-      "tipologia": "MT",
-      "fonte": "Selectra",
-      "offerta": "Enel Energia  Flex Business Luce",
-      "prezzo": 175.099
+      "offerta": "Eni Plenitude Trend Business Gas",
+      "spread": 0.12,
+      "quota_eur_anno": 192.0
     },
     {
+      "fonte": "Fornitori",
+      "commodity": "GAS",
+      "offerta": "Iren Tua Azienda Gas Variabile",
+      "spread": 0.14,
+      "quota_eur_anno": 180.0
+    },
+    {
+      "fonte": "luce-gas.it",
       "commodity": "ELE",
-      "tipologia": "MT",
-      "fonte": "Fornitori",
-      "offerta": "Eni Plenitude Trend Business Luce",
-      "prezzo": 175.511
-    },
-    {
-      "commodity": "GAS",
-      "tipologia": "Acqua Calda",
-      "fonte": "Fornitori",
-      "offerta": "Edison World Business / Placet Variabile Gas",
-      "prezzo": 65.027
-    },
-    {
-      "commodity": "GAS",
-      "tipologia": "Acqua Calda",
-      "fonte": "Selectra",
-      "offerta": "Dinamica Click ECO GAs di E.ON",
-      "prezzo": 67.579
-    },
-    {
-      "commodity": "GAS",
-      "tipologia": "Acqua Calda",
-      "fonte": "Fornitori",
-      "offerta": "Magis Energia Proxima Small Gas",
-      "prezzo": 67.753
-    },
-    {
-      "commodity": "GAS",
-      "tipologia": "Acqua Calda",
-      "fonte": "Fornitori",
-      "offerta": "Dolomiti Energia PUN-Ta Gas",
-      "prezzo": 71.004
-    },
-    {
-      "commodity": "GAS",
-      "tipologia": "Acqua Calda",
-      "fonte": "Fornitori",
-      "offerta": "A2A Smart Business Gas",
-      "prezzo": 71.251
-    },
-    {
-      "commodity": "GAS",
-      "tipologia": "Acqua Calda",
-      "fonte": "Selectra",
-      "offerta": "Smart Business Gas di A2A Energia",
-      "prezzo": 71.251
-    },
-    {
-      "commodity": "GAS",
-      "tipologia": "Acqua Calda",
-      "fonte": "Fornitori",
-      "offerta": "Eni Plenitude Trend Business Gas",
-      "prezzo": 72.05
-    },
-    {
-      "commodity": "GAS",
-      "tipologia": "Acqua Calda",
-      "fonte": "Fornitori",
       "offerta": "Iren Tua Azienda Gas Variabile",
-      "prezzo": 74.251
+      "spread": 0.14,
+      "quota_eur_anno": 180.0
     },
     {
-      "commodity": "GAS",
-      "tipologia": "Acqua Calda",
       "fonte": "Selectra",
+      "commodity": "GAS",
       "offerta": "Tua Azienda Gas Variabile di Iren",
-      "prezzo": 74.251
+      "spread": 0.14,
+      "quota_eur_anno": 180.0
     },
     {
-      "commodity": "GAS",
-      "tipologia": "Acqua Calda",
       "fonte": "Selectra",
+      "commodity": "GAS",
       "offerta": "Flex Business Gas di Enel Energia",
-      "prezzo": 76.251
+      "spread": 0.16,
+      "quota_eur_anno": 180.0
     },
     {
-      "commodity": "GAS",
-      "tipologia": "Riscaldamento",
+      "fonte": "luce-gas.it",
+      "commodity": "ELE",
+      "offerta": "Enel Energia Flex Business Gas",
+      "spread": 0.16,
+      "quota_eur_anno": 180.0
+    },
+    {
       "fonte": "Fornitori",
-      "offerta": "Edison World Business / Placet Variabile Gas",
-      "prezzo": 61.323
+      "commodity": "GAS",
+      "offerta": "Magis Energia Gas Placet Variabile",
+      "spread": 0.3,
+      "quota_eur_anno": 181.92
     },
     {
-      "commodity": "GAS",
-      "tipologia": "Riscaldamento",
-      "fonte": "Selectra",
-      "offerta": "Dinamica Click ECO GAs di E.ON",
-      "prezzo": 63.395
-    },
-    {
-      "commodity": "GAS",
-      "tipologia": "Riscaldamento",
       "fonte": "Fornitori",
-      "offerta": "Magis Energia Proxima Small Gas",
-      "prezzo": 64.288
-    },
-    {
       "commodity": "GAS",
-      "tipologia": "Riscaldamento",
-      "fonte": "Fornitori",
-      "offerta": "A2A Smart Business Gas",
-      "prezzo": 67.353
-    },
-    {
-      "commodity": "GAS",
-      "tipologia": "Riscaldamento",
-      "fonte": "Selectra",
-      "offerta": "Smart Business Gas di A2A Energia",
-      "prezzo": 67.353
-    },
-    {
-      "commodity": "GAS",
-      "tipologia": "Riscaldamento",
-      "fonte": "Fornitori",
-      "offerta": "Dolomiti Energia PUN-Ta Gas",
-      "prezzo": 67.755
-    },
-    {
-      "commodity": "GAS",
-      "tipologia": "Riscaldamento",
-      "fonte": "Fornitori",
-      "offerta": "Eni Plenitude Trend Business Gas",
-      "prezzo": 67.891
-    },
-    {
-      "commodity": "GAS",
-      "tipologia": "Riscaldamento",
-      "fonte": "Fornitori",
-      "offerta": "Iren Tua Azienda Gas Variabile",
-      "prezzo": 70.353
-    },
-    {
-      "commodity": "GAS",
-      "tipologia": "Riscaldamento",
-      "fonte": "Selectra",
-      "offerta": "Tua Azienda Gas Variabile di Iren",
-      "prezzo": 70.353
-    },
-    {
-      "commodity": "GAS",
-      "tipologia": "Riscaldamento",
-      "fonte": "Selectra",
-      "offerta": "Flex Business Gas di Enel Energia",
-      "prezzo": 72.353
-    },
-    {
-      "commodity": "GAS",
-      "tipologia": "Riscaldamento + Acqua Calda",
-      "fonte": "Fornitori",
-      "offerta": "Edison World Business / Placet Variabile Gas",
-      "prezzo": 63.558
-    },
-    {
-      "commodity": "GAS",
-      "tipologia": "Riscaldamento + Acqua Calda",
-      "fonte": "Selectra",
-      "offerta": "Dinamica Click ECO GAs di E.ON",
-      "prezzo": 65.92
-    },
-    {
-      "commodity": "GAS",
-      "tipologia": "Riscaldamento + Acqua Calda",
-      "fonte": "Fornitori",
-      "offerta": "Magis Energia Proxima Small Gas",
-      "prezzo": 66.379
-    },
-    {
-      "commodity": "GAS",
-      "tipologia": "Riscaldamento + Acqua Calda",
-      "fonte": "Fornitori",
-      "offerta": "A2A Smart Business Gas",
-      "prezzo": 69.705
-    },
-    {
-      "commodity": "GAS",
-      "tipologia": "Riscaldamento + Acqua Calda",
-      "fonte": "Selectra",
-      "offerta": "Smart Business Gas di A2A Energia",
-      "prezzo": 69.705
-    },
-    {
-      "commodity": "GAS",
-      "tipologia": "Riscaldamento + Acqua Calda",
-      "fonte": "Fornitori",
-      "offerta": "Dolomiti Energia PUN-Ta Gas",
-      "prezzo": 69.716
-    },
-    {
-      "commodity": "GAS",
-      "tipologia": "Riscaldamento + Acqua Calda",
-      "fonte": "Fornitori",
-      "offerta": "Eni Plenitude Trend Business Gas",
-      "prezzo": 70.4
-    },
-    {
-      "commodity": "GAS",
-      "tipologia": "Riscaldamento + Acqua Calda",
-      "fonte": "Fornitori",
-      "offerta": "Iren Tua Azienda Gas Variabile",
-      "prezzo": 72.705
-    },
-    {
-      "commodity": "GAS",
-      "tipologia": "Riscaldamento + Acqua Calda",
-      "fonte": "Selectra",
-      "offerta": "Tua Azienda Gas Variabile di Iren",
-      "prezzo": 72.705
-    },
-    {
-      "commodity": "GAS",
-      "tipologia": "Riscaldamento + Acqua Calda",
-      "fonte": "Selectra",
-      "offerta": "Flex Business Gas di Enel Energia",
-      "prezzo": 74.705
-    },
-    {
-      "commodity": "GAS",
-      "tipologia": "Uso Tecnologico + Riscaldamento",
-      "fonte": "Fornitori",
-      "offerta": "Edison World Business / Placet Variabile Gas",
-      "prezzo": 61.116
-    },
-    {
-      "commodity": "GAS",
-      "tipologia": "Uso Tecnologico + Riscaldamento",
-      "fonte": "Selectra",
-      "offerta": "Dinamica Click ECO GAs di E.ON",
-      "prezzo": 63.161
-    },
-    {
-      "commodity": "GAS",
-      "tipologia": "Uso Tecnologico + Riscaldamento",
-      "fonte": "Fornitori",
-      "offerta": "Magis Energia Proxima Small Gas",
-      "prezzo": 64.094
-    },
-    {
-      "commodity": "GAS",
-      "tipologia": "Uso Tecnologico + Riscaldamento",
-      "fonte": "Fornitori",
-      "offerta": "A2A Smart Business Gas",
-      "prezzo": 67.134
-    },
-    {
-      "commodity": "GAS",
-      "tipologia": "Uso Tecnologico + Riscaldamento",
-      "fonte": "Selectra",
-      "offerta": "Smart Business Gas di A2A Energia",
-      "prezzo": 67.134
-    },
-    {
-      "commodity": "GAS",
-      "tipologia": "Uso Tecnologico + Riscaldamento",
-      "fonte": "Fornitori",
-      "offerta": "Dolomiti Energia PUN-Ta Gas",
-      "prezzo": 67.573
-    },
-    {
-      "commodity": "GAS",
-      "tipologia": "Uso Tecnologico + Riscaldamento",
-      "fonte": "Fornitori",
-      "offerta": "Eni Plenitude Trend Business Gas",
-      "prezzo": 67.658
-    },
-    {
-      "commodity": "GAS",
-      "tipologia": "Uso Tecnologico + Riscaldamento",
-      "fonte": "Fornitori",
-      "offerta": "Iren Tua Azienda Gas Variabile",
-      "prezzo": 70.134
-    },
-    {
-      "commodity": "GAS",
-      "tipologia": "Uso Tecnologico + Riscaldamento",
-      "fonte": "Selectra",
-      "offerta": "Tua Azienda Gas Variabile di Iren",
-      "prezzo": 70.134
-    },
-    {
-      "commodity": "GAS",
-      "tipologia": "Uso Tecnologico + Riscaldamento",
-      "fonte": "Selectra",
-      "offerta": "Flex Business Gas di Enel Energia",
-      "prezzo": 72.134
+      "offerta": "Iren Placet Variabile Gas Non Domestica",
+      "spread": 0.4,
+      "quota_eur_anno": 180.0
     }
   ],
   "fornitori": [
@@ -750,10 +1082,6 @@
       "url": "https://www.edison.it/it/business"
     },
     {
-      "nome": "Enel Energia",
-      "url": "https://www.enel.it/it/imprese"
-    },
-    {
       "nome": "Engie Italia",
       "url": "https://www.engie.it/business"
     },
@@ -772,10 +1100,39 @@
     {
       "nome": "Repower Italia",
       "url": "https://www.repower.com/it/aziende"
+    }
+  ],
+  "fornitori_con_offerte": [
+    "AGSM / Magis Energia",
+    "A2A Energia",
+    "Dolomiti Energia",
+    "Edison Energia",
+    "Eni Plenitude",
+    "Iren Mercato",
+    "Enel Energia",
+    "E.ON"
+  ],
+  "fornitori_senza_offerte": [
+    "Axpo Italia",
+    "Engie Italia",
+    "Hera Comm",
+    "Repower Italia"
+  ],
+  "fornitori_non_monitorati": [
+    {
+      "nome": "Enel Energia",
+      "url": "https://www.enel.it/it/imprese",
+      "motivo": "non pubblica i corrispettivi di spread e quota fissa sul proprio sito; le offerte business sono visibili solo previa quotazione personalizzata"
     },
     {
       "nome": "Sorgenia",
-      "url": "https://www.sorgenia.it/business"
+      "url": "https://www.sorgenia.it/business",
+      "motivo": "non pubblica i corrispettivi di spread e quota fissa sul proprio sito; le offerte business sono visibili solo previa quotazione personalizzata"
+    },
+    {
+      "nome": "CVA Energie",
+      "url": "https://www.cvaenergie.it",
+      "motivo": "opera commercialmente solo in Val d'Aosta, quindi fuori dal perimetro delle convenzioni"
     }
   ],
   "portali": [
