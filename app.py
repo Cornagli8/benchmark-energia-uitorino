@@ -7,6 +7,7 @@ Esecuzione locale:
 
 Deploy: https://share.streamlit.io  (repo Cornagli8/benchmark-energia-uitorino)
 """
+import base64
 import json
 from pathlib import Path
 
@@ -54,15 +55,29 @@ st.markdown(
 <style>
     .block-container { padding-top: 1.6rem; padding-bottom: 3rem; max-width: 1280px; }
     h1, h2, h3 { color: #0F172A; }
-    h1 { border-bottom: 4px solid #6BAED6; padding-bottom: .4rem; margin-top: .6rem; }
+    h1 { border-bottom: 4px solid #6BAED6; padding-bottom: .4rem; margin-top: .6rem;
+         text-align: center; }
     h2 { margin-top: 2.2rem; padding-left: .4rem; border-left: 5px solid #6BAED6; }
     h2.gas-section { border-left-color: #F0A35E; }
 
-    /* Header loghi */
+    /* Header loghi: 3 colonne con immagini centrate verticalmente, dimensioni
+       indipendenti per ogni logo (UI piu' grande senza stretchare). */
     .logo-row {
-        display: flex; justify-content: center; align-items: center;
-        gap: 2.2rem; margin: 0 0 1.0rem 0;
+        display: flex; justify-content: space-around; align-items: center;
+        gap: 1.5rem; margin: .4rem 0 1.4rem 0; padding: 0 1rem;
     }
+    .logo-cell {
+        flex: 1; display: flex; justify-content: center; align-items: center;
+        min-height: 120px;
+    }
+    .logo-cell img {
+        display: block; max-width: 100%; height: auto;
+        object-fit: contain;
+    }
+    .logo-cell.mmpower img { max-height: 90px; max-width: 220px; }
+    .logo-cell.ui      img { max-height: 130px; max-width: 280px; } /* piu' grande */
+    .logo-cell.mmgas   img { max-height: 90px; max-width: 220px; }
+
     .logo-pill {
         background: linear-gradient(180deg, #FFFFFF 0%, #F1F5F9 100%);
         border: 1px solid #CBD5E1; border-radius: 10px;
@@ -225,39 +240,29 @@ logo_files = {
     "mmgas":   loghi_dir / "logo_mmgas.png",
 }
 
-# Caricamento INDIPENDENTE: se uno dei loghi manca uso il placeholder solo per quello
-cl1, cl2, cl3 = st.columns([1, 1, 1])
-LOGO_WIDTH = 180
 
-
-def _logo_or_placeholder(col, key, placeholder_html):
+def _logo_img_or_placeholder(key, placeholder_html):
     p = logo_files[key]
     if p.exists():
-        # vbox: immagine centrata verticalmente
-        with col:
-            col.markdown(
-                "<div style='display:flex;justify-content:center;align-items:center;"
-                "min-height:90px;'>",
-                unsafe_allow_html=True,
-            )
-            col.image(str(p), width=LOGO_WIDTH)
-            col.markdown("</div>", unsafe_allow_html=True)
-    else:
-        col.markdown(
-            f"<div style='display:flex;justify-content:center;align-items:center;"
-            f"min-height:90px;'>{placeholder_html}</div>",
-            unsafe_allow_html=True,
-        )
+        b64 = base64.b64encode(p.read_bytes()).decode("ascii")
+        return f'<img src="data:image/png;base64,{b64}" alt="{key}" />'
+    return placeholder_html
 
 
-_logo_or_placeholder(cl1, "mmpower",
-                     '<div class="logo-pill mmpower">⚡ MMPOWER</div>')
-_logo_or_placeholder(cl2, "ui",
-                     '<div class="logo-pill ui-torino">UNIONE INDUSTRIALI TORINO</div>')
-_logo_or_placeholder(cl3, "mmgas",
-                     '<div class="logo-pill mmgas">🔥 MMGAS</div>')
+st.markdown(
+    f"""
+<div class="logo-row">
+  <div class="logo-cell mmpower">{_logo_img_or_placeholder("mmpower",
+       '<div class="logo-pill mmpower">⚡ MMPOWER</div>')}</div>
+  <div class="logo-cell ui">{_logo_img_or_placeholder("ui",
+       '<div class="logo-pill ui-torino">UNIONE INDUSTRIALI TORINO</div>')}</div>
+  <div class="logo-cell mmgas">{_logo_img_or_placeholder("mmgas",
+       '<div class="logo-pill mmgas">🔥 MMGAS</div>')}</div>
+</div>
+""",
+    unsafe_allow_html=True,
+)
 
-# Se mancano i loghi UI e/o MMGAS, suggerimento operativo (solo se serve)
 mancanti = [k for k, p in logo_files.items() if not p.exists()]
 if mancanti:
     st.caption(
@@ -512,13 +517,6 @@ st.plotly_chart(
     use_container_width=True,
 )
 
-st.caption(
-    f"Aggregazione BT ≤40 kW: prezzo_BT≤3 × {cons_low_3:,.0f} kWh + "
-    f"prezzo_BT4,5–40 × {cons_low_40:,.0f} kWh, diviso il totale "
-    f"{cons_low_3 + cons_low_40:,.0f} kWh = <b>{bt_low_conv:.2f} €/MWh</b> per "
-    f"la Convenzione.",
-)
-
 
 # ------------------------------------------------------------------
 # SEZIONE 3 — Per tipologia d'uso (Gas)
@@ -577,34 +575,42 @@ cons_ele_real = meta["consumo_ele_totale_kwh"]
 
 
 def _consumo_widget(label, real, step, key_prefix, max_mult=6):
-    """Coppia number_input + slider sincronizzati con session_state, valori
-    sempre allineati allo step per evitare StreamlitAPIException."""
-    vmin = int(round(real * 0.1 / step) * step)
-    vmax = int(round(real * max_mult / step) * step)
-    vmin = max(vmin, step)
+    """Coppia number_input + slider sincronizzati. Tutti i valori sono garantiti
+    multipli di step e dentro [vmin, vmax] per evitare StreamlitValueBelowMinError."""
+    if not real or real <= 0:
+        st.info(f"{label}: consumo reale non disponibile, slider disabilitato.")
+        return 0
+    vmin = max(step, int(round(real * 0.1 / step) * step))
+    vmax = max(vmin + step, int(round(real * max_mult / step) * step))
     real_aligned = int(round(real / step) * step)
+    real_aligned = max(vmin, min(vmax, real_aligned))  # clamp dentro range
+
     sk = f"_cons_{key_prefix}"
-    if sk not in st.session_state:
-        st.session_state[sk] = real_aligned
+    # Inizializza/clamp anche se la session_state era impostata su un valore vecchio
+    cur = st.session_state.get(sk, real_aligned)
+    cur = int(round(cur / step) * step)
+    cur = max(vmin, min(vmax, cur))
+    st.session_state[sk] = cur
 
     def _from_num():
         v = int(round(st.session_state[f"num_{key_prefix}"] / step) * step)
         st.session_state[sk] = max(vmin, min(vmax, v))
 
     def _from_sl():
-        st.session_state[sk] = int(st.session_state[f"sl_{key_prefix}"])
+        v = int(st.session_state[f"sl_{key_prefix}"])
+        st.session_state[sk] = max(vmin, min(vmax, v))
 
     cols = st.columns([1, 2])
     with cols[0]:
         st.number_input(
             label, min_value=vmin, max_value=vmax,
-            value=st.session_state[sk], step=step,
+            value=cur, step=step,
             key=f"num_{key_prefix}", on_change=_from_num,
         )
     with cols[1]:
         st.slider(
             " ", min_value=vmin, max_value=vmax,
-            value=st.session_state[sk], step=step,
+            value=cur, step=step,
             key=f"sl_{key_prefix}", on_change=_from_sl,
             label_visibility="collapsed",
         )
