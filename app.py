@@ -90,8 +90,9 @@ st.markdown(
 # ------------------------------------------------------------------
 # Caricamento dati
 # ------------------------------------------------------------------
-@st.cache_data
 def carica_dati():
+    # Niente cache: il file viene riletto a ogni rerun (size <100 KB, costo trascurabile).
+    # Evita problemi di stale cache dopo un git push del nuovo data.json.
     p = Path(__file__).parent / "data" / "data.json"
     if not p.exists():
         return None
