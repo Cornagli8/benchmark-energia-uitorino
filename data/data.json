@@ -1,0 +1,42 @@
+{
+  "meta": {
+    "mese_riferimento": "2026-03",
+    "PUN_eur_kWh": 0.0,
+    "PSV_eur_Smc": 0.0,
+    "generazione_conv_ele_eur_MWh": 0.0,
+    "perdite_conv_ele_eur_MWh": 0.0,
+    "coeff_perdita_BT": 0.10,
+    "coeff_perdita_MT": 0.038,
+    "top_n": 10,
+    "n_offerte_totali": 0,
+    "_placeholder": true,
+    "_nota": "Placeholder: esegui la cella 5.6 del notebook Benchmark Confronto.ipynb e fai git push per popolare con i dati reali."
+  },
+  "confronto": [],
+  "generale": [
+    {"commodity": "ELE", "unita": "€/MWh", "MP_convenzione": 0.0, "benchmark_mercato": 0.0, "criterio": "media semplice 4 fasce", "delta": 0.0, "delta_%": 0.0},
+    {"commodity": "GAS", "unita": "c€/Smc", "MP_convenzione": 0.0, "benchmark_mercato": 0.0, "criterio": "media ponderata sui consumi", "delta": 0.0, "delta_%": 0.0}
+  ],
+  "sensitivity": {"fattori": [0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 2.0, 2.5, 3.0, 4.0], "ELE": [0,0,0,0,0,0,0,0,0,0], "GAS": [0,0,0,0,0,0,0,0,0,0]},
+  "top10": [],
+  "fornitori": [
+    {"nome": "AGSM / Magis Energia", "url": "https://www.magisenergia.it/business"},
+    {"nome": "A2A Energia", "url": "https://www.a2aenergia.eu/imprese"},
+    {"nome": "Axpo Italia", "url": "https://www.axpo.com/it/it/aziende.html"},
+    {"nome": "Dolomiti Energia", "url": "https://www.dolomitienergia.it/business"},
+    {"nome": "Edison Energia", "url": "https://www.edison.it/it/business"},
+    {"nome": "Enel Energia", "url": "https://www.enel.it/it/imprese"},
+    {"nome": "Engie Italia", "url": "https://www.engie.it/business"},
+    {"nome": "Eni Plenitude", "url": "https://eniplenitude.com/offerta/business/gas-e-luce"},
+    {"nome": "Hera Comm", "url": "https://www.gruppohera.it/clienti/casa-business/business/luce-gas"},
+    {"nome": "Iren Mercato", "url": "https://www.irenlucegas.it/business/offerte-luce-gas-pmi"},
+    {"nome": "Repower Italia", "url": "https://www.repower.com/it/aziende"},
+    {"nome": "Sorgenia", "url": "https://www.sorgenia.it/business"}
+  ],
+  "portali": [
+    {"nome": "Facile.it (business)", "url": "https://www.facile.it/energia-luce-gas/business.html"},
+    {"nome": "Selectra (business)", "url": "https://luce-gas.it/business"},
+    {"nome": "luce-gas.it (business)", "url": "https://luce-gas.it/business"},
+    {"nome": "bolletta-energia.it", "url": "https://bolletta-energia.it/comparazione/offerte-business-luce-gas"}
+  ]
+}

@@ -6,48 +6,60 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
   body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-         max-width: 880px; margin: 2rem auto; padding: 0 1.2rem; color:#1f2937; }
-  h1 { color:#0f172a; border-bottom: 3px solid #2563eb; padding-bottom:.4rem; }
-  h2 { margin-top: 2rem; color:#1e40af; }
-  .card { border:1px solid #e5e7eb; border-radius: 10px; padding:1.1rem 1.3rem;
-          margin: 1rem 0; background:#fafafa; }
-  a.btn { display:inline-block; padding:.55rem 1rem; background:#2563eb; color:#fff;
-          border-radius: 6px; text-decoration:none; font-weight:600; margin-top:.5rem; }
-  a.btn:hover { background:#1d4ed8; }
-  .meta { color:#6b7280; font-size:.92rem; }
-  footer { margin-top: 3rem; color:#9ca3af; font-size:.85rem; text-align:center; }
+         max-width: 880px; margin: 2rem auto; padding: 0 1.2rem; color:#1F2937;
+         background:#F8FAFC; }
+  h1 { color:#0F172A; border-bottom: 4px solid #6BAED6; padding-bottom:.4rem; }
+  h2 { color:#1F4E8C; margin-top: 2rem; }
+  .card { border:1px solid #E5E7EB; border-radius: 12px; padding:1.2rem 1.4rem;
+          margin: 1rem 0; background:#FFFFFF;
+          box-shadow: 0 1px 3px rgba(0,0,0,.04); }
+  .card.featured { border-left: 5px solid #2C5784; background:linear-gradient(180deg,#FFFFFF,#F8FAFC); }
+  a.btn { display:inline-block; padding:.6rem 1.1rem; background:#2C5784; color:#fff;
+          border-radius: 8px; text-decoration:none; font-weight:600; margin-top:.5rem; }
+  a.btn:hover { background:#1E3D62; }
+  a.btn-alt { background:#6BAED6; }
+  a.btn-alt:hover { background:#4A8AB0; }
+  .meta { color:#6B7280; font-size:.92rem; }
+  .badge { display:inline-block; padding:.2rem .6rem; border-radius:999px;
+           font-size:.78rem; font-weight:600; background:#F0A35E; color:#FFF; margin-left:.4rem; }
+  footer { margin-top: 3rem; color:#9CA3AF; font-size:.85rem; text-align:center; }
 </style>
 </head>
 <body>
-  <h1>Benchmark Materia Prima Energetica</h1>
-  <p class="meta">Confronto tra Convenzioni MMPOWER / MMGAS (UI Torino) e benchmark del mercato.
-  Mese di riferimento: <b>marzo 2026</b>. I prezzi includono Generazione + Perdite di rete
-  per il lato Convenzione; per il Mercato la materia prima è ricostruita come
-  (PUN/PSV + spread + quota fissa unitaria) maggiorata delle perdite di rete
-  (10% BT, 3,8% MT per l'elettrico).</p>
+  <h1>⚡🔥 Benchmark Materia Prima Energetica</h1>
+  <p class="meta">Confronto tra <b>Convenzioni MMPOWER / MMGAS</b> di UI Torino e
+  benchmark del mercato libero. Mese di riferimento: <b>marzo 2026</b>.</p>
 
-  <h2>Grafici interattivi</h2>
+  <h2>Dashboard interattiva</h2>
+
+  <div class="card featured">
+    <h3>🌟 App Streamlit <span class="badge">NUOVA</span></h3>
+    <p>Dashboard completa con KPI, dropdown per fascia/uso, slider di sensitivity,
+    top 10 offerte attive e metodologia dettagliata. Layout single-page con palette curata.</p>
+    <a class="btn" href="https://benchmark-energia-uitorino.streamlit.app/" target="_blank">
+      Apri Dashboard Streamlit →
+    </a>
+    <p class="meta" style="margin-top:.8rem;">
+      <i>(L'URL definitivo viene assegnato al primo deploy su Streamlit Community Cloud.)</i>
+    </p>
+  </div>
+
+  <h2>Versioni statiche (HTML)</h2>
 
   <div class="card">
-    <h3>1. Confronto GENERALE</h3>
-    <p>Dropdown per scegliere <b>Elettrico</b> o <b>Gas</b> + <b>slider</b> per simulare
-    diversi livelli di consumo (0,25× → 4× rispetto al consumo reale di marzo 2026).</p>
-    <a class="btn" href="grafico_confronto_generale.html">Apri grafico generale →</a>
+    <h3>📊 Grafico generale</h3>
+    <p>Dropdown ELE/GAS + slider del livello di consumo.</p>
+    <a class="btn btn-alt" href="grafico_confronto_generale.html">Apri →</a>
   </div>
 
   <div class="card">
-    <h3>2. Confronto per TIPOLOGIA</h3>
-    <p>Due grafici separati:
-      <ul>
-        <li>Elettrico per <b>fascia di potenza</b> (BT ≤3 kW, BT 4,5–40 kW, BT &gt;40 kW, MT)</li>
-        <li>Gas per <b>tipologia d'uso</b> (4 categorie)</li>
-      </ul>
-      Dropdown su ciascun grafico per filtrare la singola fascia/uso.</p>
-    <a class="btn" href="grafico_confronto_tipologie.html">Apri grafico per tipologia →</a>
+    <h3>📊 Grafico per tipologia</h3>
+    <p>Confronto per fascia di potenza (ELE) e tipologia d'uso (GAS).</p>
+    <a class="btn btn-alt" href="grafico_confronto_tipologie.html">Apri →</a>
   </div>
 
   <footer>
-    UI Torino · Gas &amp; Power · Generato automaticamente dal notebook
+    UI Torino · Gas &amp; Power · Generato automaticamente da
     <code>Benchmark Confronto.ipynb</code>
   </footer>
 </body>
