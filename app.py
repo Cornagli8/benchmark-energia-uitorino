@@ -113,6 +113,28 @@ df_gen = pd.DataFrame(D["generale"])
 df_top = pd.DataFrame(D["top10"])
 sens = D["sensitivity"]
 
+# Guardia: data.json placeholder (vuoto/zeri) -> mostra messaggio, non crashare
+_is_placeholder = (
+    meta.get("_placeholder") is True
+    or len(df_conf) == 0
+    or meta.get("n_offerte_totali", 0) == 0
+)
+if _is_placeholder:
+    st.warning(
+        "⚠️ **Dati non ancora caricati.** Il file `data/data.json` è in stato "
+        "placeholder. Per popolarlo:\n\n"
+        "1. Apri `Benchmark Confronto.ipynb` ed esegui le celle 5.1 → 5.6\n"
+        "2. Esegui i comandi:\n"
+        "   ```powershell\n"
+        "   cd pubblica_grafici\n"
+        "   git add data/data.json\n"
+        "   git commit -m \"aggiorna dati\"\n"
+        "   git push\n"
+        "   ```\n"
+        "3. Aspetta ~1 minuto: Streamlit Cloud rigenera l'app."
+    )
+    st.stop()
+
 
 # ------------------------------------------------------------------
 # HERO HEADER

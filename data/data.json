@@ -1,42 +1,799 @@
 {
   "meta": {
     "mese_riferimento": "2026-03",
-    "PUN_eur_kWh": 0.0,
-    "PSV_eur_Smc": 0.0,
-    "generazione_conv_ele_eur_MWh": 0.0,
-    "perdite_conv_ele_eur_MWh": 0.0,
-    "coeff_perdita_BT": 0.10,
+    "PUN_eur_kWh": 0.1434,
+    "PSV_eur_Smc": 0.557699,
+    "generazione_conv_ele_eur_MWh": 146.5057767253901,
+    "perdite_conv_ele_eur_MWh": 10.48048232442919,
+    "coeff_perdita_BT": 0.1,
     "coeff_perdita_MT": 0.038,
     "top_n": 10,
-    "n_offerte_totali": 0,
-    "_placeholder": true,
-    "_nota": "Placeholder: esegui la cella 5.6 del notebook Benchmark Confronto.ipynb e fai git push per popolare con i dati reali."
+    "n_offerte_totali": 29
   },
-  "confronto": [],
-  "generale": [
-    {"commodity": "ELE", "unita": "€/MWh", "MP_convenzione": 0.0, "benchmark_mercato": 0.0, "criterio": "media semplice 4 fasce", "delta": 0.0, "delta_%": 0.0},
-    {"commodity": "GAS", "unita": "c€/Smc", "MP_convenzione": 0.0, "benchmark_mercato": 0.0, "criterio": "media ponderata sui consumi", "delta": 0.0, "delta_%": 0.0}
+  "confronto": [
+    {
+      "commodity": "ELE",
+      "tipologia": "BT <=3 kW",
+      "unita_mp": "€/MWh",
+      "materia_prima_conv": 156.99,
+      "benchmark_mercato": 247.84,
+      "delta_mercato_vs_conv": 90.85,
+      "delta_%": 57.9,
+      "consumo_mese": 70285.0,
+      "n_utenze": 335,
+      "n_offerte_usate": 10
+    },
+    {
+      "commodity": "ELE",
+      "tipologia": "BT 4.5-40 kW",
+      "unita_mp": "€/MWh",
+      "materia_prima_conv": 156.99,
+      "benchmark_mercato": 189.24,
+      "delta_mercato_vs_conv": 32.25,
+      "delta_%": 20.5,
+      "consumo_mese": 198498.0,
+      "n_utenze": 143,
+      "n_offerte_usate": 10
+    },
+    {
+      "commodity": "ELE",
+      "tipologia": "BT >40 kW",
+      "unita_mp": "€/MWh",
+      "materia_prima_conv": 156.99,
+      "benchmark_mercato": 180.31,
+      "delta_mercato_vs_conv": 23.32,
+      "delta_%": 14.9,
+      "consumo_mese": 1057858.0,
+      "n_utenze": 110,
+      "n_offerte_usate": 10
+    },
+    {
+      "commodity": "ELE",
+      "tipologia": "MT",
+      "unita_mp": "€/MWh",
+      "materia_prima_conv": 156.99,
+      "benchmark_mercato": 169.09,
+      "delta_mercato_vs_conv": 12.1,
+      "delta_%": 7.7,
+      "consumo_mese": 1279074.0,
+      "n_utenze": 32,
+      "n_offerte_usate": 10
+    },
+    {
+      "commodity": "GAS",
+      "tipologia": "Acqua Calda",
+      "unita_mp": "c€/Smc",
+      "materia_prima_conv": 62.67,
+      "benchmark_mercato": 71.07,
+      "delta_mercato_vs_conv": 8.39,
+      "delta_%": 13.4,
+      "consumo_mese": 1339.0,
+      "n_utenze": 4,
+      "n_offerte_usate": 10
+    },
+    {
+      "commodity": "GAS",
+      "tipologia": "Riscaldamento",
+      "unita_mp": "c€/Smc",
+      "materia_prima_conv": 61.06,
+      "benchmark_mercato": 67.24,
+      "delta_mercato_vs_conv": 6.19,
+      "delta_%": 10.1,
+      "consumo_mese": 133866.0,
+      "n_utenze": 52,
+      "n_offerte_usate": 10
+    },
+    {
+      "commodity": "GAS",
+      "tipologia": "Riscaldamento + Acqua Calda",
+      "unita_mp": "c€/Smc",
+      "materia_prima_conv": 62.19,
+      "benchmark_mercato": 69.55,
+      "delta_mercato_vs_conv": 7.36,
+      "delta_%": 11.8,
+      "consumo_mese": 10733.0,
+      "n_utenze": 21,
+      "n_offerte_usate": 10
+    },
+    {
+      "commodity": "GAS",
+      "tipologia": "Uso Tecnologico + Riscaldamento",
+      "unita_mp": "c€/Smc",
+      "materia_prima_conv": 60.76,
+      "benchmark_mercato": 67.03,
+      "delta_mercato_vs_conv": 6.26,
+      "delta_%": 10.3,
+      "consumo_mese": 94744.0,
+      "n_utenze": 23,
+      "n_offerte_usate": 10
+    }
   ],
-  "sensitivity": {"fattori": [0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 2.0, 2.5, 3.0, 4.0], "ELE": [0,0,0,0,0,0,0,0,0,0], "GAS": [0,0,0,0,0,0,0,0,0,0]},
-  "top10": [],
+  "generale": [
+    {
+      "commodity": "ELE",
+      "unita": "€/MWh",
+      "MP_convenzione": 156.99,
+      "benchmark_mercato": 196.62,
+      "criterio": "media semplice 4 fasce (BT/MT equo)",
+      "delta": 39.63,
+      "delta_%": 25.2
+    },
+    {
+      "commodity": "GAS",
+      "unita": "c€/Smc",
+      "MP_convenzione": 61.0,
+      "benchmark_mercato": 67.28,
+      "criterio": "media ponderata sui consumi",
+      "delta": 6.28,
+      "delta_%": 10.3
+    }
+  ],
+  "sensitivity": {
+    "fattori": [
+      0.25,
+      0.5,
+      0.75,
+      1.0,
+      1.25,
+      1.5,
+      2.0,
+      2.5,
+      3.0,
+      4.0
+    ],
+    "ELE": [
+      257.465,
+      216.952,
+      203.397,
+      196.619,
+      192.552,
+      189.841,
+      186.452,
+      184.419,
+      183.063,
+      181.369
+    ],
+    "GAS": [
+      69.116,
+      67.893,
+      67.485,
+      67.281,
+      67.159,
+      67.078,
+      66.976,
+      66.915,
+      66.874,
+      66.823
+    ]
+  },
+  "top10": [
+    {
+      "commodity": "ELE",
+      "tipologia": "BT 4.5-40 kW",
+      "fonte": "Selectra",
+      "offerta": "E.ON  Dinamica Click ECO Luce",
+      "prezzo": 181.147
+    },
+    {
+      "commodity": "ELE",
+      "tipologia": "BT 4.5-40 kW",
+      "fonte": "Fornitori",
+      "offerta": "Magis Energia Proxima Small Luce",
+      "prezzo": 181.865
+    },
+    {
+      "commodity": "ELE",
+      "tipologia": "BT 4.5-40 kW",
+      "fonte": "Fornitori",
+      "offerta": "Dolomiti Energia PUN-Ta Small Premium Luce",
+      "prezzo": 186.105
+    },
+    {
+      "commodity": "ELE",
+      "tipologia": "BT 4.5-40 kW",
+      "fonte": "Selectra",
+      "offerta": "Iren  Tua Azienda Luce Variabile",
+      "prezzo": 190.326
+    },
+    {
+      "commodity": "ELE",
+      "tipologia": "BT 4.5-40 kW",
+      "fonte": "Fornitori",
+      "offerta": "Iren Tua Azienda Luce Variabile",
+      "prezzo": 190.326
+    },
+    {
+      "commodity": "ELE",
+      "tipologia": "BT 4.5-40 kW",
+      "fonte": "Fornitori",
+      "offerta": "A2A Smart Business Luce",
+      "prezzo": 190.544
+    },
+    {
+      "commodity": "ELE",
+      "tipologia": "BT 4.5-40 kW",
+      "fonte": "Selectra",
+      "offerta": "A2A Energia  Smart Business Luce",
+      "prezzo": 190.546
+    },
+    {
+      "commodity": "ELE",
+      "tipologia": "BT 4.5-40 kW",
+      "fonte": "luce-gas.it",
+      "offerta": "A2A Energia Smart Business Luce",
+      "prezzo": 190.546
+    },
+    {
+      "commodity": "ELE",
+      "tipologia": "BT 4.5-40 kW",
+      "fonte": "Selectra",
+      "offerta": "Enel Energia  Flex Business Luce",
+      "prezzo": 193.885
+    },
+    {
+      "commodity": "ELE",
+      "tipologia": "BT 4.5-40 kW",
+      "fonte": "Fornitori",
+      "offerta": "Eni Plenitude Trend Business Luce",
+      "prezzo": 197.097
+    },
+    {
+      "commodity": "ELE",
+      "tipologia": "BT <=3 kW",
+      "fonte": "Fornitori",
+      "offerta": "Magis Energia Proxima Small Luce",
+      "prezzo": 235.811
+    },
+    {
+      "commodity": "ELE",
+      "tipologia": "BT <=3 kW",
+      "fonte": "Fornitori",
+      "offerta": "Dolomiti Energia PUN-Ta Small Premium Luce",
+      "prezzo": 236.679
+    },
+    {
+      "commodity": "ELE",
+      "tipologia": "BT <=3 kW",
+      "fonte": "Selectra",
+      "offerta": "Enel Energia  Flex Business Luce",
+      "prezzo": 242.436
+    },
+    {
+      "commodity": "ELE",
+      "tipologia": "BT <=3 kW",
+      "fonte": "Selectra",
+      "offerta": "E.ON  Dinamica Click ECO Luce",
+      "prezzo": 245.881
+    },
+    {
+      "commodity": "ELE",
+      "tipologia": "BT <=3 kW",
+      "fonte": "Selectra",
+      "offerta": "Iren  Tua Azienda Luce Variabile",
+      "prezzo": 251.015
+    },
+    {
+      "commodity": "ELE",
+      "tipologia": "BT <=3 kW",
+      "fonte": "Fornitori",
+      "offerta": "Iren Tua Azienda Luce Variabile",
+      "prezzo": 251.015
+    },
+    {
+      "commodity": "ELE",
+      "tipologia": "BT <=3 kW",
+      "fonte": "Fornitori",
+      "offerta": "A2A Smart Business Luce",
+      "prezzo": 251.232
+    },
+    {
+      "commodity": "ELE",
+      "tipologia": "BT <=3 kW",
+      "fonte": "Selectra",
+      "offerta": "A2A Energia  Smart Business Luce",
+      "prezzo": 251.235
+    },
+    {
+      "commodity": "ELE",
+      "tipologia": "BT <=3 kW",
+      "fonte": "luce-gas.it",
+      "offerta": "A2A Energia Smart Business Luce",
+      "prezzo": 251.235
+    },
+    {
+      "commodity": "ELE",
+      "tipologia": "BT <=3 kW",
+      "fonte": "Fornitori",
+      "offerta": "Eni Plenitude Trend Business Luce",
+      "prezzo": 261.831
+    },
+    {
+      "commodity": "ELE",
+      "tipologia": "BT >40 kW",
+      "fonte": "Selectra",
+      "offerta": "E.ON  Dinamica Click ECO Luce",
+      "prezzo": 171.284
+    },
+    {
+      "commodity": "ELE",
+      "tipologia": "BT >40 kW",
+      "fonte": "Fornitori",
+      "offerta": "Magis Energia Proxima Small Luce",
+      "prezzo": 173.646
+    },
+    {
+      "commodity": "ELE",
+      "tipologia": "BT >40 kW",
+      "fonte": "Fornitori",
+      "offerta": "Dolomiti Energia PUN-Ta Small Premium Luce",
+      "prezzo": 178.4
+    },
+    {
+      "commodity": "ELE",
+      "tipologia": "BT >40 kW",
+      "fonte": "Selectra",
+      "offerta": "Iren  Tua Azienda Luce Variabile",
+      "prezzo": 181.08
+    },
+    {
+      "commodity": "ELE",
+      "tipologia": "BT >40 kW",
+      "fonte": "Fornitori",
+      "offerta": "Iren Tua Azienda Luce Variabile",
+      "prezzo": 181.08
+    },
+    {
+      "commodity": "ELE",
+      "tipologia": "BT >40 kW",
+      "fonte": "Fornitori",
+      "offerta": "A2A Smart Business Luce",
+      "prezzo": 181.298
+    },
+    {
+      "commodity": "ELE",
+      "tipologia": "BT >40 kW",
+      "fonte": "Selectra",
+      "offerta": "A2A Energia  Smart Business Luce",
+      "prezzo": 181.3
+    },
+    {
+      "commodity": "ELE",
+      "tipologia": "BT >40 kW",
+      "fonte": "luce-gas.it",
+      "offerta": "A2A Energia Smart Business Luce",
+      "prezzo": 181.3
+    },
+    {
+      "commodity": "ELE",
+      "tipologia": "BT >40 kW",
+      "fonte": "Selectra",
+      "offerta": "Enel Energia  Flex Business Luce",
+      "prezzo": 186.488
+    },
+    {
+      "commodity": "ELE",
+      "tipologia": "BT >40 kW",
+      "fonte": "Fornitori",
+      "offerta": "Eni Plenitude Trend Business Luce",
+      "prezzo": 187.234
+    },
+    {
+      "commodity": "ELE",
+      "tipologia": "MT",
+      "fonte": "Selectra",
+      "offerta": "E.ON  Dinamica Click ECO Luce",
+      "prezzo": 160.46
+    },
+    {
+      "commodity": "ELE",
+      "tipologia": "MT",
+      "fonte": "Fornitori",
+      "offerta": "Magis Energia Proxima Small Luce",
+      "prezzo": 162.884
+    },
+    {
+      "commodity": "ELE",
+      "tipologia": "MT",
+      "fonte": "Fornitori",
+      "offerta": "Dolomiti Energia PUN-Ta Small Premium Luce",
+      "prezzo": 167.431
+    },
+    {
+      "commodity": "ELE",
+      "tipologia": "MT",
+      "fonte": "Selectra",
+      "offerta": "Iren  Tua Azienda Luce Variabile",
+      "prezzo": 169.777
+    },
+    {
+      "commodity": "ELE",
+      "tipologia": "MT",
+      "fonte": "Fornitori",
+      "offerta": "Iren Tua Azienda Luce Variabile",
+      "prezzo": 169.777
+    },
+    {
+      "commodity": "ELE",
+      "tipologia": "MT",
+      "fonte": "Fornitori",
+      "offerta": "A2A Smart Business Luce",
+      "prezzo": 169.982
+    },
+    {
+      "commodity": "ELE",
+      "tipologia": "MT",
+      "fonte": "Selectra",
+      "offerta": "A2A Energia  Smart Business Luce",
+      "prezzo": 169.984
+    },
+    {
+      "commodity": "ELE",
+      "tipologia": "MT",
+      "fonte": "luce-gas.it",
+      "offerta": "A2A Energia Smart Business Luce",
+      "prezzo": 169.984
+    },
+    {
+      "commodity": "ELE",
+      "tipologia": "MT",
+      "fonte": "Selectra",
+      "offerta": "Enel Energia  Flex Business Luce",
+      "prezzo": 175.099
+    },
+    {
+      "commodity": "ELE",
+      "tipologia": "MT",
+      "fonte": "Fornitori",
+      "offerta": "Eni Plenitude Trend Business Luce",
+      "prezzo": 175.511
+    },
+    {
+      "commodity": "GAS",
+      "tipologia": "Acqua Calda",
+      "fonte": "Fornitori",
+      "offerta": "Edison World Business / Placet Variabile Gas",
+      "prezzo": 65.027
+    },
+    {
+      "commodity": "GAS",
+      "tipologia": "Acqua Calda",
+      "fonte": "Selectra",
+      "offerta": "Dinamica Click ECO GAs di E.ON",
+      "prezzo": 67.579
+    },
+    {
+      "commodity": "GAS",
+      "tipologia": "Acqua Calda",
+      "fonte": "Fornitori",
+      "offerta": "Magis Energia Proxima Small Gas",
+      "prezzo": 67.753
+    },
+    {
+      "commodity": "GAS",
+      "tipologia": "Acqua Calda",
+      "fonte": "Fornitori",
+      "offerta": "Dolomiti Energia PUN-Ta Gas",
+      "prezzo": 71.004
+    },
+    {
+      "commodity": "GAS",
+      "tipologia": "Acqua Calda",
+      "fonte": "Fornitori",
+      "offerta": "A2A Smart Business Gas",
+      "prezzo": 71.251
+    },
+    {
+      "commodity": "GAS",
+      "tipologia": "Acqua Calda",
+      "fonte": "Selectra",
+      "offerta": "Smart Business Gas di A2A Energia",
+      "prezzo": 71.251
+    },
+    {
+      "commodity": "GAS",
+      "tipologia": "Acqua Calda",
+      "fonte": "Fornitori",
+      "offerta": "Eni Plenitude Trend Business Gas",
+      "prezzo": 72.05
+    },
+    {
+      "commodity": "GAS",
+      "tipologia": "Acqua Calda",
+      "fonte": "Fornitori",
+      "offerta": "Iren Tua Azienda Gas Variabile",
+      "prezzo": 74.251
+    },
+    {
+      "commodity": "GAS",
+      "tipologia": "Acqua Calda",
+      "fonte": "Selectra",
+      "offerta": "Tua Azienda Gas Variabile di Iren",
+      "prezzo": 74.251
+    },
+    {
+      "commodity": "GAS",
+      "tipologia": "Acqua Calda",
+      "fonte": "Selectra",
+      "offerta": "Flex Business Gas di Enel Energia",
+      "prezzo": 76.251
+    },
+    {
+      "commodity": "GAS",
+      "tipologia": "Riscaldamento",
+      "fonte": "Fornitori",
+      "offerta": "Edison World Business / Placet Variabile Gas",
+      "prezzo": 61.323
+    },
+    {
+      "commodity": "GAS",
+      "tipologia": "Riscaldamento",
+      "fonte": "Selectra",
+      "offerta": "Dinamica Click ECO GAs di E.ON",
+      "prezzo": 63.395
+    },
+    {
+      "commodity": "GAS",
+      "tipologia": "Riscaldamento",
+      "fonte": "Fornitori",
+      "offerta": "Magis Energia Proxima Small Gas",
+      "prezzo": 64.288
+    },
+    {
+      "commodity": "GAS",
+      "tipologia": "Riscaldamento",
+      "fonte": "Fornitori",
+      "offerta": "A2A Smart Business Gas",
+      "prezzo": 67.353
+    },
+    {
+      "commodity": "GAS",
+      "tipologia": "Riscaldamento",
+      "fonte": "Selectra",
+      "offerta": "Smart Business Gas di A2A Energia",
+      "prezzo": 67.353
+    },
+    {
+      "commodity": "GAS",
+      "tipologia": "Riscaldamento",
+      "fonte": "Fornitori",
+      "offerta": "Dolomiti Energia PUN-Ta Gas",
+      "prezzo": 67.755
+    },
+    {
+      "commodity": "GAS",
+      "tipologia": "Riscaldamento",
+      "fonte": "Fornitori",
+      "offerta": "Eni Plenitude Trend Business Gas",
+      "prezzo": 67.891
+    },
+    {
+      "commodity": "GAS",
+      "tipologia": "Riscaldamento",
+      "fonte": "Fornitori",
+      "offerta": "Iren Tua Azienda Gas Variabile",
+      "prezzo": 70.353
+    },
+    {
+      "commodity": "GAS",
+      "tipologia": "Riscaldamento",
+      "fonte": "Selectra",
+      "offerta": "Tua Azienda Gas Variabile di Iren",
+      "prezzo": 70.353
+    },
+    {
+      "commodity": "GAS",
+      "tipologia": "Riscaldamento",
+      "fonte": "Selectra",
+      "offerta": "Flex Business Gas di Enel Energia",
+      "prezzo": 72.353
+    },
+    {
+      "commodity": "GAS",
+      "tipologia": "Riscaldamento + Acqua Calda",
+      "fonte": "Fornitori",
+      "offerta": "Edison World Business / Placet Variabile Gas",
+      "prezzo": 63.558
+    },
+    {
+      "commodity": "GAS",
+      "tipologia": "Riscaldamento + Acqua Calda",
+      "fonte": "Selectra",
+      "offerta": "Dinamica Click ECO GAs di E.ON",
+      "prezzo": 65.92
+    },
+    {
+      "commodity": "GAS",
+      "tipologia": "Riscaldamento + Acqua Calda",
+      "fonte": "Fornitori",
+      "offerta": "Magis Energia Proxima Small Gas",
+      "prezzo": 66.379
+    },
+    {
+      "commodity": "GAS",
+      "tipologia": "Riscaldamento + Acqua Calda",
+      "fonte": "Fornitori",
+      "offerta": "A2A Smart Business Gas",
+      "prezzo": 69.705
+    },
+    {
+      "commodity": "GAS",
+      "tipologia": "Riscaldamento + Acqua Calda",
+      "fonte": "Selectra",
+      "offerta": "Smart Business Gas di A2A Energia",
+      "prezzo": 69.705
+    },
+    {
+      "commodity": "GAS",
+      "tipologia": "Riscaldamento + Acqua Calda",
+      "fonte": "Fornitori",
+      "offerta": "Dolomiti Energia PUN-Ta Gas",
+      "prezzo": 69.716
+    },
+    {
+      "commodity": "GAS",
+      "tipologia": "Riscaldamento + Acqua Calda",
+      "fonte": "Fornitori",
+      "offerta": "Eni Plenitude Trend Business Gas",
+      "prezzo": 70.4
+    },
+    {
+      "commodity": "GAS",
+      "tipologia": "Riscaldamento + Acqua Calda",
+      "fonte": "Fornitori",
+      "offerta": "Iren Tua Azienda Gas Variabile",
+      "prezzo": 72.705
+    },
+    {
+      "commodity": "GAS",
+      "tipologia": "Riscaldamento + Acqua Calda",
+      "fonte": "Selectra",
+      "offerta": "Tua Azienda Gas Variabile di Iren",
+      "prezzo": 72.705
+    },
+    {
+      "commodity": "GAS",
+      "tipologia": "Riscaldamento + Acqua Calda",
+      "fonte": "Selectra",
+      "offerta": "Flex Business Gas di Enel Energia",
+      "prezzo": 74.705
+    },
+    {
+      "commodity": "GAS",
+      "tipologia": "Uso Tecnologico + Riscaldamento",
+      "fonte": "Fornitori",
+      "offerta": "Edison World Business / Placet Variabile Gas",
+      "prezzo": 61.116
+    },
+    {
+      "commodity": "GAS",
+      "tipologia": "Uso Tecnologico + Riscaldamento",
+      "fonte": "Selectra",
+      "offerta": "Dinamica Click ECO GAs di E.ON",
+      "prezzo": 63.161
+    },
+    {
+      "commodity": "GAS",
+      "tipologia": "Uso Tecnologico + Riscaldamento",
+      "fonte": "Fornitori",
+      "offerta": "Magis Energia Proxima Small Gas",
+      "prezzo": 64.094
+    },
+    {
+      "commodity": "GAS",
+      "tipologia": "Uso Tecnologico + Riscaldamento",
+      "fonte": "Fornitori",
+      "offerta": "A2A Smart Business Gas",
+      "prezzo": 67.134
+    },
+    {
+      "commodity": "GAS",
+      "tipologia": "Uso Tecnologico + Riscaldamento",
+      "fonte": "Selectra",
+      "offerta": "Smart Business Gas di A2A Energia",
+      "prezzo": 67.134
+    },
+    {
+      "commodity": "GAS",
+      "tipologia": "Uso Tecnologico + Riscaldamento",
+      "fonte": "Fornitori",
+      "offerta": "Dolomiti Energia PUN-Ta Gas",
+      "prezzo": 67.573
+    },
+    {
+      "commodity": "GAS",
+      "tipologia": "Uso Tecnologico + Riscaldamento",
+      "fonte": "Fornitori",
+      "offerta": "Eni Plenitude Trend Business Gas",
+      "prezzo": 67.658
+    },
+    {
+      "commodity": "GAS",
+      "tipologia": "Uso Tecnologico + Riscaldamento",
+      "fonte": "Fornitori",
+      "offerta": "Iren Tua Azienda Gas Variabile",
+      "prezzo": 70.134
+    },
+    {
+      "commodity": "GAS",
+      "tipologia": "Uso Tecnologico + Riscaldamento",
+      "fonte": "Selectra",
+      "offerta": "Tua Azienda Gas Variabile di Iren",
+      "prezzo": 70.134
+    },
+    {
+      "commodity": "GAS",
+      "tipologia": "Uso Tecnologico + Riscaldamento",
+      "fonte": "Selectra",
+      "offerta": "Flex Business Gas di Enel Energia",
+      "prezzo": 72.134
+    }
+  ],
   "fornitori": [
-    {"nome": "AGSM / Magis Energia", "url": "https://www.magisenergia.it/business"},
-    {"nome": "A2A Energia", "url": "https://www.a2aenergia.eu/imprese"},
-    {"nome": "Axpo Italia", "url": "https://www.axpo.com/it/it/aziende.html"},
-    {"nome": "Dolomiti Energia", "url": "https://www.dolomitienergia.it/business"},
-    {"nome": "Edison Energia", "url": "https://www.edison.it/it/business"},
-    {"nome": "Enel Energia", "url": "https://www.enel.it/it/imprese"},
-    {"nome": "Engie Italia", "url": "https://www.engie.it/business"},
-    {"nome": "Eni Plenitude", "url": "https://eniplenitude.com/offerta/business/gas-e-luce"},
-    {"nome": "Hera Comm", "url": "https://www.gruppohera.it/clienti/casa-business/business/luce-gas"},
-    {"nome": "Iren Mercato", "url": "https://www.irenlucegas.it/business/offerte-luce-gas-pmi"},
-    {"nome": "Repower Italia", "url": "https://www.repower.com/it/aziende"},
-    {"nome": "Sorgenia", "url": "https://www.sorgenia.it/business"}
+    {
+      "nome": "AGSM / Magis Energia",
+      "url": "https://www.magisenergia.it/business"
+    },
+    {
+      "nome": "A2A Energia",
+      "url": "https://www.a2aenergia.eu/imprese"
+    },
+    {
+      "nome": "Axpo Italia",
+      "url": "https://www.axpo.com/it/it/aziende.html"
+    },
+    {
+      "nome": "Dolomiti Energia",
+      "url": "https://www.dolomitienergia.it/business"
+    },
+    {
+      "nome": "Edison Energia",
+      "url": "https://www.edison.it/it/business"
+    },
+    {
+      "nome": "Enel Energia",
+      "url": "https://www.enel.it/it/imprese"
+    },
+    {
+      "nome": "Engie Italia",
+      "url": "https://www.engie.it/business"
+    },
+    {
+      "nome": "Eni Plenitude",
+      "url": "https://eniplenitude.com/offerta/business/gas-e-luce"
+    },
+    {
+      "nome": "Hera Comm",
+      "url": "https://www.gruppohera.it/clienti/casa-business/business/luce-gas"
+    },
+    {
+      "nome": "Iren Mercato",
+      "url": "https://www.irenlucegas.it/business/offerte-luce-gas-pmi"
+    },
+    {
+      "nome": "Repower Italia",
+      "url": "https://www.repower.com/it/aziende"
+    },
+    {
+      "nome": "Sorgenia",
+      "url": "https://www.sorgenia.it/business"
+    }
   ],
   "portali": [
-    {"nome": "Facile.it (business)", "url": "https://www.facile.it/energia-luce-gas/business.html"},
-    {"nome": "Selectra (business)", "url": "https://luce-gas.it/business"},
-    {"nome": "luce-gas.it (business)", "url": "https://luce-gas.it/business"},
-    {"nome": "bolletta-energia.it", "url": "https://bolletta-energia.it/comparazione/offerte-business-luce-gas"}
+    {
+      "nome": "Facile.it (business)",
+      "url": "https://www.facile.it/energia-luce-gas/business.html"
+    },
+    {
+      "nome": "Selectra (business)",
+      "url": "https://luce-gas.it/business"
+    },
+    {
+      "nome": "luce-gas.it (business)",
+      "url": "https://luce-gas.it/business"
+    },
+    {
+      "nome": "bolletta-energia.it",
+      "url": "https://bolletta-energia.it/comparazione/offerte-business-luce-gas"
+    }
   ]
 }
