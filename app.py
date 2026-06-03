@@ -367,9 +367,7 @@ Confronto a colpo d'occhio fra la <b>materia prima riconosciuta dalle Convenzion
 e il <b>benchmark</b> calcolato come media delle <b>10 migliori offerte attive</b> sul
 mercato libero. Per ciascuna offerta il prezzo è ricostruito come
 <i>PUN/PSV indicizzato + spread + quota fissa unitaria</i>; per il solo <b>elettrico</b>
-si aggiungono le <b>perdite di rete</b> (10% BT, 3,8% MT). Il gas non include perdite
-di rete perché sono già incorporate nei servizi di trasporto/distribuzione e non nella
-materia prima.<br>
+si aggiungono le <b>perdite di rete</b> (10% BT, 3,8% MT).<br>
 Per l'elettrico è una media equa fra le fasce BT e MT; per il gas è una media ponderata
 sui consumi delle 4 tipologie d'uso.
 </div>
@@ -709,11 +707,10 @@ st.markdown(
     f"""
 <div style="background:#F8FAFC; border:1px solid #E5E7EB; border-radius:8px;
             padding:.8rem 1rem; margin: .4rem 0 1rem 0; font-size:.92rem;">
-🧮 <b>Riferimento "utenza media" del mese selezionato</b>:<br>
-&nbsp;&nbsp;⚡ <b>BT</b>: {_fmt_thousands(round(cons_bt_medio))} kWh/mese per POD
-(media reale su {n_bt_real} POD BT del campione)<br>
+🧮 <b>Riferimento "utenza media" del mese selezionato</b>
+(media reale sulle utenze POD del campione):<br>
+&nbsp;&nbsp;⚡ <b>BT</b>: {_fmt_thousands(round(cons_bt_medio))} kWh/mese per POD<br>
 &nbsp;&nbsp;⚡ <b>MT</b>: {_fmt_thousands(round(cons_mt_medio))} kWh/mese per POD
-(media reale su {n_mt_real} POD MT del campione)
 </div>
 """,
     unsafe_allow_html=True,
@@ -816,15 +813,16 @@ for _, r in df_gas_loc.iterrows():
 
 # Riquadro riferimenti
 ref_rows = "<br>".join(
-    f"&nbsp;&nbsp;🔥 <b>{g['label_short']}</b>: {_fmt_thousands(round(g['cons_medio']))} "
-    f"Smc/mese per PDR (media reale su {g['n_real']} PDR)"
+    f"&nbsp;&nbsp;🔥 <b>{g['label_short']}</b>: "
+    f"{_fmt_thousands(round(g['cons_medio']))} Smc/mese per PDR"
     for g in gas_tipi
 )
 st.markdown(
     f"""
 <div style="background:#F8FAFC; border:1px solid #E5E7EB; border-radius:8px;
             padding:.8rem 1rem; margin: .4rem 0 1rem 0; font-size:.92rem;">
-🧮 <b>Riferimenti "utenza media gas" per tipologia d'uso del mese selezionato</b>:<br>
+🧮 <b>Riferimenti "utenza media gas" per tipologia d'uso del mese selezionato</b>
+(media reale sulle utenze PDR del campione):<br>
 {ref_rows}
 </div>
 """,
