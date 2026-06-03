@@ -1013,12 +1013,16 @@ st.header("📰 Le Convenzioni in essere")
 st.markdown(
     """
 <div class="desc-box">
-Entrambe le convenzioni qui descritte sono <b>tuttora attive</b> per il biennio
-2026-2027. Le aziende associate interessate ad aderire — o anche solo a richiedere
-ulteriori informazioni — possono contattare direttamente l'Area Gas &amp; Power
-dell'Unione Industriali Torino ai contatti indicati. Di seguito una sintesi delle
-condizioni economiche; in fondo a ciascuna scheda il download della news ufficiale
-completa.
+Le Convenzioni MMPOWER e MMGAS sono contratti <b>riservati esclusivamente alle aziende
+associate</b> all'Unione Industriali Torino. <b>Sono tuttora attive ed è ancora
+possibile aderirvi</b>: la scadenza di adesione indicata nelle news ufficiali si
+riferiva al solo avvio della fornitura nel primo mese del biennio, mentre per
+decorrenze successive l'adesione resta aperta. Si tratta di <b>contratti biennali
+a tempo determinato senza tacito rinnovo</b>; in prossimità della scadenza
+l'Area Gas &amp; Power proporrà un nuovo accordo perfezionato tramite gara con
+asta al ribasso tra i principali fornitori del mercato.<br>
+Di seguito una sintesi delle condizioni economiche; in fondo a ciascuna scheda il
+download della news ufficiale completa.
 </div>
 """,
     unsafe_allow_html=True,
@@ -1044,17 +1048,18 @@ with cN1:
     st.markdown(
         """
 <div style="border:1px solid #6BAED6; border-radius:12px; padding:1rem 1.2rem;
-            background:linear-gradient(180deg,#FFFFFF,#F0F7FC); height:100%;">
+            background:linear-gradient(180deg,#FFFFFF,#F0F7FC);
+            min-height:340px; display:flex; flex-direction:column;">
 <h4 style="color:#2C5784; margin-top:0;">⚡ Convenzione MMPOWER 2026-2027</h4>
 <p style="color:#6B7280; margin:.2rem 0 1rem 0; font-size:.9rem;">
 Fornitore: <b>Iren Mercato S.p.A.</b></p>
 
-<ul style="font-size:.95rem; line-height:1.5;">
+<ul style="font-size:.95rem; line-height:1.5; flex:1;">
 <li><b>Prezzo materia prima</b>: indicizzato al <b>PUN Index GME</b> mensile <b>per fasce
 orarie</b> (F1, F2, F3), maggiorato di uno spread fisso
 <b>2,70 €/MWh</b>, invariabile per tutto il biennio di fornitura</li>
 <li><b>Soglia consumo</b>: <b>3.000.000 kWh/anno</b> per singola utenza</li>
-<li><b>Periodo di fornitura</b>: <b>fino al 31/12/2027</b>, senza tacito rinnovo</li>
+<li><b>Periodo di fornitura</b>: <b>fino al 31/12/2027</b></li>
 <li><b>Opzione 100% energia verde</b> (su richiesta del singolo cliente):
 +1,40 €/MWh nel 2026, +1,70 €/MWh nel 2027</li>
 </ul>
@@ -1078,19 +1083,20 @@ with cN2:
     st.markdown(
         """
 <div style="border:1px solid #F0A35E; border-radius:12px; padding:1rem 1.2rem;
-            background:linear-gradient(180deg,#FFFFFF,#FCF5EE); height:100%;">
+            background:linear-gradient(180deg,#FFFFFF,#FCF5EE);
+            min-height:340px; display:flex; flex-direction:column;">
 <h4 style="color:#B4495C; margin-top:0;">🔥 Convenzione MMGAS 2025/26 — 2026/27</h4>
 <p style="color:#6B7280; margin:.2rem 0 1rem 0; font-size:.9rem;">
 Fornitore: <b>Eni Plenitude S.p.A.</b></p>
 
-<ul style="font-size:.95rem; line-height:1.5;">
+<ul style="font-size:.95rem; line-height:1.5; flex:1;">
 <li><b>Prezzo materia prima</b>: indicizzato al <b>CMEM</b> (media mensile
 quotazioni Day Ahead PSV) maggiorato di uno spread fisso
 <b>0,023 €/Smc</b>, invariabile per tutto il biennio di fornitura</li>
 <li><b>Commercializzazione e vendita</b>: corrispettivo fisso <b>7 €/mese</b>
 + variabile <b>0,007946 €/Smc</b></li>
 <li><b>Soglia consumo</b>: <b>200.000 Smc/anno</b> per singolo cliente</li>
-<li><b>Periodo di fornitura</b>: <b>fino al 30/09/2027</b>, senza tacito rinnovo</li>
+<li><b>Periodo di fornitura</b>: <b>fino al 30/09/2027</b></li>
 <li><b>Opzione 100% CO₂ compensata</b> (su richiesta del singolo cliente):
 lo spread sale a 0,0493 €/Smc</li>
 </ul>
