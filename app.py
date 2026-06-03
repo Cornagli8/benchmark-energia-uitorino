@@ -896,11 +896,12 @@ else:
 # ------------------------------------------------------------------
 st.header("📚 Metodologia")
 
+# ----- Sotto-sezione 1: come è costruito il benchmark -----
 st.markdown(
     f"""
 <div class="footer-block">
 
-<h4>🔬 Come è costruito il benchmark</h4>
+<h4 style="margin-top:0;">🔬 Come è costruito il benchmark</h4>
 
 <ol>
 <li><b>Convenzione MMPOWER</b> — Materia prima dell'energia elettrica composta dalle voci
@@ -923,6 +924,18 @@ d'uso (gas) si ordinano in modo crescente tutti i prezzi ricostruiti delle offer
 raccolte sul mercato e si selezionano le <b>10 più convenienti</b>. La loro media
 aritmetica costituisce il valore di benchmark di mercato esposto nei grafici.</li>
 </ol>
+
+</div>
+""",
+    unsafe_allow_html=True,
+)
+
+# ----- Sotto-sezione 2: offerte e fornitori monitorati -----
+st.markdown(
+    """
+<div class="footer-block" style="margin-top:1rem;">
+
+<h4 style="margin-top:0;">🏢 Offerte e Fornitori monitorati</h4>
 """,
     unsafe_allow_html=True,
 )
@@ -1025,19 +1038,6 @@ fornitori del mercato.
     unsafe_allow_html=True,
 )
 
-# Banner contatti SUBITO dopo la descrizione introduttiva
-st.markdown(
-    """
-<p style="text-align:center; margin: .2rem 0 1.4rem 0; padding:.8rem;
-background:#F8FAFC; border-radius:8px; border:1px solid #E5E7EB;">
-✉️ <b>Per adesioni o informazioni</b>:
-<a href="mailto:s.cornagliotto@ui.torino.it">s.cornagliotto@ui.torino.it</a>
-&nbsp;·&nbsp; ☎ 011 5718278
-</p>
-""",
-    unsafe_allow_html=True,
-)
-
 cN1, cN2 = st.columns(2)
 
 # ---------- MMPOWER ----------
@@ -1046,7 +1046,7 @@ with cN1:
         """
 <div style="border:1px solid #6BAED6; border-radius:12px; padding:1rem 1.2rem;
             background:linear-gradient(180deg,#FFFFFF,#F0F7FC);
-            min-height:340px; display:flex; flex-direction:column;">
+            min-height:430px; display:flex; flex-direction:column;">
 <h4 style="color:#2C5784; margin-top:0;">⚡ Convenzione MMPOWER 2026-2027</h4>
 <p style="color:#6B7280; margin:.2rem 0 1rem 0; font-size:.9rem;">
 Fornitore: <b>Iren Mercato S.p.A.</b></p>
@@ -1081,7 +1081,7 @@ with cN2:
         """
 <div style="border:1px solid #F0A35E; border-radius:12px; padding:1rem 1.2rem;
             background:linear-gradient(180deg,#FFFFFF,#FCF5EE);
-            min-height:340px; display:flex; flex-direction:column;">
+            min-height:430px; display:flex; flex-direction:column;">
 <h4 style="color:#B4495C; margin-top:0;">🔥 Convenzione MMGAS 2025/26 — 2026/27</h4>
 <p style="color:#6B7280; margin:.2rem 0 1rem 0; font-size:.9rem;">
 Fornitore: <b>Eni Plenitude S.p.A.</b></p>
@@ -1112,10 +1112,23 @@ lo spread sale a 0,0493 €/Smc</li>
             key="dl_mmg",
         )
 
-# Nota con asterisco subito dopo i pulsanti di download
+# Banner contatti DOPO i pulsanti di download
 st.markdown(
     """
-<p style="color:#6B7280; font-size:.88rem; font-style:italic; margin-top:1rem;">
+<p style="text-align:center; margin: 1.2rem 0 .6rem 0; padding:.8rem;
+background:#F8FAFC; border-radius:8px; border:1px solid #E5E7EB;">
+✉️ <b>Per adesioni o informazioni</b>:
+<a href="mailto:s.cornagliotto@ui.torino.it">s.cornagliotto@ui.torino.it</a>
+&nbsp;·&nbsp; ☎ 011 5718278
+</p>
+""",
+    unsafe_allow_html=True,
+)
+
+# Nota con asterisco SUBITO dopo il banner contatti
+st.markdown(
+    """
+<p style="color:#6B7280; font-size:.88rem; font-style:italic; margin-top:.6rem;">
 * la scadenza di adesione indicata nelle news ufficiali si riferiva al solo avvio
 della fornitura nel primo mese del biennio. È possibile aderire con avvio della
 fornitura alla prima data utile prevista in accordo col fornitore.
@@ -1126,9 +1139,9 @@ fornitura alla prima data utile prevista in accordo col fornitore.
 
 
 # ------------------------------------------------------------------
-# BIBLIOGRAFIA
+# SITOGRAFIA
 # ------------------------------------------------------------------
-st.header("🔗 Bibliografia")
+st.header("🔗 Sitografia")
 
 
 def _link_lista(items):
