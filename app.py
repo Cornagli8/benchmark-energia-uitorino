@@ -1005,6 +1005,117 @@ offerte raccolte sono
 # ------------------------------------------------------------------
 # BIBLIOGRAFIA: tutti i link a fornitori, offerte, portali
 # ------------------------------------------------------------------
+# ------------------------------------------------------------------
+# CONVENZIONI IN ESSERE — schede + download news in PDF
+# ------------------------------------------------------------------
+st.header("📰 Le Convenzioni in essere")
+
+st.markdown(
+    """
+<div class="desc-box">
+Entrambe le convenzioni qui descritte sono <b>tuttora attive</b> per il biennio
+2026-2027. Le aziende associate interessate ad aderire — o anche solo a richiedere
+ulteriori informazioni — possono contattare direttamente il responsabile dell'Area
+Gas & Power Acquisti e Regolazione dell'Unione Industriali Torino all'indirizzo
+<a href="mailto:s.cornagliotto@ui.torino.it">s.cornagliotto@ui.torino.it</a>.
+Di seguito una sintesi delle condizioni economiche; in fondo a ciascuna scheda il
+download della news ufficiale completa.
+</div>
+""",
+    unsafe_allow_html=True,
+)
+
+cN1, cN2 = st.columns(2)
+
+# ---------- MMPOWER ----------
+with cN1:
+    st.markdown(
+        """
+<div style="border:1px solid #6BAED6; border-radius:12px; padding:1rem 1.2rem;
+            background:linear-gradient(180deg,#FFFFFF,#F0F7FC); height:100%;">
+<h4 style="color:#2C5784; margin-top:0;">⚡ Convenzione MMPOWER 2026-2027</h4>
+<p style="color:#6B7280; margin:.2rem 0 1rem 0; font-size:.9rem;">
+Fornitore: <b>Iren Mercato S.p.A.</b></p>
+
+<ul style="font-size:.95rem; line-height:1.5;">
+<li><b>Prezzo materia prima</b>: indicizzato al PUN Index GME mensile più uno spread
+fisso <b>α = 2,70 €/MWh</b>, invariabile per tutto il biennio di fornitura</li>
+<li><b>Soglia consumo</b>: utenze fino a <b>3.000.000 kWh/anno</b> ciascuna (salvo deroghe)</li>
+<li><b>Periodo</b>: dal 01/01/2026 al 01/09/2027 — <b>scadenza 31/12/2027</b>, senza tacito rinnovo</li>
+<li><b>Inclusi</b>: oneri di sbilanciamento, oneri CO₂ (dir. 2003/87/CE), certificati verdi</li>
+<li><b>Esclusi</b>: perdite di rete, dispacciamento, trasporto/distribuzione/misura,
+oneri di sistema, imposte</li>
+<li><b>Opzione 100% verde</b>: +1,40 €/MWh nel 2026, +1,70 €/MWh nel 2027</li>
+<li><b>Fatturazione</b>: mensile, RID, scadenza fine mese</li>
+</ul>
+</div>
+""",
+        unsafe_allow_html=True,
+    )
+    pdf_mmp = Path(__file__).parent / "News_Convenzione_MMPOWER_2026-2027.pdf"
+    if pdf_mmp.exists():
+        st.download_button(
+            label="📄 Scarica la news completa MMPOWER",
+            data=pdf_mmp.read_bytes(),
+            file_name="News_Convenzione_MMPOWER_2026-2027.pdf",
+            mime="application/pdf",
+            type="primary",
+            key="dl_mmp",
+        )
+
+# ---------- MMGAS ----------
+with cN2:
+    st.markdown(
+        """
+<div style="border:1px solid #F0A35E; border-radius:12px; padding:1rem 1.2rem;
+            background:linear-gradient(180deg,#FFFFFF,#FCF5EE); height:100%;">
+<h4 style="color:#B4495C; margin-top:0;">🔥 Convenzione MMGAS 2025/26 — 2026/27</h4>
+<p style="color:#6B7280; margin:.2rem 0 1rem 0; font-size:.9rem;">
+Fornitore: <b>Eni Plenitude S.p.A.</b></p>
+
+<ul style="font-size:.95rem; line-height:1.5;">
+<li><b>Prezzo materia prima</b>: variabile mensile, formula
+<code>P<sub>m</sub> = CMEM<sub>m</sub> + 0,023 €/Smc</code>, dove CMEM è la media
+mensile delle quotazioni Day Ahead del mercato gas PSV</li>
+<li><b>Commercializzazione/vendita</b>: corrispettivo fisso <b>7 €/mese</b> + variabile <b>0,007946 €/Smc</b></li>
+<li><b>Soglia consumo</b>: utenze fino a <b>200.000 Smc/anno</b>, escluse le Microimprese
+(art. 18, c.1, lett. d-bis Codice del Consumo)</li>
+<li><b>Periodo</b>: dal 01/10/2025 al 01/07/2027 — <b>scadenza 30/09/2027</b>, senza tacito rinnovo</li>
+<li><b>Riferimento PCS</b>: 0,0381 GJ/Smc</li>
+<li><b>Opzione 100% CO₂ compensata</b>: lo spread sale a 0,0493 €/Smc</li>
+<li><b>Fatturazione</b>: RID, scadenza 30 giorni data fattura</li>
+</ul>
+</div>
+""",
+        unsafe_allow_html=True,
+    )
+    pdf_mmg = Path(__file__).parent / "News_Convenzione_MMGAS_2025-26_2026-27.pdf"
+    if pdf_mmg.exists():
+        st.download_button(
+            label="📄 Scarica la news completa MMGAS",
+            data=pdf_mmg.read_bytes(),
+            file_name="News_Convenzione_MMGAS_2025-26_2026-27.pdf",
+            mime="application/pdf",
+            type="primary",
+            key="dl_mmg",
+        )
+
+st.markdown(
+    """
+<p style="text-align:center; margin-top:1rem; padding:.8rem; background:#F8FAFC;
+border-radius:8px; border:1px solid #E5E7EB;">
+✉️ <b>Per adesioni o informazioni</b>:
+<a href="mailto:s.cornagliotto@ui.torino.it">s.cornagliotto@ui.torino.it</a>
+&nbsp;·&nbsp; ☎ 011 5718278
+</p>
+""",
+    unsafe_allow_html=True,
+)
+
+
+# ------------------------------------------------------------------
+# BIBLIOGRAFIA
+# ------------------------------------------------------------------
 st.header("🔗 Bibliografia")
 
 
