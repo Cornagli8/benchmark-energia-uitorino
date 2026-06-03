@@ -1014,15 +1014,12 @@ st.markdown(
     """
 <div class="desc-box">
 Le Convenzioni MMPOWER e MMGAS sono contratti <b>riservati esclusivamente alle aziende
-associate</b> all'Unione Industriali Torino. <b>Sono tuttora attive ed è ancora
-possibile aderirvi</b>: la scadenza di adesione indicata nelle news ufficiali si
-riferiva al solo avvio della fornitura nel primo mese del biennio, mentre per
-decorrenze successive l'adesione resta aperta. Si tratta di <b>contratti biennali
-a tempo determinato senza tacito rinnovo</b>; in prossimità della scadenza
-l'Area Gas &amp; Power proporrà un nuovo accordo perfezionato tramite gara con
-asta al ribasso tra i principali fornitori del mercato.<br>
-Di seguito una sintesi delle condizioni economiche; in fondo a ciascuna scheda il
-download della news ufficiale completa.
+associate</b> all'Unione Industriali Torino. Si tratta di <b>contratti a tempo
+determinato senza tacito rinnovo</b> e sono <b>tuttora attivi ed è possibile
+aderirvi</b>. In prossimità della scadenza l'Area Gas &amp; Power proporrà, sempre
+per le aziende associate e con priorità alle aziende già convenzionate, un nuovo
+accordo per il biennio successivo perfezionato tramite gara tra i principali
+fornitori del mercato.
 </div>
 """,
     unsafe_allow_html=True,
@@ -1114,6 +1111,18 @@ lo spread sale a 0,0493 €/Smc</li>
             type="primary",
             key="dl_mmg",
         )
+
+# Nota con asterisco subito dopo i pulsanti di download
+st.markdown(
+    """
+<p style="color:#6B7280; font-size:.88rem; font-style:italic; margin-top:1rem;">
+* la scadenza di adesione indicata nelle news ufficiali si riferiva al solo avvio
+della fornitura nel primo mese del biennio. È possibile aderire con avvio della
+fornitura alla prima data utile prevista in accordo col fornitore.
+</p>
+""",
+    unsafe_allow_html=True,
+)
 
 
 # ------------------------------------------------------------------
