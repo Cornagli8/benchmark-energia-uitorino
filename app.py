@@ -9,6 +9,7 @@ Deploy: https://share.streamlit.io  (repo Cornagli8/benchmark-energia-uitorino)
 """
 import base64
 import json
+import re
 from pathlib import Path
 
 import pandas as pd
@@ -363,10 +364,14 @@ st.markdown(
     """
 <div class="desc-box">
 Confronto a colpo d'occhio fra la <b>materia prima riconosciuta dalle Convenzioni</b>
-e il <b>benchmark</b> calcolato come media delle 10 migliori offerte attive sul
-mercato libero (PUN/PSV indicizzato + spread + quota fissa unitaria + perdite di rete).
-Per l'elettrico è una media equa fra fasce BT e MT, per il gas una media ponderata sui
-consumi delle 4 tipologie d'uso.
+e il <b>benchmark</b> calcolato come media delle <b>10 migliori offerte attive</b> sul
+mercato libero. Per ciascuna offerta il prezzo è ricostruito come
+<i>PUN/PSV indicizzato + spread + quota fissa unitaria</i>; per il solo <b>elettrico</b>
+si aggiungono le <b>perdite di rete</b> (10% BT, 3,8% MT). Il gas non include perdite
+di rete perché sono già incorporate nei servizi di trasporto/distribuzione e non nella
+materia prima.<br>
+Per l'elettrico è una media equa fra le fasce BT e MT; per il gas è una media ponderata
+sui consumi delle 4 tipologie d'uso.
 </div>
 """,
     unsafe_allow_html=True,
@@ -783,48 +788,107 @@ else:
 
 
 # =================================================================
-# 4.2 Gas — 1 slider (n_PDR) sui PDR.
-#   Il consumo medio per PDR e' FISSO al medio reale del mese.
+# 4.2 Gas — 4 slider, uno per ciascuna tipologia d'uso.
+#   Per ogni tipologia: consumo medio per PDR e prezzo Convenzione FISSI dal mese.
+#   L'aumento del numero di utenze sposta il mix (e quindi la media ponderata).
 # =================================================================
-st.subheader(f"4.2 {ICON_GAS} Gas — simulatore per utenza media")
+st.subheader(f"4.2 {ICON_GAS} Gas — simulatore per utenza media (per tipologia d'uso)")
 
+# Riferimenti per ciascuna tipologia gas dal mese selezionato
+df_gas_loc = df_conf[df_conf["commodity"] == "GAS"].copy()
+df_gas_loc["_order"] = df_gas_loc["tipologia"].apply(
+    lambda t: ORDINE_GAS.index(t) if t in ORDINE_GAS else 99)
+df_gas_loc = df_gas_loc.sort_values("_order").reset_index(drop=True)
+
+gas_tipi = []  # lista di dict {tip, label_short, conv, cons_medio, n_real, key}
+for _, r in df_gas_loc.iterrows():
+    tip = r["tipologia"]
+    n_r = int(r["n_utenze"]) if r["n_utenze"] else 1
+    cons_r = float(r["consumo_mese"]) / n_r if n_r else 0.0
+    gas_tipi.append({
+        "tip": tip,
+        "label_short": _short_gas(tip),
+        "conv": float(r["materia_prima_conv"]),
+        "cons_medio": cons_r,
+        "n_real": n_r,
+        "key": re.sub(r"[^a-z0-9]+", "_", tip.lower()).strip("_"),
+    })
+
+# Riquadro riferimenti
+ref_rows = "<br>".join(
+    f"&nbsp;&nbsp;🔥 <b>{g['label_short']}</b>: {_fmt_thousands(round(g['cons_medio']))} "
+    f"Smc/mese per PDR (media reale su {g['n_real']} PDR)"
+    for g in gas_tipi
+)
 st.markdown(
     f"""
 <div style="background:#F8FAFC; border:1px solid #E5E7EB; border-radius:8px;
             padding:.8rem 1rem; margin: .4rem 0 1rem 0; font-size:.92rem;">
-🧮 <b>Riferimento "utenza media gas" del mese selezionato</b>:<br>
-&nbsp;&nbsp;🔥 {_fmt_thousands(round(cons_pdr_medio))} Smc/mese per PDR
-(media reale su {n_pdr_real} PDR del campione)
+🧮 <b>Riferimenti "utenza media gas" per tipologia d'uso del mese selezionato</b>:<br>
+{ref_rows}
 </div>
 """,
     unsafe_allow_html=True,
 )
 
-n_pdr = _slider_intero("Numero utenze gas (PDR)", vmin=0, vmax=1000,
-                        default=1, step=1, key_prefix="n_pdr")
+# 4 slider in 2 colonne (default 1 per tipologia)
+ggcols = st.columns(2)
+n_gas = {}
+for i, g in enumerate(gas_tipi):
+    with ggcols[i % 2]:
+        n_gas[g["tip"]] = _slider_intero(
+            f"Numero PDR · {g['label_short']}",
+            vmin=0, vmax=1000, default=1, step=1,
+            key_prefix=f"ng_{g['key']}",
+        )
 
-if n_pdr == 0:
+# Calcolo aggregato
+psv_val = float(meta.get("PSV_eur_Smc", 0))
+totale_n = sum(n_gas.values())
+if totale_n == 0:
     st.warning("Seleziona almeno una utenza gas per visualizzare il confronto.")
 else:
-    psv_val = float(meta.get("PSV_eur_Smc", 0))
-    conv_gas_agg = float(df_gen[df_gen["commodity"] == "GAS"]["MP_convenzione"].iloc[0])
-    bench_gas = _benchmark_mercato_singola("GAS", psv_val, cons_pdr_medio,
-                                            coeff_perdita=0.0)
-    cons_tot_gas = n_pdr * cons_pdr_medio
-    etichetta_gas = (f"🔥 {n_pdr} PDR × {_fmt_thousands(round(cons_pdr_medio))} Smc "
-                     f"= {_fmt_thousands(round(cons_tot_gas))} Smc totali")
+    # Per ciascuna tipologia: cons_tot, benchmark a consumo_medio_tipologia, peso
+    cons_tot_gas_sim = 0.0
+    num_c = num_m = 0.0
+    den = 0.0
+    pezzi_bench = []
+    for g in gas_tipi:
+        nn = n_gas[g["tip"]]
+        if nn <= 0 or g["cons_medio"] <= 0:
+            continue
+        cons_sim = nn * g["cons_medio"]
+        cons_tot_gas_sim += cons_sim
+        # Benchmark Mercato a consumo medio della tipologia (top10 sulle 12 offerte gas)
+        bench_tip = _benchmark_mercato_singola(
+            "GAS", psv_val, g["cons_medio"], coeff_perdita=0.0,
+        ) or g.get("conv", 0)
+        num_c += g["conv"] * cons_sim
+        num_m += bench_tip * cons_sim
+        den += cons_sim
+        pezzi_bench.append(
+            f"<b>{g['label_short']}</b>: {bench_tip:.2f} c€/Smc "
+            f"(a {_fmt_thousands(round(g['cons_medio']))} Smc/PDR)"
+        )
 
+    if den > 0:
+        conv_gas_v = num_c / den
+        merc_gas_v = num_m / den
+    else:
+        conv_gas_v = merc_gas_v = 0.0
+
+    etichetta_gas = (f"🔥 {totale_n} PDR totali "
+                     f"({_fmt_thousands(round(cons_tot_gas_sim))} Smc totali)")
     st.plotly_chart(
-        bar_gruppi([etichetta_gas], [conv_gas_agg], [bench_gas or 0],
+        bar_gruppi([etichetta_gas], [conv_gas_v], [merc_gas_v],
                    C_CONV_GAS, C_MERC_GAS,
                    LABEL_CONV_GAS, LABEL_MERC_GAS, "c€/Smc", height=400),
         use_container_width=True,
     )
-    if bench_gas:
+    if pezzi_bench:
         st.caption(
-            f"<span style='color:#6B7280;'>Mercato gas a "
-            f"{_fmt_thousands(round(cons_pdr_medio))} Smc/PDR: "
-            f"<b>{bench_gas:.2f} c€/Smc</b></span>",
+            "<span style='color:#6B7280;'>Benchmark Mercato per tipologia &mdash; "
+            + " · ".join(pezzi_bench) + "</span>",
             unsafe_allow_html=True,
         )
 
