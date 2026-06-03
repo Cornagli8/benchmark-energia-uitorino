@@ -1091,7 +1091,6 @@ quotazioni Day Ahead del mercato gas PSV) maggiorato di uno spread fisso
 + variabile <b>0,007946 €/Smc</b></li>
 <li><b>Soglia consumo</b>: utenze fino a <b>200.000 Smc/anno</b> ciascuna</li>
 <li><b>Periodo di fornitura</b>: <b>fino al 30/09/2027</b>, senza tacito rinnovo</li>
-<li><b>Riferimento PCS</b>: 0,0381 GJ/Smc</li>
 <li><b>Opzione 100% CO₂ compensata</b> (facoltativa, su richiesta del singolo cliente):
 lo spread sale a 0,0493 €/Smc</li>
 </ul>
