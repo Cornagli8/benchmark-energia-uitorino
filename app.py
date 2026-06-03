@@ -462,15 +462,15 @@ def bar_gruppi(x_labels, y_conv, y_merc, color_conv, color_merc,
         plot_bgcolor="#FFFFFF", paper_bgcolor="#FFFFFF",
         yaxis=dict(title=unita, gridcolor="#E5E7EB"),
         xaxis=dict(title="", tickangle=xtickangle), bargap=0.25, bargroupgap=0.08,
-        # Legenda in basso al centro su UNA SOLA RIGA (i 2 valori non vanno a capo)
+        # Legenda in basso al centro (stessa forma del grafico 1)
+        showlegend=True,
         legend=dict(
             orientation="h", x=0.5, xanchor="center",
-            y=-0.22, yanchor="top",
+            y=-0.18, yanchor="top",
             bgcolor="#F8FAFC", bordercolor="#CBD5E1", borderwidth=1,
-            font=dict(size=11), itemwidth=30,
-            entrywidth=0, entrywidthmode="fraction",
+            font=dict(size=11),
         ),
-        margin=dict(t=40, b=120, l=60, r=40),
+        margin=dict(t=40, b=110, l=60, r=40),
     )
     return fig
 
