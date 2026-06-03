@@ -1015,12 +1015,24 @@ st.markdown(
 <div class="desc-box">
 Entrambe le convenzioni qui descritte sono <b>tuttora attive</b> per il biennio
 2026-2027. Le aziende associate interessate ad aderire — o anche solo a richiedere
-ulteriori informazioni — possono contattare direttamente il responsabile dell'Area
-Gas & Power Acquisti e Regolazione dell'Unione Industriali Torino all'indirizzo
-<a href="mailto:s.cornagliotto@ui.torino.it">s.cornagliotto@ui.torino.it</a>.
-Di seguito una sintesi delle condizioni economiche; in fondo a ciascuna scheda il
-download della news ufficiale completa.
+ulteriori informazioni — possono contattare direttamente l'Area Gas &amp; Power
+dell'Unione Industriali Torino ai contatti indicati. Di seguito una sintesi delle
+condizioni economiche; in fondo a ciascuna scheda il download della news ufficiale
+completa.
 </div>
+""",
+    unsafe_allow_html=True,
+)
+
+# Banner contatti SUBITO dopo la descrizione introduttiva
+st.markdown(
+    """
+<p style="text-align:center; margin: .2rem 0 1.4rem 0; padding:.8rem;
+background:#F8FAFC; border-radius:8px; border:1px solid #E5E7EB;">
+✉️ <b>Per adesioni o informazioni</b>:
+<a href="mailto:s.cornagliotto@ui.torino.it">s.cornagliotto@ui.torino.it</a>
+&nbsp;·&nbsp; ☎ 011 5718278
+</p>
 """,
     unsafe_allow_html=True,
 )
@@ -1038,15 +1050,13 @@ with cN1:
 Fornitore: <b>Iren Mercato S.p.A.</b></p>
 
 <ul style="font-size:.95rem; line-height:1.5;">
-<li><b>Prezzo materia prima</b>: indicizzato al PUN Index GME mensile più uno spread
-fisso <b>α = 2,70 €/MWh</b>, invariabile per tutto il biennio di fornitura</li>
-<li><b>Soglia consumo</b>: utenze fino a <b>3.000.000 kWh/anno</b> ciascuna (salvo deroghe)</li>
-<li><b>Periodo</b>: dal 01/01/2026 al 01/09/2027 — <b>scadenza 31/12/2027</b>, senza tacito rinnovo</li>
-<li><b>Inclusi</b>: oneri di sbilanciamento, oneri CO₂ (dir. 2003/87/CE), certificati verdi</li>
-<li><b>Esclusi</b>: perdite di rete, dispacciamento, trasporto/distribuzione/misura,
-oneri di sistema, imposte</li>
-<li><b>Opzione 100% verde</b>: +1,40 €/MWh nel 2026, +1,70 €/MWh nel 2027</li>
-<li><b>Fatturazione</b>: mensile, RID, scadenza fine mese</li>
+<li><b>Prezzo materia prima</b>: indicizzato al PUN Index GME mensile <b>per fasce
+orarie</b> (F1, F2, F3) e in tariffa monoraria (F0), maggiorato di uno spread fisso
+<b>α = 2,70 €/MWh</b>, invariabile per tutto il biennio di fornitura</li>
+<li><b>Soglia consumo</b>: utenze fino a <b>3.000.000 kWh/anno</b> ciascuna</li>
+<li><b>Periodo di fornitura</b>: <b>fino al 31/12/2027</b>, senza tacito rinnovo</li>
+<li><b>Opzione 100% energia verde</b> (facoltativa, su richiesta del singolo cliente):
++1,40 €/MWh nel 2026, +1,70 €/MWh nel 2027</li>
 </ul>
 </div>
 """,
@@ -1074,16 +1084,16 @@ with cN2:
 Fornitore: <b>Eni Plenitude S.p.A.</b></p>
 
 <ul style="font-size:.95rem; line-height:1.5;">
-<li><b>Prezzo materia prima</b>: variabile mensile, formula
-<code>P<sub>m</sub> = CMEM<sub>m</sub> + 0,023 €/Smc</code>, dove CMEM è la media
-mensile delle quotazioni Day Ahead del mercato gas PSV</li>
-<li><b>Commercializzazione/vendita</b>: corrispettivo fisso <b>7 €/mese</b> + variabile <b>0,007946 €/Smc</b></li>
-<li><b>Soglia consumo</b>: utenze fino a <b>200.000 Smc/anno</b>, escluse le Microimprese
-(art. 18, c.1, lett. d-bis Codice del Consumo)</li>
-<li><b>Periodo</b>: dal 01/10/2025 al 01/07/2027 — <b>scadenza 30/09/2027</b>, senza tacito rinnovo</li>
+<li><b>Prezzo materia prima</b>: indicizzato al <b>CMEM</b> (media mensile delle
+quotazioni Day Ahead del mercato gas PSV) maggiorato di uno spread fisso
+<b>0,023 €/Smc</b>, invariabile per tutto il biennio di fornitura</li>
+<li><b>Commercializzazione e vendita</b>: corrispettivo fisso <b>7 €/mese</b>
++ variabile <b>0,007946 €/Smc</b></li>
+<li><b>Soglia consumo</b>: utenze fino a <b>200.000 Smc/anno</b> ciascuna</li>
+<li><b>Periodo di fornitura</b>: <b>fino al 30/09/2027</b>, senza tacito rinnovo</li>
 <li><b>Riferimento PCS</b>: 0,0381 GJ/Smc</li>
-<li><b>Opzione 100% CO₂ compensata</b>: lo spread sale a 0,0493 €/Smc</li>
-<li><b>Fatturazione</b>: RID, scadenza 30 giorni data fattura</li>
+<li><b>Opzione 100% CO₂ compensata</b> (facoltativa, su richiesta del singolo cliente):
+lo spread sale a 0,0493 €/Smc</li>
 </ul>
 </div>
 """,
@@ -1099,18 +1109,6 @@ mensile delle quotazioni Day Ahead del mercato gas PSV</li>
             type="primary",
             key="dl_mmg",
         )
-
-st.markdown(
-    """
-<p style="text-align:center; margin-top:1rem; padding:.8rem; background:#F8FAFC;
-border-radius:8px; border:1px solid #E5E7EB;">
-✉️ <b>Per adesioni o informazioni</b>:
-<a href="mailto:s.cornagliotto@ui.torino.it">s.cornagliotto@ui.torino.it</a>
-&nbsp;·&nbsp; ☎ 011 5718278
-</p>
-""",
-    unsafe_allow_html=True,
-)
 
 
 # ------------------------------------------------------------------
