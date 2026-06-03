@@ -992,17 +992,16 @@ def _elenco_virgole(lst):
 testo_con = _elenco_virgole(fornitori_con)
 testo_senza = _elenco_virgole(fornitori_senza)
 
-# Continuazione DENTRO il footer-block (apertura div + sezioni 1-4 sono sopra)
+# Continuazione DENTRO il sotto-riquadro 'Offerte e Fornitori monitorati'
+# (senza ulteriori h4: i due paragrafi rientrano sotto lo stesso sottotitolo)
 st.markdown(
     f"""
-<h4>📊 Offerte raccolte</h4>
 <p>In data <b>{data_estr_it or '—'}</b> sono state raccolte e analizzate
 complessivamente <span class="num-evidenza">{n_off_tot} offerte indicizzate</span>
 attive sul mercato libero italiano, provenienti sia dai siti istituzionali dei
 fornitori sia dai principali portali comparatori, di cui
 <b>{n_off_ele}</b> per l'energia elettrica e <b>{n_off_gas}</b> per il gas.</p>
 
-<h4>🏢 Fornitori monitorati</h4>
 <p>I fornitori per cui è stato possibile rilevare almeno una delle {n_off_tot}
 offerte raccolte sono
 {testo_con if testo_con else "<i>nessuno (rigenera i dati)</i>"}.
@@ -1055,6 +1054,7 @@ Fornitore: <b>Iren Mercato S.p.A.</b></p>
 <li><b>Prezzo materia prima</b>: indicizzato al <b>PUN Index GME</b> mensile <b>per fasce
 orarie</b> (F1, F2, F3), maggiorato di uno spread fisso
 <b>2,70 €/MWh</b>, invariabile per tutto il biennio di fornitura</li>
+<li><b>Commercializzazione e vendita</b>: <b>nessun corrispettivo aggiuntivo</b></li>
 <li><b>Soglia consumo</b>: <b>3.000.000 kWh/anno</b> per singola utenza</li>
 <li><b>Periodo di fornitura</b>: <b>fino al 31/12/2027</b></li>
 <li><b>Opzione 100% energia verde</b> (su richiesta del singolo cliente):
