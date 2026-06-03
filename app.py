@@ -1051,11 +1051,11 @@ Fornitore: <b>Iren Mercato S.p.A.</b></p>
 
 <ul style="font-size:.95rem; line-height:1.5;">
 <li><b>Prezzo materia prima</b>: indicizzato al PUN Index GME mensile <b>per fasce
-orarie</b> (F1, F2, F3) e in tariffa monoraria (F0), maggiorato di uno spread fisso
-<b>α = 2,70 €/MWh</b>, invariabile per tutto il biennio di fornitura</li>
+orarie</b> (F1, F2, F3), maggiorato di uno spread fisso
+<b>2,70 €/MWh</b>, invariabile per tutto il biennio di fornitura</li>
 <li><b>Soglia consumo</b>: utenze fino a <b>3.000.000 kWh/anno</b> ciascuna</li>
 <li><b>Periodo di fornitura</b>: <b>fino al 31/12/2027</b>, senza tacito rinnovo</li>
-<li><b>Opzione 100% energia verde</b> (facoltativa, su richiesta del singolo cliente):
+<li><b>Opzione 100% energia verde</b> (su richiesta del singolo cliente):
 +1,40 €/MWh nel 2026, +1,70 €/MWh nel 2027</li>
 </ul>
 </div>
@@ -1091,7 +1091,7 @@ quotazioni Day Ahead PSV) maggiorato di uno spread fisso
 + variabile <b>0,007946 €/Smc</b></li>
 <li><b>Soglia consumo</b>: utenze fino a <b>200.000 Smc/anno</b> ciascuna</li>
 <li><b>Periodo di fornitura</b>: <b>fino al 30/09/2027</b>, senza tacito rinnovo</li>
-<li><b>Opzione 100% CO₂ compensata</b> (facoltativa, su richiesta del singolo cliente):
+<li><b>Opzione 100% CO₂ compensata</b> (su richiesta del singolo cliente):
 lo spread sale a 0,0493 €/Smc</li>
 </ul>
 </div>
