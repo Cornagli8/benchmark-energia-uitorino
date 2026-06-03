@@ -1050,7 +1050,7 @@ with cN1:
 Fornitore: <b>Iren Mercato S.p.A.</b></p>
 
 <ul style="font-size:.95rem; line-height:1.5;">
-<li><b>Prezzo materia prima</b>: indicizzato al PUN Index GME mensile <b>per fasce
+<li><b>Prezzo materia prima</b>: indicizzato al <b>PUN Index GME</b> mensile <b>per fasce
 orarie</b> (F1, F2, F3), maggiorato di uno spread fisso
 <b>2,70 €/MWh</b>, invariabile per tutto il biennio di fornitura</li>
 <li><b>Soglia consumo</b>: utenze fino a <b>3.000.000 kWh/anno</b> ciascuna</li>
