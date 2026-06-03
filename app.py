@@ -1084,8 +1084,8 @@ with cN2:
 Fornitore: <b>Eni Plenitude S.p.A.</b></p>
 
 <ul style="font-size:.95rem; line-height:1.5;">
-<li><b>Prezzo materia prima</b>: indicizzato al <b>CMEM</b> (media mensile delle
-quotazioni Day Ahead del mercato gas PSV) maggiorato di uno spread fisso
+<li><b>Prezzo materia prima</b>: indicizzato al <b>CMEM</b> (media mensile
+quotazioni Day Ahead PSV) maggiorato di uno spread fisso
 <b>0,023 €/Smc</b>, invariabile per tutto il biennio di fornitura</li>
 <li><b>Commercializzazione e vendita</b>: corrispettivo fisso <b>7 €/mese</b>
 + variabile <b>0,007946 €/Smc</b></li>
