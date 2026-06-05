@@ -74,22 +74,25 @@ st.markdown(
     h2.gas-section { border-left-color: #F0A35E; }
 
     /* Header loghi: 3 colonne con immagini centrate verticalmente, dimensioni
-       indipendenti per ogni logo (UI piu' grande senza stretchare). */
+       indipendenti per ogni logo. MMPOWER spinto a sinistra, MMGAS a destra,
+       UI centrato. */
     .logo-row {
-        display: flex; justify-content: space-around; align-items: center;
-        gap: 1.5rem; margin: .4rem 0 1.4rem 0; padding: 0 1rem;
+        display: flex; justify-content: space-between; align-items: center;
+        gap: 1rem; margin: .4rem 0 1.4rem 0; padding: 0 .5rem;
     }
     .logo-cell {
-        flex: 1; display: flex; justify-content: center; align-items: center;
-        min-height: 120px;
+        flex: 1; display: flex; align-items: center; min-height: 140px;
     }
     .logo-cell img {
         display: block; max-width: 100%; height: auto;
         object-fit: contain;
     }
-    .logo-cell.mmpower img { max-height: 90px; max-width: 220px; }
-    .logo-cell.ui      img { max-height: 130px; max-width: 280px; } /* piu' grande */
-    .logo-cell.mmgas   img { max-height: 90px; max-width: 220px; }
+    .logo-cell.mmpower { justify-content: flex-start; }       /* a SINISTRA */
+    .logo-cell.ui      { justify-content: center; }           /* CENTRO */
+    .logo-cell.mmgas   { justify-content: flex-end; }         /* a DESTRA */
+    .logo-cell.mmpower img { max-height: 115px; max-width: 280px; }
+    .logo-cell.ui      img { max-height: 155px; max-width: 340px; } /* piu' grande */
+    .logo-cell.mmgas   img { max-height: 115px; max-width: 280px; }
 
     .logo-pill {
         background: linear-gradient(180deg, #FFFFFF 0%, #F1F5F9 100%);
