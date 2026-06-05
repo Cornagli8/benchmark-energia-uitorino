@@ -892,7 +892,7 @@ n_gas = {}
 for i, g in enumerate(gas_tipi):
     with ggcols[i % 2]:
         n_gas[g["tip"]] = _slider_intero(
-            g["tip"],
+            g["label_short"],
             vmin=0, vmax=1000, default=1, step=1,
             key_prefix=f"ng_{g['key']}",
         )
