@@ -291,6 +291,20 @@ if mancanti:
 
 st.title("Benchmark Materia Prima Gas&Power")
 
+# Descrizione introduttiva sotto il titolo (max 2-3 righe)
+st.markdown(
+    """
+<p style="text-align:center; color:#374151; font-size:1rem; margin: -.4rem 0 1.2rem 0;
+          max-width: 900px; margin-left:auto; margin-right:auto;">
+Confronto fra il prezzo della materia prima delle Convenzioni <b>MMPOWER</b> e
+<b>MMGAS</b> dell'Unione Industriali Torino e le <b>10 migliori offerte indicizzate</b>
+attive sul mercato libero italiano. Pagina interattiva con grafici per fascia/tipologia,
+simulatori di scenari personalizzati e schede operative delle convenzioni in essere.
+</p>
+""",
+    unsafe_allow_html=True,
+)
+
 # --- Dropdown SELEZIONE MESE (in alto, governa tutti i grafici) ---
 mese_default = D.get("meta", {}).get("mese_default", mesi_disp[-1])
 if mese_default not in mesi_disp:
@@ -300,7 +314,7 @@ col_sel_lbl, col_sel_drop, col_sel_fill = st.columns([1, 2, 2])
 with col_sel_lbl:
     st.markdown(
         "<div style='padding-top:.55rem; font-weight:700; color:#1F2937;'>"
-        "📅 Mese di osservazione:</div>",
+        "📅 Periodo di osservazione:</div>",
         unsafe_allow_html=True,
     )
 with col_sel_drop:
@@ -597,7 +611,7 @@ consumi medi reali del campione convenzionato. Selezionando il numero di utenze
 desiderato per ciascuna categoria si ottiene una proiezione immediata di quanto la
 materia prima Convenzione e il benchmark di mercato si sposterebbero al variare
 della composizione del portafoglio di utenze, mantenendo costanti i consumi medi
-per POD/PDR rilevati nel mese in osservazione.
+per POD/PDR rilevati nel periodo di osservazione.
 <ul>
   <li>per il <b>4.1 Elettrico</b>, il prezzo aggregato corrisponderà alla media
   ponderata sui consumi al variare del numero e della fascia di potenza delle
@@ -945,7 +959,7 @@ st.markdown(
 <li style="margin-bottom: 1.2rem;"><b>Convenzione MMPOWER</b> — Materia prima dell'energia elettrica composta dalle
 voci <i>Generazione</i> e <i>Perdite di rete</i> calcolate a partire dai
 <b>dati reali</b> di fornitura delle aziende convenzionate (media ponderata sui
-consumi effettivi del mese in osservazione).</li>
+consumi effettivi del periodo di osservazione).</li>
 
 <li style="margin-bottom: 1.2rem;"><b>Convenzione MMGAS</b> — Materia prima del gas calcolata per ciascuna tipologia
 d'uso a partire dai <b>dati reali</b> di fornitura delle aziende
