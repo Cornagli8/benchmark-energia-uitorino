@@ -384,7 +384,7 @@ Confronto a colpo d'occhio fra il <b>prezzo della materia prima riconosciuta dal
 Convenzioni</b> e il <b>benchmark</b> calcolato come media delle <b>10 migliori offerte
 attive sul mercato libero</b>. Per ciascuna offerta il prezzo è ricostruito come
 <i>PUN/PSV indicizzato + spread + quota fissa unitaria</i>; per il solo <b>elettrico</b>
-si aggiungono le <b>perdite di rete</b> (10% BT, 3,8% MT).
+si aggiungono le <b>perdite di rete</b>.
 </div>
 """,
     unsafe_allow_html=True,
@@ -724,8 +724,10 @@ st.markdown(
             padding:.8rem 1rem; margin: .4rem 0 1rem 0; font-size:.92rem;">
 🧮 <b>Riferimento "utenza media" del mese selezionato</b>
 (media reale sulle utenze POD del campione):<br>
-&nbsp;&nbsp;⚡ <b>BT</b>: {_fmt_thousands(round(cons_bt_medio))} kWh/mese per POD<br>
-&nbsp;&nbsp;⚡ <b>MT</b>: {_fmt_thousands(round(cons_mt_medio))} kWh/mese per POD
+&nbsp;&nbsp;⚡ <b>Utenza in Bassa Tensione (BT)</b>:
+{_fmt_thousands(round(cons_bt_medio))} kWh/mese per POD<br>
+&nbsp;&nbsp;⚡ <b>Utenza in Media Tensione (MT)</b>:
+{_fmt_thousands(round(cons_mt_medio))} kWh/mese per POD
 </div>
 """,
     unsafe_allow_html=True,
@@ -733,10 +735,10 @@ st.markdown(
 
 cE1, cE2 = st.columns(2)
 with cE1:
-    n_bt = _slider_intero("Utenza in Bassa Tensione (BT):", vmin=0, vmax=2000,
+    n_bt = _slider_intero("BT", vmin=0, vmax=2000,
                            default=1, step=1, key_prefix="n_bt")
 with cE2:
-    n_mt = _slider_intero("Utenza in Media Tensione (MT):", vmin=0, vmax=500,
+    n_mt = _slider_intero("MT", vmin=0, vmax=500,
                            default=1, step=1, key_prefix="n_mt")
 
 if n_bt == 0 and n_mt == 0:
@@ -796,13 +798,13 @@ else:
 
     pezzi = []
     if n_bt > 0 and bench_bt is not None:
-        pezzi.append(f"<b>BT {_mese_aa}</b>: {bench_bt:.2f} €/MWh")
+        pezzi.append(f"<b>BT</b>: {bench_bt:.2f} €/MWh")
     if n_mt > 0 and bench_mt is not None:
-        pezzi.append(f"<b>MT {_mese_aa}</b>: {bench_mt:.2f} €/MWh")
+        pezzi.append(f"<b>MT</b>: {bench_mt:.2f} €/MWh")
     if pezzi:
         st.caption(
-            "<span style='color:#6B7280;'>Prezzo Materia Prima per potenza &mdash; "
-            + " · ".join(pezzi) + "</span>",
+            f"<span style='color:#6B7280;'>Prezzo Materia Prima per potenza "
+            f"{_mese_aa} &mdash; " + " · ".join(pezzi) + "</span>",
             unsafe_allow_html=True,
         )
 
@@ -836,7 +838,7 @@ for _, r in df_gas_loc.iterrows():
 
 # Riquadro riferimenti
 ref_rows = "<br>".join(
-    f"&nbsp;&nbsp;🔥 <b>{g['label_short']}</b>: "
+    f"&nbsp;&nbsp;🔥 <b>Utenza con Tipologia {g['tip']}</b>: "
     f"{_fmt_thousands(round(g['cons_medio']))} Smc/mese per PDR"
     for g in gas_tipi
 )
@@ -858,7 +860,7 @@ n_gas = {}
 for i, g in enumerate(gas_tipi):
     with ggcols[i % 2]:
         n_gas[g["tip"]] = _slider_intero(
-            f"Utenza con Tipologia {g['tip']}:",
+            g["tip"],
             vmin=0, vmax=1000, default=1, step=1,
             key_prefix=f"ng_{g['key']}",
         )
@@ -907,6 +909,11 @@ else:
         use_container_width=True,
     )
     # Caption: SEMPRE i 4 bench per tipologia (anche se n_gas=0), in label abbreviato
+    _MESI_AB_G = ["", "gen", "feb", "mar", "apr", "mag", "giu",
+                  "lug", "ago", "set", "ott", "nov", "dic"]
+    _yg, _mg = map(int, meta["mese"].split("-"))
+    _mese_aa_g = f"{_MESI_AB_G[_mg]}-{str(_yg)[-2:]}"
+
     pezzi_full = []
     for g in gas_tipi:
         b_tip = _benchmark_mercato_singola(
@@ -916,8 +923,8 @@ else:
             pezzi_full.append(f"<b>{g['label_short']}</b>: {b_tip:.2f} c€/Smc")
     if pezzi_full:
         st.caption(
-            "<span style='color:#6B7280;'>Prezzo Materia Prima per Tipologia &mdash; "
-            + " · ".join(pezzi_full) + "</span>",
+            f"<span style='color:#6B7280;'>Prezzo Materia Prima per Tipologia "
+            f"{_mese_aa_g} &mdash; " + " · ".join(pezzi_full) + "</span>",
             unsafe_allow_html=True,
         )
 
@@ -941,29 +948,26 @@ voci <i>Generazione</i> e <i>Perdite di rete</i> calcolate a partire dai
 consumi effettivi del mese in osservazione).</li>
 
 <li><b>Convenzione MMGAS</b> — Materia prima del gas calcolata per ciascuna tipologia
-d'uso a partire dagli stessi <b>dati reali</b> di fornitura delle aziende
+d'uso a partire dai <b>dati reali</b> di fornitura delle aziende
 convenzionate (importo "materia prima" diviso per i Smc consumati del mese).</li>
 
 <li><b>Mercato</b> — Per ogni offerta indicizzata raccolta il prezzo è ricostruito
 distintamente per i due vettori:<br><br>
-&nbsp;&nbsp;&nbsp;⚡ <b>Energia elettrica</b><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<code>P = PUN + spread + (PUN + spread) × coeff_perdita
-+ (quota_fissa_annua × n_utenze) ÷ (12 × consumo_mese)</code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;dove <code>coeff_perdita</code> = {meta['coeff_perdita_BT']*100:.0f}%
-per le utenze BT e {meta['coeff_perdita_MT']*100:.1f}% per quelle MT.<br><br>
-&nbsp;&nbsp;&nbsp;🔥 <b>Gas</b><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<code>P = PSV + spread + (quota_fissa_annua × n_utenze)
-÷ (12 × consumo_mese)</code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;senza componente di perdite di rete (già incorporate nei servizi
-di trasporto e distribuzione).</li>
+&nbsp;&nbsp;&nbsp;⚡ <b>Energia elettrica</b>:
+<code>P = PUNx + spread + (PUNx + spread) × coeff_perdita + (quota_fissa_annua × n_utenze) ÷ (12 × consumo_mese)</code>,
+dove <code>coeff_perdita</code> = {meta['coeff_perdita_BT']*100:.0f}% per le utenze
+BT e {meta['coeff_perdita_MT']*100:.1f}% per quelle MT.<br><br>
+&nbsp;&nbsp;&nbsp;🔥 <b>Gas</b>:
+<code>P = PSV + spread + (quota_fissa_annua × n_utenze) ÷ (12 × consumo_mese)</code>.</li>
 
-<li><b>PUN ponderato per fasce</b> — Anziché applicare il PUN monorario all'intero
-campione, viene utilizzato un PUN differenziato per classe di tensione (BT, MT) e un
-PUN aggregato totale (TOT). Questo consente di rappresentare in modo più aderente
-alla realtà il prezzo all'ingrosso dell'elettrico, riconoscendo che la composizione
-oraria del consumo è strutturalmente diversa fra utenze a Bassa Tensione e a Media
-Tensione: il PUN così ponderato si avvicina di più al costo effettivo che ciascun
-segmento sostiene per l'energia ritirata dal mercato.<br><br>
+<li><b>PUNx: PUN Ponderato per Fasce</b> — Anziché applicare il PUN monorario
+all'intero campione, viene utilizzato un <b>PUNx</b> differenziato per classe di
+tensione (PUN BT, PUN MT) e un PUNx aggregato totale (PUN TOT). Questo consente di
+rappresentare in modo più aderente alla realtà il prezzo all'ingrosso
+dell'elettrico, riconoscendo che la composizione oraria del consumo è
+strutturalmente diversa fra utenze a Bassa Tensione e a Media Tensione: il PUNx
+così ponderato si avvicina di più al costo effettivo che ciascun segmento sostiene
+per l'energia ritirata dal mercato.<br><br>
 Per il mese di <b>{mese_label(meta['mese'])}</b>:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;⚡ <b>PUN TOT</b>: {_pun_tot:.4f} €/kWh — usato nel grafico Generale (sezione 1)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;⚡ <b>PUN BT</b>: {_pun_bt:.4f} €/kWh — usato per le fasce BT (sezioni 2 e 4.1)<br>
