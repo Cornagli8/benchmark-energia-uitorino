@@ -302,8 +302,8 @@ st.markdown(
             font-style: italic; font-size: 1.05rem; line-height: 1.55;
             color:#4B5563; margin: 0 auto; max-width: 880px;">
     Confronto fra il prezzo della materia prima delle Convenzioni
-    <span style="color:#2C5784; font-style:normal; font-weight:600;">MMPOWER</span> e
-    <span style="color:#B4495C; font-style:normal; font-weight:600;">MMGAS</span>
+    <span style="color:#6BAED6; font-style:normal; font-weight:700;">MMPOWER</span> e
+    <span style="color:#F0A35E; font-style:normal; font-weight:700;">MMGAS</span>
     dell'Unione Industriali Torino e le 10 migliori offerte indicizzate attive sul
     mercato libero italiano. Pagina interattiva con grafici per fascia&nbsp;/&nbsp;tipologia,
     simulatori di scenari personalizzati e schede operative delle convenzioni in essere.
