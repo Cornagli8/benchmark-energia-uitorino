@@ -296,11 +296,26 @@ if mancanti:
 st.markdown(
     """
 <div style="text-align:center; border-bottom: 4px solid #6BAED6;
-            padding-bottom: .9rem; margin: .6rem 0 1.6rem 0;">
-  <h1 style="margin: 0 0 .5rem 0; padding: 0; border: none;
-             color:#0F172A; font-size: 2.25rem; font-weight: 700;">
-    Benchmark Materia Prima Gas&Power
+            padding-bottom: 1rem; margin: .6rem 0 1.6rem 0;">
+
+  <div style="font-family: 'Segoe UI', system-ui, sans-serif;
+              font-size: .78rem; font-weight: 600; letter-spacing: .22em;
+              color:#94A3B8; text-transform: uppercase; margin-bottom: .35rem;">
+    Unione Industriali Torino &nbsp;·&nbsp; Area Gas &amp; Power
+  </div>
+
+  <h1 style="margin: 0 0 .65rem 0; padding: 0; border: none;
+             font-family: 'Segoe UI', 'Helvetica Neue', system-ui, -apple-system, sans-serif;
+             font-size: 2.9rem; font-weight: 800; letter-spacing: -0.02em;
+             line-height: 1.1;
+             background: linear-gradient(135deg, #2C5784 0%, #4A6FA5 35%,
+                                                 #C97950 65%, #B4495C 100%);
+             -webkit-background-clip: text; background-clip: text;
+             -webkit-text-fill-color: transparent; color: transparent;
+             text-shadow: 0 1px 0 rgba(0,0,0,0.02);">
+    Benchmark Materia Prima Gas&amp;Power
   </h1>
+
   <p style="font-family: Georgia, 'Bookman Old Style', Cambria, serif;
             font-style: italic; font-size: 1.05rem; line-height: 1.55;
             color:#4B5563; margin: 0 auto; max-width: 880px;">
