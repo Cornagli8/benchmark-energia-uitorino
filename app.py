@@ -1173,7 +1173,7 @@ st.markdown(
     """
 <p style="text-align:center; margin: 1.2rem 0 .6rem 0; padding:.8rem;
 background:#F8FAFC; border-radius:8px; border:1px solid #E5E7EB;">
-✉️ <b>Per ulteriori informazioni e adesioni alle Convenzioni, o per analisi e
+✉️ <b>Per informazioni o adesione alle Convenzioni, o per analisi e
 confronti sulle offerte di mercato attive</b>:
 <a href="mailto:s.cornagliotto@ui.torino.it">s.cornagliotto@ui.torino.it</a>
 &nbsp;·&nbsp; ☎ 011 5718278
