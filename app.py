@@ -955,7 +955,7 @@ else:
             pezzi_full.append(f"<b>{g['label_short']}</b>: {b_tip:.2f} c€/Smc")
     if pezzi_full:
         st.caption(
-            f"<span style='color:#6B7280;'>Prezzo Materia Prima per Tipologia "
+            f"<span style='color:#6B7280;'>Prezzo Materia Prima per Tipologia d'uso "
             f"{_mese_aa_g} &mdash; " + " · ".join(pezzi_full) + "</span>",
             unsafe_allow_html=True,
         )
