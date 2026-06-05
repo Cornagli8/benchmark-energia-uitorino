@@ -752,12 +752,13 @@ st.markdown(
     f"""
 <div style="background:#F8FAFC; border:1px solid #E5E7EB; border-radius:8px;
             padding:.8rem 1rem; margin: .4rem 0 1rem 0; font-size:.92rem;">
-🧮 <b>Riferimento "utenza media" del mese selezionato</b>
+🧮 Riferimenti "Utenza media" del Periodo d'osservazione
+<b>{mese_label(meta['mese'])}</b>
 (media reale sulle utenze POD del campione):<br>
-&nbsp;&nbsp;⚡ <b>Utenza in Bassa Tensione (BT)</b>:
-{_fmt_thousands(round(cons_bt_medio))} kWh/mese per POD<br>
-&nbsp;&nbsp;⚡ <b>Utenza in Media Tensione (MT)</b>:
-{_fmt_thousands(round(cons_mt_medio))} kWh/mese per POD
+&nbsp;&nbsp;⚡ Consumo medio di un'Utenza in <b>Bassa Tensione (BT)</b>:
+{_fmt_thousands(round(cons_bt_medio))} kWh<br>
+&nbsp;&nbsp;⚡ Consumo medio di un'Utenza in <b>Media Tensione (MT)</b>:
+{_fmt_thousands(round(cons_mt_medio))} kWh
 </div>
 """,
     unsafe_allow_html=True,
@@ -868,15 +869,16 @@ for _, r in df_gas_loc.iterrows():
 
 # Riquadro riferimenti
 ref_rows = "<br>".join(
-    f"&nbsp;&nbsp;🔥 <b>Utenza con Tipologia {g['tip']}</b>: "
-    f"{_fmt_thousands(round(g['cons_medio']))} Smc/mese per PDR"
+    f"&nbsp;&nbsp;🔥 Consumo medio di un'Utenza con <b>Tipologia {g['tip']}</b>: "
+    f"{_fmt_thousands(round(g['cons_medio']))} Smc"
     for g in gas_tipi
 )
 st.markdown(
     f"""
 <div style="background:#F8FAFC; border:1px solid #E5E7EB; border-radius:8px;
             padding:.8rem 1rem; margin: .4rem 0 1rem 0; font-size:.92rem;">
-🧮 <b>Riferimenti "utenza media gas" per tipologia d'uso del mese selezionato</b>
+🧮 Riferimenti "Utenza media" per tipologia d'uso del Periodo d'osservazione
+<b>{mese_label(meta['mese'])}</b>
 (media reale sulle utenze PDR del campione):<br>
 {ref_rows}
 </div>
