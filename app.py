@@ -289,18 +289,26 @@ if mancanti:
         unsafe_allow_html=True,
     )
 
-st.title("Benchmark Materia Prima Gas&Power")
-
-# Descrizione introduttiva sotto il titolo (max 2-3 righe)
+# Titolo + descrizione introduttiva in un unico blocco con barra blu in fondo
 st.markdown(
     """
-<p style="text-align:center; color:#374151; font-size:1rem; margin: -.4rem 0 1.2rem 0;
-          max-width: 900px; margin-left:auto; margin-right:auto;">
-Confronto fra il prezzo della materia prima delle Convenzioni <b>MMPOWER</b> e
-<b>MMGAS</b> dell'Unione Industriali Torino e le <b>10 migliori offerte indicizzate</b>
-attive sul mercato libero italiano. Pagina interattiva con grafici per fascia/tipologia,
-simulatori di scenari personalizzati e schede operative delle convenzioni in essere.
-</p>
+<div style="text-align:center; border-bottom: 4px solid #6BAED6;
+            padding-bottom: .9rem; margin: .6rem 0 1.6rem 0;">
+  <h1 style="margin: 0 0 .5rem 0; padding: 0; border: none;
+             color:#0F172A; font-size: 2.25rem; font-weight: 700;">
+    Benchmark Materia Prima Gas&Power
+  </h1>
+  <p style="font-family: Georgia, 'Bookman Old Style', Cambria, serif;
+            font-style: italic; font-size: 1.05rem; line-height: 1.55;
+            color:#4B5563; margin: 0 auto; max-width: 880px;">
+    Confronto fra il prezzo della materia prima delle Convenzioni
+    <span style="color:#2C5784; font-style:normal; font-weight:600;">MMPOWER</span> e
+    <span style="color:#B4495C; font-style:normal; font-weight:600;">MMGAS</span>
+    dell'Unione Industriali Torino e le 10 migliori offerte indicizzate attive sul
+    mercato libero italiano. Pagina interattiva con grafici per fascia&nbsp;/&nbsp;tipologia,
+    simulatori di scenari personalizzati e schede operative delle convenzioni in essere.
+  </p>
+</div>
 """,
     unsafe_allow_html=True,
 )
