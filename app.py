@@ -752,7 +752,7 @@ st.markdown(
     f"""
 <div style="background:#F8FAFC; border:1px solid #E5E7EB; border-radius:8px;
             padding:.8rem 1rem; margin: .4rem 0 1rem 0; font-size:.92rem;">
-🧮 Riferimenti "Utenza media" del Periodo d'osservazione
+🧮 Consumo medio del Periodo d'osservazione
 <b>{mese_label(meta['mese'])}</b>
 (media reale sulle utenze POD del campione):<br>
 &nbsp;&nbsp;⚡ Consumo medio di un'Utenza in <b>Bassa Tensione (BT)</b>:
@@ -877,7 +877,7 @@ st.markdown(
     f"""
 <div style="background:#F8FAFC; border:1px solid #E5E7EB; border-radius:8px;
             padding:.8rem 1rem; margin: .4rem 0 1rem 0; font-size:.92rem;">
-🧮 Riferimenti "Utenza media" per tipologia d'uso del Periodo d'osservazione
+🧮 Consumo medio per tipologia d'uso del Periodo d'osservazione
 <b>{mese_label(meta['mese'])}</b>
 (media reale sulle utenze PDR del campione):<br>
 {ref_rows}
