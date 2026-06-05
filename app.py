@@ -389,7 +389,7 @@ st.markdown(
       <b style="color:#16A34A;">F2 {_pun_f2:.4f}</b>
       &nbsp;·&nbsp;
       <b style="color:#16A34A;">F3 {_pun_f3:.4f}</b>
-      <span style="color:#9CA3AF;font-size:.85rem;">&nbsp;€/kWh</span>
+      &nbsp;<b style="color:#16A34A;">€/kWh</b>
     </span>
     <span style="color:#374151; font-size:.9rem;">
       <span style="color:#6B7280;">PSV</span>
