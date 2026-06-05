@@ -630,7 +630,7 @@ della composizione del portafoglio di utenze, mantenendo costanti i consumi medi
 per POD/PDR rilevati nel periodo di osservazione.
 <ul>
   <li>per il <b>4.1 Elettrico</b>, il prezzo aggregato corrisponderà alla media
-  ponderata sui consumi al variare del numero e della fascia di potenza delle
+  ponderata sui consumi al variare del numero e della classe di tensione delle
   utenze indicate;</li>
   <li>per il <b>4.2 Gas</b>, il prezzo aggregato corrisponderà alla media ponderata
   sui consumi al variare del numero e della tipologia d'uso delle utenze indicate.</li>
@@ -746,13 +746,13 @@ cons_pdr_medio = cons_gas_tot_real / n_pdr_real if n_pdr_real else 2500.0
 #   I consumi medi per POD sono FISSI (medi reali del mese selezionato).
 #   Si parte con 1 BT + 1 MT (utenze medie).
 # =================================================================
-st.subheader(f"4.1 {ICON_ELE} Elettrico — simulatore per utenza media")
+st.subheader(f"4.1 {ICON_ELE} Elettrico — Simulatore Prezzo Materia prima per n° Utenze (per Tensione)")
 
 st.markdown(
     f"""
 <div style="background:#F8FAFC; border:1px solid #E5E7EB; border-radius:8px;
             padding:.8rem 1rem; margin: .4rem 0 1rem 0; font-size:.92rem;">
-🧮 Consumo medio del Periodo d'osservazione
+🧮 Consumo medio per Classe di Tensione del Periodo d'osservazione
 <b>{mese_label(meta['mese'])}</b>
 (media reale sulle utenze POD del campione):<br>
 &nbsp;&nbsp;⚡ Consumo medio di un'Utenza in <b>Bassa Tensione (BT)</b>:
@@ -834,7 +834,7 @@ else:
         pezzi.append(f"<b>MT</b>: {bench_mt:.2f} €/MWh")
     if pezzi:
         st.caption(
-            f"<span style='color:#6B7280;'>Prezzo Materia Prima per potenza "
+            f"<span style='color:#6B7280;'>Prezzo Materia Prima per Classe di Tensione "
             f"{_mese_aa} &mdash; " + " · ".join(pezzi) + "</span>",
             unsafe_allow_html=True,
         )
@@ -845,7 +845,7 @@ else:
 #   Per ogni tipologia: consumo medio per PDR e prezzo Convenzione FISSI dal mese.
 #   L'aumento del numero di utenze sposta il mix (e quindi la media ponderata).
 # =================================================================
-st.subheader(f"4.2 {ICON_GAS} Gas — simulatore per utenza media (per tipologia d'uso)")
+st.subheader(f"4.2 {ICON_GAS} Gas — Simulatore Prezzo Materia prima per n° Utenze (per Tipologia d'uso)")
 
 # Riferimenti per ciascuna tipologia gas dal mese selezionato
 df_gas_loc = df_conf[df_conf["commodity"] == "GAS"].copy()
