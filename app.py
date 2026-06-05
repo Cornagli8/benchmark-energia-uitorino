@@ -332,11 +332,15 @@ if len(df_conf) == 0:
     st.warning(f"⚠️ Nessun dato per il mese {mese_label(mese_sel)}.")
     st.stop()
 
-# --- Riquadro PERIODO DI OSSERVAZIONE (PUN pesati + PSV, in verde) ---
-# Fallback se il data.json non ha ancora i PUN per fasce
+# --- Riquadro PERIODO DI OSSERVAZIONE (PUN per fasce ARERA + PSV) ---
+# Mostro i PUN ARERA per fascia oraria del mese (F1, F2, F3) e il PSV gas.
+# I PUN ponderati TOT/BT/MT sono mostrati in dettaglio in Metodologia.
 _pun_tot = meta.get("PUN_TOT_eur_kWh") or meta.get("PUN_eur_kWh", 0)
 _pun_bt  = meta.get("PUN_BT_eur_kWh")  or meta.get("PUN_eur_kWh", 0)
 _pun_mt  = meta.get("PUN_MT_eur_kWh")  or meta.get("PUN_eur_kWh", 0)
+_pun_f1  = meta.get("PUN_F1_eur_kWh") or 0
+_pun_f2  = meta.get("PUN_F2_eur_kWh") or 0
+_pun_f3  = meta.get("PUN_F3_eur_kWh") or 0
 
 st.markdown(
     f"""
@@ -345,16 +349,22 @@ st.markdown(
     <span class="periodo-label">📅 Periodo di osservazione</span>
     <span class="periodo-value">{mese_label(meta['mese'])}</span>
   </div>
-  <div style="display:grid; grid-template-columns:auto auto; gap:.1rem 1.2rem;
-              text-align:right; border-left:1px solid #CBD5E1; padding-left:1.2rem;">
-    <span style="color:#6B7280;font-weight:500;">PUN totale</span>
-    <span style="color:#16A34A; font-weight:700;">{_pun_tot:.4f} €/kWh</span>
-    <span style="color:#6B7280;font-weight:500;">PUN BT</span>
-    <span style="color:#16A34A; font-weight:700;">{_pun_bt:.4f} €/kWh</span>
-    <span style="color:#6B7280;font-weight:500;">PUN MT</span>
-    <span style="color:#16A34A; font-weight:700;">{_pun_mt:.4f} €/kWh</span>
-    <span style="color:#6B7280;font-weight:500;">PSV</span>
-    <span style="color:#16A34A; font-weight:700;">{meta['PSV_eur_Smc']:.4f} €/Smc</span>
+  <div style="display:flex; flex-direction:column; gap:.25rem; text-align:right;
+              border-left:1px solid #CBD5E1; padding-left:1.2rem;">
+    <span style="color:#374151; font-size:.9rem;">
+      <span style="color:#6B7280;">PUN ARERA per fasce</span>
+      &nbsp;&nbsp;
+      <b style="color:#16A34A;">F1 {_pun_f1:.4f}</b>
+      &nbsp;·&nbsp;
+      <b style="color:#16A34A;">F2 {_pun_f2:.4f}</b>
+      &nbsp;·&nbsp;
+      <b style="color:#16A34A;">F3 {_pun_f3:.4f}</b>
+      <span style="color:#9CA3AF;font-size:.85rem;">&nbsp;€/kWh</span>
+    </span>
+    <span style="color:#374151; font-size:.9rem;">
+      <span style="color:#6B7280;">PSV</span>
+      &nbsp;<b style="color:#16A34A;">{meta['PSV_eur_Smc']:.4f} €/Smc</b>
+    </span>
   </div>
 </div>
 """,
@@ -929,21 +939,22 @@ a cui si sommano le <b>perdite di rete</b> per l'elettrico:
 <code>× {meta['coeff_perdita_MT']*100:.1f}%</code> per MT.</li>
 
 <li><b>PUN ponderato per fasce orarie</b> — Anziché usare il PUN monorario, per
-l'elettrico viene applicato un PUN <b>pesato sui consumi storici per fascia</b>
-(F1, F2, F3) delle aziende convenzionate, calcolato distintamente per i tre
-segmenti — totale (TOT), BT e MT — sulla base delle percentuali di consumo
-mensili indicate nell'allegato di benchmark. Per il mese di
-<b>{mese_label(meta['mese'])}</b> i valori sono:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;⚡ <b>PUN TOT</b>: {_pun_tot:.4f} €/kWh — usato nel
-grafico Generale (sezione 1)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;⚡ <b>PUN BT</b>: {_pun_bt:.4f} €/kWh — usato per le
-fasce BT (sezioni 2 e 4.1)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;⚡ <b>PUN MT</b>: {_pun_mt:.4f} €/kWh — usato per la
-fascia MT (sezioni 2 e 4.1)<br>
-La formula applicata è
+l'elettrico viene applicato un PUN <b>pesato per fascia oraria</b> usando le
+<b>percentuali storiche di consumo</b> per fascia (F1, F2, F3) delle utenze
+convenzionate, suddivise per classe di tensione. Queste percentuali rappresentano,
+mediate sui dati storici per mese, la quota di kWh consumati in fascia diurna piena
+(F1), intermedia (F2) e notturna/festiva (F3); danno quindi il peso relativo che
+ciascuna fascia ha sul fabbisogno effettivo del segmento (BT o MT).<br><br>
+La formula applicata per il <b>PUN BT</b> e il <b>PUN MT</b> è
 <code>PUN_X = PUN_F1·%F1_X + PUN_F2·%F2_X + PUN_F3·%F3_X</code>, con i
-prezzi PUN per fascia pubblicati da ARERA e le percentuali %F1/%F2/%F3
-relative ai consumi storici del segmento X.</li>
+prezzi ARERA per fascia e le percentuali del segmento X (BT o MT).
+Il <b>PUN TOT</b> è invece la media ponderata tra PUN BT e PUN MT sui
+<b>consumi reali del mese in osservazione</b>, in modo da riflettere il mix
+effettivo di utenze del campione corrente.<br><br>
+Per il mese di <b>{mese_label(meta['mese'])}</b>:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;⚡ <b>PUN TOT</b>: {_pun_tot:.4f} €/kWh — usato nel grafico Generale (sezione 1)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;⚡ <b>PUN BT</b>: {_pun_bt:.4f} €/kWh — usato per le fasce BT (sezioni 2 e 4.1)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;⚡ <b>PUN MT</b>: {_pun_mt:.4f} €/kWh — usato per la fascia MT (sezioni 2 e 4.1)</li>
 
 <li><b>Selezione del Top 10</b> — Per ciascuna fascia di potenza (elettrico) o tipologia
 d'uso (gas) si ordinano in modo crescente tutti i prezzi ricostruiti delle offerte
@@ -957,16 +968,10 @@ aritmetica costituisce il valore di benchmark di mercato esposto nei grafici.</l
 )
 
 # ----- Sotto-sezione 2: offerte e fornitori monitorati -----
-st.markdown(
-    """
-<div class="footer-block" style="margin-top:1rem;">
+# Calcolo i dati Python prima, poi un UNICO st.markdown con tutto il contenuto
+# dentro lo stesso div.footer-block (cosi' il sottotitolo e i paragrafi sono
+# visivamente uniti nella stessa box).
 
-<h4 style="margin-top:0;">🏢 Offerte e Fornitori monitorati</h4>
-""",
-    unsafe_allow_html=True,
-)
-
-# --- Lista fornitori CON / SENZA offerte ---
 fornitori_con  = D.get("fornitori_con_offerte")
 fornitori_senza = D.get("fornitori_senza_offerte")
 # Fallback per data.json di versione precedente
@@ -1018,10 +1023,13 @@ def _elenco_virgole(lst):
 testo_con = _elenco_virgole(fornitori_con)
 testo_senza = _elenco_virgole(fornitori_senza)
 
-# Continuazione DENTRO il sotto-riquadro 'Offerte e Fornitori monitorati'
-# (senza ulteriori h4: i due paragrafi rientrano sotto lo stesso sottotitolo)
+# UN UNICO blocco markdown per garantire che tutto sia dentro il footer-block
 st.markdown(
     f"""
+<div class="footer-block" style="margin-top:1rem;">
+
+<h4 style="margin-top:0;">🏢 Offerte e Fornitori monitorati</h4>
+
 <p>In data <b>{data_estr_it or '—'}</b> sono state raccolte e analizzate
 complessivamente <span class="num-evidenza">{n_off_tot} offerte indicizzate</span>
 attive sul mercato libero italiano, provenienti sia dai siti istituzionali dei
