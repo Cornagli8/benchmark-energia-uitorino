@@ -941,26 +941,26 @@ st.markdown(
 
 <h4 style="margin-top:0;">🔬 Come è costruito il benchmark</h4>
 
-<ol>
-<li><b>Convenzione MMPOWER</b> — Materia prima dell'energia elettrica composta dalle
+<ol style="line-height:1.6;">
+<li style="margin-bottom: 1.2rem;"><b>Convenzione MMPOWER</b> — Materia prima dell'energia elettrica composta dalle
 voci <i>Generazione</i> e <i>Perdite di rete</i> calcolate a partire dai
 <b>dati reali</b> di fornitura delle aziende convenzionate (media ponderata sui
 consumi effettivi del mese in osservazione).</li>
 
-<li><b>Convenzione MMGAS</b> — Materia prima del gas calcolata per ciascuna tipologia
+<li style="margin-bottom: 1.2rem;"><b>Convenzione MMGAS</b> — Materia prima del gas calcolata per ciascuna tipologia
 d'uso a partire dai <b>dati reali</b> di fornitura delle aziende
 convenzionate (importo "materia prima" diviso per i Smc consumati del mese).</li>
 
-<li><b>Mercato</b> — Per ogni offerta indicizzata raccolta il prezzo è ricostruito
+<li style="margin-bottom: 1.2rem;"><b>Mercato</b> — Per ogni offerta indicizzata raccolta il prezzo è ricostruito
 distintamente per i due vettori:<br><br>
 &nbsp;&nbsp;&nbsp;⚡ <b>Energia elettrica</b>:
-<code>P = PUNx + spread + (PUNx + spread) × coeff_perdita + (quota_fissa_annua × n_utenze) ÷ (12 × consumo_mese)</code>,
-dove <code>coeff_perdita</code> = {meta['coeff_perdita_BT']*100:.0f}% per le utenze
-BT e {meta['coeff_perdita_MT']*100:.1f}% per quelle MT.<br><br>
+<code>P = PUNx + spread + (PUNx + spread) × coeff_perdita + (quota_fissa_annua × n_utenze) ÷ (12 × consumo_mese)</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;dove <code>coeff_perdita</code> = {meta['coeff_perdita_BT']*100:.0f}%
+per le utenze BT e {meta['coeff_perdita_MT']*100:.1f}% per quelle MT.<br><br>
 &nbsp;&nbsp;&nbsp;🔥 <b>Gas</b>:
 <code>P = PSV + spread + (quota_fissa_annua × n_utenze) ÷ (12 × consumo_mese)</code>.</li>
 
-<li><b>PUNx: PUN Ponderato per Fasce</b> — Anziché applicare il PUN monorario
+<li style="margin-bottom: 1.2rem;"><b>PUNx: PUN Ponderato per Fasce</b> — Anziché applicare il PUN monorario
 all'intero campione, viene utilizzato un <b>PUNx</b> differenziato per classe di
 tensione (PUN BT, PUN MT) e un PUNx aggregato totale (PUN TOT). Questo consente di
 rappresentare in modo più aderente alla realtà il prezzo all'ingrosso
@@ -977,7 +977,7 @@ in osservazione del campione corrente; i prezzi <b>PUN BT</b> e <b>PUN MT</b>
 corrispondono alle medie ponderate dei prezzi PUN per fascia ARERA per le percentuali
 dei consumi storici per fascia, del mese osservato, delle utenze convenzionate.</li>
 
-<li><b>Selezione del Top 10</b> — Per ciascuna fascia di potenza (elettrico) o
+<li style="margin-bottom: 1.2rem;"><b>Selezione del Top 10</b> — Per ciascuna fascia di potenza (elettrico) o
 tipologia d'uso (gas) si ordinano in modo crescente tutti i prezzi ricostruiti
 delle offerte raccolte sul mercato e si selezionano le <b>10 più convenienti</b>.
 La loro media aritmetica costituisce il valore di benchmark di mercato esposto nei
