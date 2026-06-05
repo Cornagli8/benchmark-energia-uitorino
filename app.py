@@ -183,6 +183,9 @@ if "dati_per_mese" not in D:
             "meta_mese": {
                 "mese": _mese,
                 "PUN_eur_kWh": D.get("meta", {}).get("PUN_eur_kWh", 0),
+                "PUN_TOT_eur_kWh": D.get("meta", {}).get("PUN_eur_kWh", 0),
+                "PUN_BT_eur_kWh":  D.get("meta", {}).get("PUN_eur_kWh", 0),
+                "PUN_MT_eur_kWh":  D.get("meta", {}).get("PUN_eur_kWh", 0),
                 "PSV_eur_Smc": D.get("meta", {}).get("PSV_eur_Smc", 0),
                 "generazione_BT": D.get("meta", {}).get("generazione_BT", 0),
                 "perdite_BT":     D.get("meta", {}).get("perdite_BT", 0),
@@ -329,7 +332,12 @@ if len(df_conf) == 0:
     st.warning(f"⚠️ Nessun dato per il mese {mese_label(mese_sel)}.")
     st.stop()
 
-# --- Riquadro PERIODO DI OSSERVAZIONE (PUN + PSV su 2 righe, grassetto verde) ---
+# --- Riquadro PERIODO DI OSSERVAZIONE (PUN pesati + PSV, in verde) ---
+# Fallback se il data.json non ha ancora i PUN per fasce
+_pun_tot = meta.get("PUN_TOT_eur_kWh") or meta.get("PUN_eur_kWh", 0)
+_pun_bt  = meta.get("PUN_BT_eur_kWh")  or meta.get("PUN_eur_kWh", 0)
+_pun_mt  = meta.get("PUN_MT_eur_kWh")  or meta.get("PUN_eur_kWh", 0)
+
 st.markdown(
     f"""
 <div class="periodo-box">
@@ -337,17 +345,16 @@ st.markdown(
     <span class="periodo-label">📅 Periodo di osservazione</span>
     <span class="periodo-value">{mese_label(meta['mese'])}</span>
   </div>
-  <div style="display:flex; flex-direction:column; gap:.15rem; text-align:right;
-              border-left:1px solid #CBD5E1; padding-left:1.2rem;">
-    <span style="color:#16A34A; font-weight:600;">
-      <span style="color:#6B7280;font-weight:500;">PUN monorario</span>
-      &nbsp;<b>{meta['PUN_eur_kWh']:.4f} €/kWh</b>
-    </span>
-    <span style="color:#16A34A; font-weight:600;">
-      <span style="color:#6B7280;font-weight:500;">PSV</span>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      <b>{meta['PSV_eur_Smc']:.4f} €/Smc</b>
-    </span>
+  <div style="display:grid; grid-template-columns:auto auto; gap:.1rem 1.2rem;
+              text-align:right; border-left:1px solid #CBD5E1; padding-left:1.2rem;">
+    <span style="color:#6B7280;font-weight:500;">PUN totale</span>
+    <span style="color:#16A34A; font-weight:700;">{_pun_tot:.4f} €/kWh</span>
+    <span style="color:#6B7280;font-weight:500;">PUN BT</span>
+    <span style="color:#16A34A; font-weight:700;">{_pun_bt:.4f} €/kWh</span>
+    <span style="color:#6B7280;font-weight:500;">PUN MT</span>
+    <span style="color:#16A34A; font-weight:700;">{_pun_mt:.4f} €/kWh</span>
+    <span style="color:#6B7280;font-weight:500;">PSV</span>
+    <span style="color:#16A34A; font-weight:700;">{meta['PSV_eur_Smc']:.4f} €/Smc</span>
   </div>
 </div>
 """,
@@ -727,17 +734,19 @@ with cE2:
 if n_bt == 0 and n_mt == 0:
     st.warning("Seleziona almeno una utenza BT o MT per visualizzare il confronto.")
 else:
-    pun_val = float(meta.get("PUN_eur_kWh", 0))
+    # Uso PUN_BT e PUN_MT pesati (sui consumi storici per fascia oraria)
+    pun_bt_val = float(meta.get("PUN_BT_eur_kWh") or meta.get("PUN_eur_kWh", 0))
+    pun_mt_val = float(meta.get("PUN_MT_eur_kWh") or meta.get("PUN_eur_kWh", 0))
     mp_conv_bt = float(meta.get("mp_conv_BT", 0))    # €/MWh, fisso
     mp_conv_mt = float(meta.get("mp_conv_MT", 0))
 
     # Benchmark di mercato a consumo medio fisso (per fascia)
     bench_bt = _benchmark_mercato_singola(
-        "ELE", pun_val, cons_bt_medio,
+        "ELE", pun_bt_val, cons_bt_medio,
         coeff_perdita=meta.get("coeff_perdita_BT", 0.10),
     )
     bench_mt = _benchmark_mercato_singola(
-        "ELE", pun_val, cons_mt_medio,
+        "ELE", pun_mt_val, cons_mt_medio,
         coeff_perdita=meta.get("coeff_perdita_MT", 0.038),
     )
 
@@ -918,6 +927,23 @@ d'uso a partire dal medesimo report di fornitura delle aziende convenzionate
 a cui si sommano le <b>perdite di rete</b> per l'elettrico:
 <code>(PUN + spread) × {meta['coeff_perdita_BT']*100:.0f}%</code> per BT,
 <code>× {meta['coeff_perdita_MT']*100:.1f}%</code> per MT.</li>
+
+<li><b>PUN ponderato per fasce orarie</b> — Anziché usare il PUN monorario, per
+l'elettrico viene applicato un PUN <b>pesato sui consumi storici per fascia</b>
+(F1, F2, F3) delle aziende convenzionate, calcolato distintamente per i tre
+segmenti — totale (TOT), BT e MT — sulla base delle percentuali di consumo
+mensili indicate nell'allegato di benchmark. Per il mese di
+<b>{mese_label(meta['mese'])}</b> i valori sono:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;⚡ <b>PUN TOT</b>: {_pun_tot:.4f} €/kWh — usato nel
+grafico Generale (sezione 1)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;⚡ <b>PUN BT</b>: {_pun_bt:.4f} €/kWh — usato per le
+fasce BT (sezioni 2 e 4.1)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;⚡ <b>PUN MT</b>: {_pun_mt:.4f} €/kWh — usato per la
+fascia MT (sezioni 2 e 4.1)<br>
+La formula applicata è
+<code>PUN_X = PUN_F1·%F1_X + PUN_F2·%F2_X + PUN_F3·%F3_X</code>, con i
+prezzi PUN per fascia pubblicati da ARERA e le percentuali %F1/%F2/%F3
+relative ai consumi storici del segmento X.</li>
 
 <li><b>Selezione del Top 10</b> — Per ciascuna fascia di potenza (elettrico) o tipologia
 d'uso (gas) si ordinano in modo crescente tutti i prezzi ricostruiti delle offerte
