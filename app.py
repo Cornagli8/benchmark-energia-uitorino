@@ -352,7 +352,7 @@ st.markdown(
   <div style="display:flex; flex-direction:column; gap:.25rem; text-align:right;
               border-left:1px solid #CBD5E1; padding-left:1.2rem;">
     <span style="color:#374151; font-size:.9rem;">
-      <span style="color:#6B7280;">PUN ARERA per fasce</span>
+      <span style="color:#6B7280;">PUN per fasce</span>
       &nbsp;&nbsp;
       <b style="color:#16A34A;">F1 {_pun_f1:.4f}</b>
       &nbsp;·&nbsp;
@@ -380,13 +380,11 @@ st.header("1️⃣ Confronto generale")
 st.markdown(
     """
 <div class="desc-box">
-Confronto a colpo d'occhio fra la <b>materia prima riconosciuta dalle Convenzioni</b>
-e il <b>benchmark</b> calcolato come media delle <b>10 migliori offerte attive</b> sul
-mercato libero. Per ciascuna offerta il prezzo è ricostruito come
+Confronto a colpo d'occhio fra il <b>prezzo della materia prima riconosciuta dalle
+Convenzioni</b> e il <b>benchmark</b> calcolato come media delle <b>10 migliori offerte
+attive sul mercato libero</b>. Per ciascuna offerta il prezzo è ricostruito come
 <i>PUN/PSV indicizzato + spread + quota fissa unitaria</i>; per il solo <b>elettrico</b>
-si aggiungono le <b>perdite di rete</b> (10% BT, 3,8% MT).<br>
-Per l'elettrico è una media equa fra le fasce BT e MT; per il gas è una media ponderata
-sui consumi delle 4 tipologie d'uso.
+si aggiungono le <b>perdite di rete</b> (10% BT, 3,8% MT).
 </div>
 """,
     unsafe_allow_html=True,
@@ -527,14 +525,11 @@ st.markdown(
     f"""
 <div class="desc-box">
 Dettaglio per <b>fascia di potenza impegnata</b>. La materia prima della Convenzione
-è calcolata per ciascuna delle quattro fasce di potenza presenti nel report della
-fornitura delle aziende convenzionate (media ponderata sui consumi dei POD di ogni
-fascia). Per chiarezza espositiva, le due fasce BT ≤3 kW e BT 4,5–40 kW sono qui
-<b>aggregate in BT ≤40 kW</b> usando una media ponderata sui consumi:<br>
-<code>prezzo_BT≤40 = (prezzo_BT≤3 × consumo_BT≤3 + prezzo_BT4.5–40 × consumo_BT4.5–40) /
-(consumo_BT≤3 + consumo_BT4.5–40)</code>.<br>
-Anche il <b>Top 10 di mercato</b> è ricalcolato per ciascuna categoria, perché la quota fissa
-dell'offerta pesa diversamente sul consumo medio di ognuna.
+è calcolata per ciascuna delle tre fasce di potenza presenti nel report della
+fornitura delle aziende convenzionate (media ponderata sui consumi dei POD di
+ciascuna fascia); le <b>Top 10 di mercato</b> sono invece ricalcolate per ciascuna
+categoria, in quanto le offerte migliori possono variare a seconda della fascia di
+potenza presa come riferimento.
 </div>
 """,
     unsafe_allow_html=True,
@@ -564,9 +559,12 @@ st.markdown("<h2 class='gas-section'>3️⃣ 🔥 Per tipologia d'uso (Gas)</h2>
 st.markdown(
     """
 <div class="desc-box gas">
-Dettaglio per <b>tipologia d'uso del gas</b>: la materia prima della Convenzione
-varia per tipologia (calcolata sui consumi e importi reali del mese); il benchmark
-di mercato è la media delle 10 migliori offerte indicizzate sul PSV.
+Dettaglio per <b>tipologia d'uso del gas</b>. La materia prima della Convenzione
+è calcolata distintamente <b>per ciascuna delle quattro tipologie d'uso</b>
+(media ponderata sui consumi e importi reali del mese, per ogni categoria); le
+<b>Top 10 di mercato</b> sono ricalcolate per ciascuna categoria, in quanto le
+offerte migliori possono variare a seconda della tipologia d'uso presa come
+riferimento.
 </div>
 """,
     unsafe_allow_html=True,
@@ -594,19 +592,19 @@ st.header("4️⃣ 🎚️ Simulatore per utenza media")
 st.markdown(
     """
 <div class="desc-box">
-Il simulatore parte da <b>una sola utenza media</b> con il consumo medio reale del
-campione del mese selezionato. Al crescere del <b>numero di utenze</b>:
+Questa sezione consente di <b>simulare scenari di mix di utenze</b> a partire dai
+consumi medi reali del campione convenzionato. Selezionando il numero di utenze
+desiderato per ciascuna categoria si ottiene una proiezione immediata di quanto la
+materia prima Convenzione e il benchmark di mercato si sposterebbero al variare
+della composizione del portafoglio di utenze, mantenendo costanti i consumi medi
+per POD/PDR rilevati nel mese in osservazione.
 <ul>
-  <li>per il <b>4.1 Elettrico</b>, se aumenti solo BT o solo MT l'aggregato si
-  sposta verso quella fascia; con un mix BT+MT il prezzo aggregato è la media
-  ponderata sui consumi delle due categorie (il numero di utenze influenza il
-  benchmark Mercato <b>solo</b> nel mix delle perdite di rete: 10% BT, 3,8% MT);</li>
-  <li>per il <b>4.2 Gas</b>, l'aumento delle utenze scala proporzionalmente i
-  consumi totali ma il prezzo unitario resta lo stesso (perché il consumo medio
-  per PDR è fisso e la quota fissa unitaria si diluisce su quello).</li>
+  <li>per il <b>4.1 Elettrico</b>, il prezzo aggregato corrisponderà alla media
+  ponderata sui consumi al variare del numero e della fascia di potenza delle
+  utenze indicate;</li>
+  <li>per il <b>4.2 Gas</b>, il prezzo aggregato corrisponderà alla media ponderata
+  sui consumi al variare del numero e della tipologia d'uso delle utenze indicate.</li>
 </ul>
-La <b>Convenzione</b> resta sempre indicizzata al PUN/PSV all'ingrosso e non
-dipende dal volume del cliente.
 </div>
 """,
     unsafe_allow_html=True,
@@ -735,10 +733,10 @@ st.markdown(
 
 cE1, cE2 = st.columns(2)
 with cE1:
-    n_bt = _slider_intero("Numero utenze BT", vmin=0, vmax=2000,
+    n_bt = _slider_intero("Utenza in Bassa Tensione (BT):", vmin=0, vmax=2000,
                            default=1, step=1, key_prefix="n_bt")
 with cE2:
-    n_mt = _slider_intero("Numero utenze MT", vmin=0, vmax=500,
+    n_mt = _slider_intero("Utenza in Media Tensione (MT):", vmin=0, vmax=500,
                            default=1, step=1, key_prefix="n_mt")
 
 if n_bt == 0 and n_mt == 0:
@@ -790,17 +788,23 @@ else:
         use_container_width=True,
     )
 
-    # Dettaglio dei benchmark per fascia (sempre, se ci sono utenze in quella fascia)
+    # Etichetta mese-anno compatta (es. mar-26)
+    _MESI_AB = ["", "gen", "feb", "mar", "apr", "mag", "giu",
+                "lug", "ago", "set", "ott", "nov", "dic"]
+    _y, _m = map(int, meta["mese"].split("-"))
+    _mese_aa = f"{_MESI_AB[_m]}-{str(_y)[-2:]}"
+
     pezzi = []
     if n_bt > 0 and bench_bt is not None:
-        pezzi.append(f"Mercato BT a {_fmt_thousands(round(cons_bt_medio))} kWh/POD: "
-                     f"<b>{bench_bt:.2f} €/MWh</b>")
+        pezzi.append(f"<b>BT {_mese_aa}</b>: {bench_bt:.2f} €/MWh")
     if n_mt > 0 and bench_mt is not None:
-        pezzi.append(f"Mercato MT a {_fmt_thousands(round(cons_mt_medio))} kWh/POD: "
-                     f"<b>{bench_mt:.2f} €/MWh</b>")
+        pezzi.append(f"<b>MT {_mese_aa}</b>: {bench_mt:.2f} €/MWh")
     if pezzi:
-        st.caption("<span style='color:#6B7280;'>" + " · ".join(pezzi) + "</span>",
-                   unsafe_allow_html=True)
+        st.caption(
+            "<span style='color:#6B7280;'>Prezzo Materia Prima per potenza &mdash; "
+            + " · ".join(pezzi) + "</span>",
+            unsafe_allow_html=True,
+        )
 
 
 # =================================================================
@@ -848,13 +852,13 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# 4 slider in 2 colonne (default 1 per tipologia)
+# 4 slider in 2 colonne (default 1 per tipologia). Le label usano i NOMI COMPLETI.
 ggcols = st.columns(2)
 n_gas = {}
 for i, g in enumerate(gas_tipi):
     with ggcols[i % 2]:
         n_gas[g["tip"]] = _slider_intero(
-            f"Numero PDR · {g['label_short']}",
+            f"Utenza con Tipologia {g['tip']}:",
             vmin=0, vmax=1000, default=1, step=1,
             key_prefix=f"ng_{g['key']}",
         )
@@ -902,10 +906,18 @@ else:
                    LABEL_CONV_GAS, LABEL_MERC_GAS, "c€/Smc", height=400),
         use_container_width=True,
     )
-    if pezzi_bench:
+    # Caption: SEMPRE i 4 bench per tipologia (anche se n_gas=0), in label abbreviato
+    pezzi_full = []
+    for g in gas_tipi:
+        b_tip = _benchmark_mercato_singola(
+            "GAS", psv_val, g["cons_medio"], coeff_perdita=0.0,
+        )
+        if b_tip is not None:
+            pezzi_full.append(f"<b>{g['label_short']}</b>: {b_tip:.2f} c€/Smc")
+    if pezzi_full:
         st.caption(
-            "<span style='color:#6B7280;'>Benchmark Mercato per tipologia &mdash; "
-            + " · ".join(pezzi_bench) + "</span>",
+            "<span style='color:#6B7280;'>Prezzo Materia Prima per Tipologia &mdash; "
+            + " · ".join(pezzi_full) + "</span>",
             unsafe_allow_html=True,
         )
 
@@ -923,43 +935,49 @@ st.markdown(
 <h4 style="margin-top:0;">🔬 Come è costruito il benchmark</h4>
 
 <ol>
-<li><b>Convenzione MMPOWER</b> — Materia prima dell'energia elettrica composta dalle voci
-<i>Generazione</i> e <i>Perdite di rete</i> riportate nel <b>report della fornitura
-delle aziende convenzionate</b>. Il valore è differenziato per classe di tensione:
-<b>BT</b> {meta['mp_conv_BT']:.2f} €/MWh, <b>MT</b> {meta['mp_conv_MT']:.2f} €/MWh.</li>
+<li><b>Convenzione MMPOWER</b> — Materia prima dell'energia elettrica composta dalle
+voci <i>Generazione</i> e <i>Perdite di rete</i> calcolate a partire dai
+<b>dati reali</b> di fornitura delle aziende convenzionate (media ponderata sui
+consumi effettivi del mese in osservazione).</li>
 
 <li><b>Convenzione MMGAS</b> — Materia prima del gas calcolata per ciascuna tipologia
-d'uso a partire dal medesimo report di fornitura delle aziende convenzionate
-(importo "materia prima" diviso per i Smc consumati).</li>
+d'uso a partire dagli stessi <b>dati reali</b> di fornitura delle aziende
+convenzionate (importo "materia prima" diviso per i Smc consumati del mese).</li>
 
-<li><b>Mercato</b> — Per ogni offerta indicizzata raccolta, il prezzo è ricostruito come<br>
-<code>(PUN o PSV) + spread + quota_fissa_annua / 12 × n_utenze / consumo_mese</code><br>
-a cui si sommano le <b>perdite di rete</b> per l'elettrico:
-<code>(PUN + spread) × {meta['coeff_perdita_BT']*100:.0f}%</code> per BT,
-<code>× {meta['coeff_perdita_MT']*100:.1f}%</code> per MT.</li>
+<li><b>Mercato</b> — Per ogni offerta indicizzata raccolta il prezzo è ricostruito
+distintamente per i due vettori:<br><br>
+&nbsp;&nbsp;&nbsp;⚡ <b>Energia elettrica</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<code>P = PUN + spread + (PUN + spread) × coeff_perdita
++ (quota_fissa_annua × n_utenze) ÷ (12 × consumo_mese)</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;dove <code>coeff_perdita</code> = {meta['coeff_perdita_BT']*100:.0f}%
+per le utenze BT e {meta['coeff_perdita_MT']*100:.1f}% per quelle MT.<br><br>
+&nbsp;&nbsp;&nbsp;🔥 <b>Gas</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<code>P = PSV + spread + (quota_fissa_annua × n_utenze)
+÷ (12 × consumo_mese)</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;senza componente di perdite di rete (già incorporate nei servizi
+di trasporto e distribuzione).</li>
 
-<li><b>PUN ponderato per fasce orarie</b> — Anziché usare il PUN monorario, per
-l'elettrico viene applicato un PUN <b>pesato per fascia oraria</b> usando le
-<b>percentuali storiche di consumo</b> per fascia (F1, F2, F3) delle utenze
-convenzionate, suddivise per classe di tensione. Queste percentuali rappresentano,
-mediate sui dati storici per mese, la quota di kWh consumati in fascia diurna piena
-(F1), intermedia (F2) e notturna/festiva (F3); danno quindi il peso relativo che
-ciascuna fascia ha sul fabbisogno effettivo del segmento (BT o MT).<br><br>
-La formula applicata per il <b>PUN BT</b> e il <b>PUN MT</b> è
-<code>PUN_X = PUN_F1·%F1_X + PUN_F2·%F2_X + PUN_F3·%F3_X</code>, con i
-prezzi ARERA per fascia e le percentuali del segmento X (BT o MT).
-Il <b>PUN TOT</b> è invece la media ponderata tra PUN BT e PUN MT sui
-<b>consumi reali del mese in osservazione</b>, in modo da riflettere il mix
-effettivo di utenze del campione corrente.<br><br>
+<li><b>PUN ponderato per fasce</b> — Anziché applicare il PUN monorario all'intero
+campione, viene utilizzato un PUN differenziato per classe di tensione (BT, MT) e un
+PUN aggregato totale (TOT). Questo consente di rappresentare in modo più aderente
+alla realtà il prezzo all'ingrosso dell'elettrico, riconoscendo che la composizione
+oraria del consumo è strutturalmente diversa fra utenze a Bassa Tensione e a Media
+Tensione: il PUN così ponderato si avvicina di più al costo effettivo che ciascun
+segmento sostiene per l'energia ritirata dal mercato.<br><br>
 Per il mese di <b>{mese_label(meta['mese'])}</b>:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;⚡ <b>PUN TOT</b>: {_pun_tot:.4f} €/kWh — usato nel grafico Generale (sezione 1)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;⚡ <b>PUN BT</b>: {_pun_bt:.4f} €/kWh — usato per le fasce BT (sezioni 2 e 4.1)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;⚡ <b>PUN MT</b>: {_pun_mt:.4f} €/kWh — usato per la fascia MT (sezioni 2 e 4.1)</li>
+&nbsp;&nbsp;&nbsp;&nbsp;⚡ <b>PUN MT</b>: {_pun_mt:.4f} €/kWh — usato per la fascia MT (sezioni 2 e 4.1)<br><br>
+Il <b>PUN TOT</b> è la media ponderata tra PUN BT e PUN MT sui consumi reali del mese
+in osservazione del campione corrente; i prezzi <b>PUN BT</b> e <b>PUN MT</b>
+corrispondono alle medie ponderate dei prezzi PUN per fascia ARERA per le percentuali
+dei consumi storici per fascia, del mese osservato, delle utenze convenzionate.</li>
 
-<li><b>Selezione del Top 10</b> — Per ciascuna fascia di potenza (elettrico) o tipologia
-d'uso (gas) si ordinano in modo crescente tutti i prezzi ricostruiti delle offerte
-raccolte sul mercato e si selezionano le <b>10 più convenienti</b>. La loro media
-aritmetica costituisce il valore di benchmark di mercato esposto nei grafici.</li>
+<li><b>Selezione del Top 10</b> — Per ciascuna fascia di potenza (elettrico) o
+tipologia d'uso (gas) si ordinano in modo crescente tutti i prezzi ricostruiti
+delle offerte raccolte sul mercato e si selezionano le <b>10 più convenienti</b>.
+La loro media aritmetica costituisce il valore di benchmark di mercato esposto nei
+grafici.</li>
 </ol>
 
 </div>
@@ -1101,7 +1119,7 @@ orarie</b> (F1, F2, F3), maggiorato di uno spread fisso
     pdf_mmp = Path(__file__).parent / "News_Convenzione_MMPOWER_2026-2027.pdf"
     if pdf_mmp.exists():
         st.download_button(
-            label="📄 Scarica la news completa MMPOWER",
+            label="📄 Scarica la news completa MMPOWER *",
             data=pdf_mmp.read_bytes(),
             file_name="News_Convenzione_MMPOWER_2026-2027.pdf",
             mime="application/pdf",
@@ -1129,7 +1147,7 @@ quotazioni Day Ahead PSV) maggiorato di uno spread fisso
 <li><b>Soglia consumo</b>: <b>200.000 Smc/anno</b> per singolo cliente</li>
 <li><b>Periodo di fornitura</b>: <b>fino al 30/09/2027</b></li>
 <li><b>Opzione 100% CO₂ compensata</b> (su richiesta del singolo cliente):
-lo spread sale a 0,0493 €/Smc</li>
++ 0,0263 €/Smc</li>
 </ul>
 </div>
 """,
@@ -1138,7 +1156,7 @@ lo spread sale a 0,0493 €/Smc</li>
     pdf_mmg = Path(__file__).parent / "News_Convenzione_MMGAS_2025-26_2026-27.pdf"
     if pdf_mmg.exists():
         st.download_button(
-            label="📄 Scarica la news completa MMGAS",
+            label="📄 Scarica la news completa MMGAS *",
             data=pdf_mmg.read_bytes(),
             file_name="News_Convenzione_MMGAS_2025-26_2026-27.pdf",
             mime="application/pdf",
