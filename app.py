@@ -527,25 +527,37 @@ if len(df_conf) == 0:
     st.warning(f"⚠️ Nessun dato per il mese {mese_label(mese_sel)}.")
     st.stop()
 
-# --- Riquadro PERIODO DI OSSERVAZIONE (PUN per fasce ARERA + PSV) ---
-# Mostro i PUN ARERA per fascia oraria del mese (F1, F2, F3) e il PSV gas.
-# I PUN ponderati TOT/BT/MT sono mostrati in dettaglio in Metodologia.
+# --- Riquadro PERIODO DI OSSERVAZIONE ---
+# Singolo mese: mostra i PUN ARERA per fasce orarie (F1/F2/F3) e il PSV.
+# Aggregato 'Tutti i mesi': mostra PUN/PSV ponderati ai consumi.
 _pun_tot = meta.get("PUN_TOT_eur_kWh") or meta.get("PUN_eur_kWh", 0)
 _pun_bt  = meta.get("PUN_BT_eur_kWh")  or meta.get("PUN_eur_kWh", 0)
 _pun_mt  = meta.get("PUN_MT_eur_kWh")  or meta.get("PUN_eur_kWh", 0)
 _pun_f1  = meta.get("PUN_F1_eur_kWh") or 0
 _pun_f2  = meta.get("PUN_F2_eur_kWh") or 0
 _pun_f3  = meta.get("PUN_F3_eur_kWh") or 0
+_is_aggregato = (mese_sel == KEY_AGGREGATO)
 
-st.markdown(
-    f"""
-<div class="periodo-box">
-  <div style="display:flex; flex-direction:column; flex:1;">
-    <span class="periodo-label">📅 Periodo di osservazione</span>
-    <span class="periodo-value">{mese_label(meta['mese'])}</span>
-  </div>
-  <div style="display:flex; flex-direction:column; gap:.25rem; text-align:right;
-              border-left:1px solid #CBD5E1; padding-left:1.2rem;">
+if _is_aggregato:
+    # Per l'aggregato: PUN ponderato ai consumi (F1/F2/F3 sono medie pesate),
+    # PSV ponderato ai consumi gas
+    _prezzi_html = f"""
+    <span style="color:#374151; font-size:.9rem;">
+      <span style="color:#6B7280;">PUN ponderato ai consumi per fasce</span>
+      &nbsp;&nbsp;
+      <b style="color:#16A34A;">F1 {_pun_f1:.4f}</b>
+      &nbsp;·&nbsp;
+      <b style="color:#16A34A;">F2 {_pun_f2:.4f}</b>
+      &nbsp;·&nbsp;
+      <b style="color:#16A34A;">F3 {_pun_f3:.4f}</b>
+      &nbsp;<b style="color:#16A34A;">€/kWh</b>
+    </span>
+    <span style="color:#374151; font-size:.9rem;">
+      <span style="color:#6B7280;">PSV ponderato ai consumi</span>
+      &nbsp;<b style="color:#16A34A;">{meta['PSV_eur_Smc']:.4f} €/Smc</b>
+    </span>"""
+else:
+    _prezzi_html = f"""
     <span style="color:#374151; font-size:.9rem;">
       <span style="color:#6B7280;">PUN per fasce</span>
       &nbsp;&nbsp;
@@ -559,7 +571,18 @@ st.markdown(
     <span style="color:#374151; font-size:.9rem;">
       <span style="color:#6B7280;">PSV</span>
       &nbsp;<b style="color:#16A34A;">{meta['PSV_eur_Smc']:.4f} €/Smc</b>
-    </span>
+    </span>"""
+
+st.markdown(
+    f"""
+<div class="periodo-box">
+  <div style="display:flex; flex-direction:column; flex:1;">
+    <span class="periodo-label">📅 Periodo di osservazione</span>
+    <span class="periodo-value">{mese_label(meta['mese'])}</span>
+  </div>
+  <div style="display:flex; flex-direction:column; gap:.25rem; text-align:right;
+              border-left:1px solid #CBD5E1; padding-left:1.2rem;">
+    {_prezzi_html}
   </div>
 </div>
 """,
@@ -719,12 +742,11 @@ cons_low_40 = float(df_ele[df_ele["tipologia"] == "BT 4.5-40 kW"]["consumo_mese"
 st.markdown(
     f"""
 <div class="desc-box">
-Dettaglio per <b>fascia di potenza impegnata</b>. La materia prima della Convenzione
-è calcolata per ciascuna delle tre fasce di potenza presenti nel report della
-fornitura delle aziende convenzionate (media ponderata sui consumi dei POD di
-ciascuna fascia); le <b>Top 10 di mercato</b> sono invece ricalcolate per ciascuna
-categoria, in quanto le offerte migliori possono variare a seconda della fascia di
-potenza presa come riferimento.
+Dettaglio per <b>classe di potenza impegnata</b>. Il Prezzo per la materia prima
+della Convenzione è calcolato per ciascuna delle tre classi di potenza (media
+ponderata sui consumi dei POD di ciascuna classe); le <b>Top 10 di mercato</b>
+sono invece ricalcolate per ciascuna categoria, in quanto le offerte migliori
+possono variare in funzione delle loro caratteristiche di consumo tipico.
 </div>
 """,
     unsafe_allow_html=True,
@@ -754,12 +776,12 @@ st.markdown("<h2 class='gas-section'>3️⃣ 🔥 Per tipologia d'uso (Gas)</h2>
 st.markdown(
     """
 <div class="desc-box gas">
-Dettaglio per <b>tipologia d'uso del gas</b>. La materia prima della Convenzione
-è calcolata distintamente <b>per ciascuna delle quattro tipologie d'uso</b>
-(media ponderata sui consumi e importi reali del mese, per ogni categoria); le
-<b>Top 10 di mercato</b> sono ricalcolate per ciascuna categoria, in quanto le
-offerte migliori possono variare a seconda della tipologia d'uso presa come
-riferimento.
+Dettaglio per <b>tipologia d'uso del gas</b>. Il Prezzo per la materia prima
+della Convenzione è calcolato distintamente <b>per ciascuna delle quattro
+tipologie d'uso</b> (media ponderata sui consumi e importi reali del mese, per
+ogni tipologia); le <b>Top 10 di mercato</b> sono ricalcolate per ciascuna
+tipologia, in quanto le offerte migliori possono variare in funzione delle
+loro caratteristiche di consumo tipico.
 </div>
 """,
     unsafe_allow_html=True,
@@ -789,10 +811,10 @@ st.markdown(
 <div class="desc-box">
 Questa sezione consente di <b>simulare scenari di mix di utenze</b> a partire dai
 consumi medi reali del campione convenzionato. Selezionando il numero di utenze
-desiderato per ciascuna categoria si ottiene una proiezione immediata di quanto la
-materia prima Convenzione e il benchmark di mercato si sposterebbero al variare
-della composizione del portafoglio di utenze, mantenendo costanti i consumi medi
-per POD/PDR rilevati nel periodo di osservazione.
+desiderato per ciascuna classe o tipologia si ottiene una proiezione immediata di
+quanto il prezzo della materia prima della Convenzione e del benchmark di mercato
+si sposterebbero al variare della composizione del portafoglio di utenze,
+mantenendo costanti i predetti consumi medi rilevati nel periodo di osservazione.
 <ul>
   <li>per il <b>4.1 Elettrico</b>, il prezzo aggregato corrisponderà alla media
   ponderata sui consumi al variare del numero e della classe di tensione delle
@@ -1135,83 +1157,7 @@ else:
 # ------------------------------------------------------------------
 st.header("📚 Metodologia")
 
-# ----- Sotto-sezione 1: come è costruito il benchmark -----
-st.markdown(
-    f"""
-<div class="footer-block">
-
-<h4 style="margin-top:0;">🔬 Come è costruito il benchmark</h4>
-
-<ol style="line-height:1.6;">
-<li style="margin-bottom: 1.2rem;"><b>Convenzione MMPOWER</b> — Materia prima dell'energia elettrica composta dalle
-voci <i>Generazione</i> e <i>Perdite di rete</i> calcolate a partire dai
-<b>dati reali</b> di fornitura delle aziende convenzionate (media ponderata sui
-consumi effettivi del periodo di osservazione).</li>
-
-<li style="margin-bottom: 1.2rem;"><b>Convenzione MMGAS</b> — Materia prima del gas calcolata per ciascuna tipologia
-d'uso a partire dai <b>dati reali</b> di fornitura delle aziende
-convenzionate (importo "materia prima" diviso per i Smc consumati del mese).</li>
-
-<li style="margin-bottom: 1.2rem;"><b>Mercato</b> — Per ogni offerta indicizzata raccolta il prezzo è ricostruito
-distintamente per i due vettori:<br><br>
-&nbsp;&nbsp;&nbsp;⚡ <b>Energia elettrica</b>:
-<code>P = PUNx + spread + (PUNx + spread) × coeff_perdita + (quota_fissa_annua × n_utenze) ÷ (12 × consumo_mese)</code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;dove <code>coeff_perdita</code> = {meta['coeff_perdita_BT']*100:.0f}%
-per le utenze BT e {meta['coeff_perdita_MT']*100:.1f}% per quelle MT.<br><br>
-&nbsp;&nbsp;&nbsp;🔥 <b>Gas</b>:
-<code>P = PSV + spread + (quota_fissa_annua × n_utenze) ÷ (12 × consumo_mese)</code>.</li>
-
-<li style="margin-bottom: 1.2rem;"><b>PUNx: PUN Ponderato per Fasce</b> — Anziché applicare il PUN monorario
-all'intero campione, viene utilizzato un <b>PUNx</b> differenziato per classe di
-tensione (PUN BT, PUN MT) e un PUNx aggregato totale (PUN TOT). Questo consente di
-rappresentare in modo più aderente alla realtà il prezzo all'ingrosso
-dell'elettrico, riconoscendo che la composizione oraria del consumo è
-strutturalmente diversa fra utenze a Bassa Tensione e a Media Tensione: il PUNx
-così ponderato si avvicina di più al costo effettivo che ciascun segmento sostiene
-per l'energia ritirata dal mercato.<br><br>
-Per il mese di <b>{mese_label(meta['mese'])}</b>:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;⚡ <b>PUN TOT</b>: {_pun_tot:.4f} €/kWh — usato nel grafico Generale (sezione 1)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;⚡ <b>PUN BT</b>: {_pun_bt:.4f} €/kWh — usato per le fasce BT (sezioni 2 e 4.1)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;⚡ <b>PUN MT</b>: {_pun_mt:.4f} €/kWh — usato per la fascia MT (sezioni 2 e 4.1)<br><br>
-Il <b>PUN TOT</b> è la media ponderata tra PUN BT e PUN MT sui consumi reali del mese
-in osservazione del campione corrente; i prezzi <b>PUN BT</b> e <b>PUN MT</b>
-corrispondono alle medie ponderate dei prezzi PUN per fascia ARERA per le percentuali
-dei consumi storici per fascia, del mese osservato, delle utenze convenzionate.</li>
-
-<li style="margin-bottom: 1.2rem;"><b>Selezione del Top 10</b> — Per ciascuna fascia di potenza (elettrico) o
-tipologia d'uso (gas) si ordinano in modo crescente tutti i prezzi ricostruiti
-delle offerte raccolte sul mercato e si selezionano le <b>10 più convenienti</b>.
-La loro media aritmetica costituisce il valore di benchmark di mercato esposto nei
-grafici.</li>
-</ol>
-
-</div>
-""",
-    unsafe_allow_html=True,
-)
-
-# ----- Sotto-sezione 2: offerte e fornitori monitorati -----
-# Calcolo i dati Python prima, poi un UNICO st.markdown con tutto il contenuto
-# dentro lo stesso div.footer-block (cosi' il sottotitolo e i paragrafi sono
-# visivamente uniti nella stessa box).
-
-fornitori_con  = D.get("fornitori_con_offerte")
-fornitori_senza = D.get("fornitori_senza_offerte")
-# Fallback per data.json di versione precedente
-if fornitori_con is None or fornitori_senza is None:
-    _alias = {
-        "AGSM / Magis Energia": ["agsm", "magis"], "A2A Energia": ["a2a"],
-        "Axpo Italia": ["axpo"], "Dolomiti Energia": ["dolomiti"],
-        "Edison Energia": ["edison"], "Enel Energia": ["enel"],
-        "Engie Italia": ["engie"], "Eni Plenitude": ["plenitude", "eni "],
-        "Hera Comm": ["hera"], "Iren Mercato": ["iren"],
-        "Repower Italia": ["repower"], "Sorgenia": ["sorgenia"],
-    }
-    _txt = " | ".join(str(o.get("offerta", "")) for o in D.get("offerte_tutte", [])).lower()
-    fornitori_con = [n for n, a in _alias.items() if any(x in _txt for x in a)]
-    fornitori_senza = [f["nome"] for f in D.get("fornitori", []) if f["nome"] not in fornitori_con]
-
-# Data di estrazione (fallback alla mtime del data.json)
+# Calcolo data estrazione e conteggi offerte prima del markdown
 data_estr_str = D.get("meta", {}).get("data_estrazione")
 if not data_estr_str:
     import os
@@ -1227,7 +1173,6 @@ if data_estr_str:
     except Exception:
         data_estr_it = data_estr_str
 
-# Conteggi offerte ELE/GAS
 n_off_tot = meta.get("n_offerte_totali") or D.get("meta", {}).get("n_offerte_totali", 0)
 n_off_ele = D.get("meta", {}).get("n_offerte_ele")
 n_off_gas = D.get("meta", {}).get("n_offerte_gas")
@@ -1236,28 +1181,67 @@ if n_off_ele is None or n_off_gas is None:
     n_off_ele = sum(1 for o in _ot if o.get("commodity") == "ELE")
     n_off_gas = sum(1 for o in _ot if o.get("commodity") == "GAS")
 
-
-def _elenco_virgole(lst):
-    if not lst: return ""
-    if len(lst) == 1: return lst[0]
-    return ", ".join(lst[:-1]) + " e " + lst[-1]
-
-
-testo_con = _elenco_virgole(fornitori_con)
-testo_senza = _elenco_virgole(fornitori_senza)
-
-# UN UNICO blocco markdown per garantire che tutto sia dentro il footer-block
+# UN SOLO st.markdown con tutto dentro lo stesso footer-block
 st.markdown(
     f"""
-<div class="footer-block" style="margin-top:1rem;">
+<div class="footer-block">
 
-<h4 style="margin-top:0;">🏢 Offerte monitorate</h4>
+<h4 style="margin-top:0;">🔬 Come è costruito il benchmark</h4>
 
-<p>In data <b>{data_estr_it or '—'}</b> sono state raccolte e analizzate
-complessivamente <span class="num-evidenza">{n_off_tot} offerte indicizzate</span>
-attive sul mercato libero italiano, provenienti sia dai siti istituzionali dei
-fornitori sia dai principali portali comparatori, di cui
-<b>{n_off_ele}</b> per l'energia elettrica e <b>{n_off_gas}</b> per il gas.</p>
+<ol style="line-height:1.6;">
+<li style="margin-bottom: 1.2rem;"><b>Convenzione MMPOWER</b> — Il Prezzo della
+Materia prima è composto dalle voci <i>Generazione</i> e <i>Perdite di rete</i>
+calcolate a partire dai <b>dati reali</b> di fornitura delle aziende
+convenzionate (media ponderata sui consumi effettivi del periodo di osservazione).</li>
+
+<li style="margin-bottom: 1.2rem;"><b>Convenzione MMGAS</b> — Materia prima del
+gas calcolata per ciascuna tipologia d'uso a partire dai <b>dati reali</b> di
+fornitura delle aziende convenzionate (importo "materia prima" diviso per i Smc
+consumati del mese).</li>
+
+<li style="margin-bottom: 1.2rem;"><b>Mercato</b> — Per ogni offerta indicizzata
+raccolta il prezzo è ricostruito distintamente per i due vettori:<br><br>
+&nbsp;&nbsp;&nbsp;⚡ <b>Energia elettrica</b>:
+<code>P = PUNx + spread + (PUNx + spread) × coeff_perdita + (quota_fissa_annua × n_utenze) ÷ (12 × consumo_mese)</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;dove <code>coeff_perdita</code> = {meta['coeff_perdita_BT']*100:.0f}%
+per le utenze BT e {meta['coeff_perdita_MT']*100:.1f}% per quelle MT.<br><br>
+&nbsp;&nbsp;&nbsp;🔥 <b>Gas</b>:
+<code>P = PSV + spread + (quota_fissa_annua × n_utenze) ÷ (12 × consumo_mese)</code>.<br><br>
+<span style="color:#6B7280; font-size:.92rem;">I prezzi PUN e PSV all'ingrosso
+utilizzati nelle formule sono pubblicati da
+<a href="https://www.arera.it/dati-e-statistiche/dettaglio/prezzi-finali-energia-elettrica-per-i-consumatori-domestici-tipo" target="_blank"><b>ARERA — PLACET</b></a>.</span></li>
+
+<li style="margin-bottom: 1.2rem;"><b>PUNx: PUN Ponderato per Fasce</b> — Anziché
+applicare il PUN monorario all'intero campione, viene utilizzato un <b>PUNx</b>
+differenziato per classe di tensione (PUN BT, PUN MT) e un PUNx aggregato totale
+(PUN TOT). Questo consente di rappresentare in modo più aderente alla realtà il
+prezzo all'ingrosso del mercato elettrico italiano, riconoscendo che la
+composizione oraria del consumo è strutturalmente diversa fra utenze a Bassa
+Tensione e a Media Tensione: il PUNx così ponderato si avvicina di più al costo
+effettivo che ciascun segmento sostiene per l'energia ritirata dal mercato.<br><br>
+Per il periodo di osservazione <b>{mese_label(meta['mese'])}</b>:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;⚡ <b>PUN TOT</b>: {_pun_tot:.4f} €/kWh — usato nel grafico Generale (sezione 1)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;⚡ <b>PUN BT</b>: {_pun_bt:.4f} €/kWh — usato per le fasce BT (sezioni 2 e 4.1)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;⚡ <b>PUN MT</b>: {_pun_mt:.4f} €/kWh — usato per la fascia MT (sezioni 2 e 4.1)<br><br>
+Il <b>PUN TOT</b> è la media ponderata tra PUN BT e PUN MT sui consumi reali del
+periodo di osservazione del campione corrente; i prezzi <b>PUN BT</b> e
+<b>PUN MT</b> corrispondono alle medie ponderate dei prezzi PUN per fascia ARERA
+per le percentuali dei consumi storici per fascia, del mese osservato, delle
+utenze convenzionate.</li>
+
+<li style="margin-bottom: 1.2rem;"><b>Selezione del Top 10</b> — Per ciascuna
+classe di potenza (elettrico) o tipologia d'uso (gas) si ordinano in modo crescente
+tutti i prezzi ricostruiti delle offerte raccolte sul mercato e si selezionano le
+<b>10 più convenienti</b>. La loro media aritmetica costituisce il valore di
+benchmark di mercato esposto nei grafici.</li>
+
+<li style="margin-bottom: 1.2rem;"><b>Offerte monitorate</b> — In data
+<b>{data_estr_it or '—'}</b> sono state raccolte e analizzate complessivamente
+<span class="num-evidenza">{n_off_tot} offerte indicizzate</span> attive sul
+mercato libero italiano, provenienti sia dai siti istituzionali dei fornitori
+sia dai principali portali comparatori, di cui <b>{n_off_ele}</b> per l'energia
+elettrica e <b>{n_off_gas}</b> per il gas.</li>
+</ol>
 
 </div>
 """,
@@ -1296,35 +1280,25 @@ with cN1:
         """
 <div style="border:1px solid #6BAED6; border-radius:12px; padding:1rem 1.2rem;
             background:linear-gradient(180deg,#FFFFFF,#F0F7FC);
-            min-height:430px; display:flex; flex-direction:column;">
+            min-height:280px; display:flex; flex-direction:column;">
 <h4 style="color:#2C5784; margin-top:0;">⚡ Convenzione MMPOWER 2026-2027</h4>
 <p style="color:#6B7280; margin:.2rem 0 1rem 0; font-size:.9rem;">
 Fornitore: <b>Iren Mercato S.p.A.</b></p>
 
 <ul style="font-size:.95rem; line-height:1.5; flex:1;">
-<li><b>Prezzo materia prima</b>: indicizzato al <b>PUN Index GME</b> mensile <b>per fasce
-orarie</b> (F1, F2, F3), maggiorato di uno spread fisso
-<b>2,70 €/MWh</b>, invariabile per tutto il biennio di fornitura</li>
-<li><b>Commercializzazione e vendita</b>: <b>nessun corrispettivo aggiuntivo</b></li>
 <li><b>Soglia consumo</b>: <b>3.000.000 kWh/anno</b> per singola utenza</li>
 <li><b>Periodo di fornitura</b>: <b>fino al 31/12/2027</b></li>
-<li><b>Opzione 100% energia verde</b> (su richiesta del singolo cliente):
-+1,40 €/MWh nel 2026, +1,70 €/MWh nel 2027</li>
+<li><b>Opzione 100% energia verde</b> (su richiesta del singolo cliente)</li>
 </ul>
 </div>
 """,
         unsafe_allow_html=True,
     )
-    pdf_mmp = Path(__file__).parent / "News_Convenzione_MMPOWER_2026-2027.pdf"
-    if pdf_mmp.exists():
-        st.download_button(
-            label="📄 Scarica la news completa MMPOWER *",
-            data=pdf_mmp.read_bytes(),
-            file_name="News_Convenzione_MMPOWER_2026-2027.pdf",
-            mime="application/pdf",
-            type="primary",
-            key="dl_mmp",
-        )
+    st.link_button(
+        label="📰 Vai alla news completa MMPOWER *",
+        url="https://www.ui.torino.it/unione-per-te/energia-commodity/notizia/101781/prezzi-energia-elettrica-20262027-nuova/",
+        type="primary",
+    )
 
 # ---------- MMGAS ----------
 with cN2:
@@ -1332,36 +1306,25 @@ with cN2:
         """
 <div style="border:1px solid #F0A35E; border-radius:12px; padding:1rem 1.2rem;
             background:linear-gradient(180deg,#FFFFFF,#FCF5EE);
-            min-height:430px; display:flex; flex-direction:column;">
+            min-height:280px; display:flex; flex-direction:column;">
 <h4 style="color:#B4495C; margin-top:0;">🔥 Convenzione MMGAS 2025/26 — 2026/27</h4>
 <p style="color:#6B7280; margin:.2rem 0 1rem 0; font-size:.9rem;">
 Fornitore: <b>Eni Plenitude S.p.A.</b></p>
 
 <ul style="font-size:.95rem; line-height:1.5; flex:1;">
-<li><b>Prezzo materia prima</b>: indicizzato al <b>CMEM</b> (media mensile
-quotazioni Day Ahead PSV) maggiorato di uno spread fisso
-<b>0,023 €/Smc</b>, invariabile per tutto il biennio di fornitura</li>
-<li><b>Commercializzazione e vendita</b>: corrispettivo fisso <b>7 €/mese</b>
-+ variabile <b>0,007946 €/Smc</b></li>
 <li><b>Soglia consumo</b>: <b>200.000 Smc/anno</b> per singolo cliente</li>
 <li><b>Periodo di fornitura</b>: <b>fino al 30/09/2027</b></li>
-<li><b>Opzione 100% CO₂ compensata</b> (su richiesta del singolo cliente):
-+ 0,0263 €/Smc</li>
+<li><b>Opzione 100% CO₂ compensata</b> (su richiesta del singolo cliente)</li>
 </ul>
 </div>
 """,
         unsafe_allow_html=True,
     )
-    pdf_mmg = Path(__file__).parent / "News_Convenzione_MMGAS_2025-26_2026-27.pdf"
-    if pdf_mmg.exists():
-        st.download_button(
-            label="📄 Scarica la news completa MMGAS *",
-            data=pdf_mmg.read_bytes(),
-            file_name="News_Convenzione_MMGAS_2025-26_2026-27.pdf",
-            mime="application/pdf",
-            type="primary",
-            key="dl_mmg",
-        )
+    st.link_button(
+        label="📰 Vai alla news completa MMGAS *",
+        url="https://www.ui.torino.it/unione-per-te/energia-commodity/notizia/100897/gas-nuova-convenzione-biennale-unioneeni-plenitude/",
+        type="primary",
+    )
 
 # Banner contatti DOPO i pulsanti di download
 st.markdown(
@@ -1390,40 +1353,9 @@ fornitura alla prima data utile prevista in accordo col fornitore.
 )
 
 
-# ------------------------------------------------------------------
-# SITOGRAFIA
-# ------------------------------------------------------------------
-st.header("🔗 Sitografia")
-
-
-def _link_lista(items):
-    """Trasforma una lista di {nome,url} in HTML 'A, B e C' con i nomi linkati."""
-    parts = [f'<a href="{x["url"]}" target="_blank">{x["nome"]}</a>' for x in items]
-    if not parts: return ""
-    if len(parts) == 1: return parts[0]
-    return ", ".join(parts[:-1]) + " e " + parts[-1]
-
-
-# 1) ARERA come PRIMA voce
-arera_url = ("https://www.arera.it/dati-e-statistiche/dettaglio/prezzi-finali-"
-             "energia-elettrica-per-i-consumatori-domestici-tipo")
-st.markdown(
-    f"""
-<p><b>Fonte prezzi all'ingrosso:</b>
-<a href="{arera_url}" target="_blank">ARERA — PLACET</a>
-(PUN monorario per l'energia elettrica, PSV per il gas).</p>
-
-<p><b>Portali comparatori monitorati:</b><br>
-{_link_lista(D.get("portali", []))}.</p>
-
-<p><b>Siti istituzionali dei fornitori monitorati:</b><br>
-{_link_lista(D.get("fornitori", []))}.</p>
-""",
-    unsafe_allow_html=True,
-)
-
-# Sezione PDF rimossa: il documento delle offerte resta riservato e disponibile
-# solo all'Area Gas & Power (non scaricabile dalla pagina).
+# Sezione Sitografia rimossa: i riferimenti rilevanti (ARERA PLACET) sono
+# integrati nella Metodologia. Il PDF delle offerte resta riservato e disponibile
+# solo all'Area Gas & Power (non pubblicato sulla pagina).
 
 st.markdown(
     f"""
