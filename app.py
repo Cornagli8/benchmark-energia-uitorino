@@ -1218,8 +1218,8 @@ Tensione e a Media Tensione: il PUNx così ponderato si avvicina di più al cost
 effettivo che ciascun segmento sostiene per l'energia ritirata dal mercato.<br><br>
 Per il periodo di osservazione <b>{mese_label(meta['mese'])}</b>:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;⚡ <b>PUN TOT</b>: {_pun_tot:.4f} €/kWh — usato nel grafico Generale (sezione 1)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;⚡ <b>PUN BT</b>: {_pun_bt:.4f} €/kWh — usato per le fasce BT (sezioni 2 e 4.1)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;⚡ <b>PUN MT</b>: {_pun_mt:.4f} €/kWh — usato per la fascia MT (sezioni 2 e 4.1)<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;⚡ <b>PUN BT</b>: {_pun_bt:.4f} €/kWh — usato per le classi BT (sezioni 2 e 4.1)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;⚡ <b>PUN MT</b>: {_pun_mt:.4f} €/kWh — usato per la classe MT (sezioni 2 e 4.1)<br><br>
 Il <b>PUN TOT</b> è la media ponderata tra PUN BT e PUN MT sui consumi reali del
 periodo di osservazione del campione corrente; i prezzi <b>PUN BT</b> e
 <b>PUN MT</b> corrispondono alle medie ponderate dei prezzi PUN per fascia ARERA
