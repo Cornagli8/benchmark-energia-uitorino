@@ -700,27 +700,11 @@ df_ele["_order"] = df_ele["tipologia"].apply(
 df_ele = df_ele.sort_values("_order").reset_index(drop=True)
 
 
-def _wmean(s, w):
-    w = w.loc[s.index]
-    return (s * w).sum() / w.sum() if w.sum() else 0.0
-
-
-# Aggrega BT≤3 + BT 4.5-40 -> BT≤40 con media ponderata sui consumi
-bt_low = df_ele[df_ele["tipologia"].isin(["BT <=3 kW", "BT 4.5-40 kW"])]
-bt_high = df_ele[df_ele["tipologia"] == "BT >40 kW"]
-mt_row = df_ele[df_ele["tipologia"] == "MT"]
-
-bt_low_conv = _wmean(bt_low["materia_prima_conv"], bt_low["consumo_mese"])
-bt_low_merc = _wmean(bt_low["benchmark_mercato"], bt_low["consumo_mese"])
-
-cons_low_3 = float(df_ele[df_ele["tipologia"] == "BT <=3 kW"]["consumo_mese"].sum())
-cons_low_40 = float(df_ele[df_ele["tipologia"] == "BT 4.5-40 kW"]["consumo_mese"].sum())
-
 st.markdown(
-    f"""
+    """
 <div class="desc-box">
 Dettaglio per <b>classe di potenza impegnata</b>. Il Prezzo per la materia prima
-della Convenzione è calcolato per ciascuna delle tre classi di potenza (media
+della Convenzione è calcolato per ciascuna delle quattro classi di potenza (media
 ponderata sui consumi dei POD di ciascuna classe); le <b>Top 10 di mercato</b>
 sono invece ricalcolate per ciascuna classe di potenza, in quanto le migliori
 offerte possono variare in funzione delle caratteristiche di consumo tipico
@@ -730,13 +714,10 @@ delle classi indicate.
     unsafe_allow_html=True,
 )
 
-cat = ["BT <=40 kW", "BT >40 kW", "MT"]
-y_c = [bt_low_conv,
-       float(bt_high["materia_prima_conv"].iloc[0]) if len(bt_high) else 0,
-       float(mt_row["materia_prima_conv"].iloc[0]) if len(mt_row) else 0]
-y_m = [bt_low_merc,
-       float(bt_high["benchmark_mercato"].iloc[0]) if len(bt_high) else 0,
-       float(mt_row["benchmark_mercato"].iloc[0]) if len(mt_row) else 0]
+# 4 classi di potenza dirette dal df_ele (ordinato secondo ORDINE_ELE)
+cat = df_ele["tipologia"].tolist()
+y_c = df_ele["materia_prima_conv"].astype(float).tolist()
+y_m = df_ele["benchmark_mercato"].astype(float).tolist()
 
 st.plotly_chart(
     bar_gruppi(cat, y_c, y_m, C_CONV_ELE, C_MERC_ELE,
@@ -889,27 +870,31 @@ def _slider_intero(label, vmin, vmax, default, step, key_prefix, unit=""):
 
 
 # =====================================================================
-# Consumi medi per POD - aggregati in 3 categorie (BT<=40 / BT>40 / MT)
-# in modo da matchare la stessa suddivisione usata nella sezione 2.
+# Consumi medi per POD - 4 classi di potenza distinte
+# (BT <=3 kW / BT 4.5-40 kW / BT >40 kW / MT) come da df_ele.
 # =====================================================================
-def _agg_cat(filter_tip):
-    """Somma consumi e n_utenze sulle righe ELE che soddisfano la condizione."""
+def _stat_cat(tip):
+    """Estrae (cons_totale, n_utenze, cons_medio) per la fascia indicata."""
     sub = df_conf[(df_conf["commodity"] == "ELE")
-                   & df_conf["tipologia"].apply(filter_tip)]
-    n = int(sub["n_utenze"].sum())
-    cons = float(sub["consumo_mese"].sum())
-    return cons, n
+                   & (df_conf["tipologia"] == tip)]
+    if sub.empty:
+        return 0.0, 0, 0.0
+    cons = float(sub["consumo_mese"].iloc[0])
+    n = int(sub["n_utenze"].iloc[0])
+    return cons, n, (cons / n if n else 0.0)
 
-# BT <=40 kW = somma di "BT <=3 kW" + "BT 4.5-40 kW"
-cons_btL_tot, n_btL_real = _agg_cat(lambda t: t in ("BT <=3 kW", "BT 4.5-40 kW"))
-# BT >40 kW
-cons_btH_tot, n_btH_real = _agg_cat(lambda t: t == "BT >40 kW")
-# MT
-cons_mt_tot_real, n_mt_real = _agg_cat(lambda t: t == "MT")
 
-cons_btL_medio = cons_btL_tot / n_btL_real if n_btL_real else 1500.0
-cons_btH_medio = cons_btH_tot / n_btH_real if n_btH_real else 10000.0
-cons_mt_medio  = cons_mt_tot_real / n_mt_real if n_mt_real else 40000.0
+# 4 classi di potenza ELE: dati base
+_cons_3,   _n_3,   cons_3_medio   = _stat_cat("BT <=3 kW")
+_cons_40,  _n_40,  cons_40_medio  = _stat_cat("BT 4.5-40 kW")
+_cons_btH, _n_btH, cons_btH_medio = _stat_cat("BT >40 kW")
+_cons_mt,  _n_mt,  cons_mt_medio  = _stat_cat("MT")
+
+# fallback di sicurezza per evitare slider con default=0
+if cons_3_medio   == 0: cons_3_medio   = 200.0
+if cons_40_medio  == 0: cons_40_medio  = 1500.0
+if cons_btH_medio == 0: cons_btH_medio = 10000.0
+if cons_mt_medio  == 0: cons_mt_medio  = 40000.0
 
 n_pdr_real = int(df_conf[df_conf["commodity"] == "GAS"]["n_utenze"].sum())
 cons_gas_tot_real = float(df_conf[df_conf["commodity"] == "GAS"]["consumo_mese"].sum())
@@ -917,9 +902,8 @@ cons_pdr_medio = cons_gas_tot_real / n_pdr_real if n_pdr_real else 2500.0
 
 
 # =====================================================================
-# 4.1 Elettrico — 3 slider (BT<=40 / BT>40 / MT) sui numeri di utenze.
+# 4.1 Elettrico — 4 slider (BT ≤3 / BT 4.5-40 / BT >40 / MT)
 #   I consumi medi per POD sono FISSI (medi reali del mese selezionato).
-#   Si parte con 1 utenza per ciascuna categoria.
 # =====================================================================
 st.subheader(f"4.1 {ICON_ELE} Elettrico — Simulatore Prezzo Materia prima per n° Utenze (per Tensione)")
 
@@ -930,8 +914,10 @@ st.markdown(
 🧮 Consumo medio per Classe di Potenza del Periodo d'osservazione
 <b>{mese_label(meta['mese'])}</b>
 (media reale sulle utenze POD del campione):<br>
-&nbsp;&nbsp;⚡ Consumo medio di un'Utenza <b>BT ≤40 kW</b>:
-{_fmt_thousands(round(cons_btL_medio))} kWh<br>
+&nbsp;&nbsp;⚡ Consumo medio di un'Utenza <b>BT ≤3 kW</b>:
+{_fmt_thousands(round(cons_3_medio))} kWh<br>
+&nbsp;&nbsp;⚡ Consumo medio di un'Utenza <b>BT 4,5–40 kW</b>:
+{_fmt_thousands(round(cons_40_medio))} kWh<br>
 &nbsp;&nbsp;⚡ Consumo medio di un'Utenza <b>BT &gt;40 kW</b>:
 {_fmt_thousands(round(cons_btH_medio))} kWh<br>
 &nbsp;&nbsp;⚡ Consumo medio di un'Utenza in <b>Media Tensione (MT)</b>:
@@ -941,21 +927,23 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-cE1, cE2, cE3 = st.columns(3)
+cE1, cE2, cE3, cE4 = st.columns(4)
 with cE1:
-    n_btL = _slider_intero("BT ≤40 kW", vmin=0, vmax=2000,
-                            default=1, step=1, key_prefix="n_btL")
+    n_bt3 = _slider_intero("BT ≤3 kW", vmin=0, vmax=2000,
+                            default=1, step=1, key_prefix="n_bt3")
 with cE2:
+    n_bt40 = _slider_intero("BT 4,5–40 kW", vmin=0, vmax=2000,
+                             default=1, step=1, key_prefix="n_bt40")
+with cE3:
     n_btH = _slider_intero("BT >40 kW", vmin=0, vmax=2000,
                             default=1, step=1, key_prefix="n_btH")
-with cE3:
+with cE4:
     n_mt = _slider_intero("MT", vmin=0, vmax=500,
                            default=1, step=1, key_prefix="n_mt")
 
-if n_btL == 0 and n_btH == 0 and n_mt == 0:
+if n_bt3 == 0 and n_bt40 == 0 and n_btH == 0 and n_mt == 0:
     st.warning("Seleziona almeno una utenza per visualizzare il confronto.")
 else:
-    # PUNx per tensione + Conv per tensione (BT condiviso fra BT<=40 e BT>40)
     pun_bt_val = float(meta.get("PUN_BT_eur_kWh") or meta.get("PUN_eur_kWh", 0))
     pun_mt_val = float(meta.get("PUN_MT_eur_kWh") or meta.get("PUN_eur_kWh", 0))
     mp_conv_bt = float(meta.get("mp_conv_BT", 0))
@@ -963,24 +951,29 @@ else:
     coeff_BT = meta.get("coeff_perdita_BT", 0.10)
     coeff_MT = meta.get("coeff_perdita_MT", 0.038)
 
-    # Benchmark di mercato a consumo medio della categoria (perdite BT per le 2 BT, MT per MT)
-    bench_btL = _benchmark_mercato_singola("ELE", pun_bt_val, cons_btL_medio, coeff_perdita=coeff_BT)
-    bench_btH = _benchmark_mercato_singola("ELE", pun_bt_val, cons_btH_medio, coeff_perdita=coeff_BT)
-    bench_mt  = _benchmark_mercato_singola("ELE", pun_mt_val, cons_mt_medio,  coeff_perdita=coeff_MT)
+    # Benchmark di mercato a consumo medio della categoria
+    bench_bt3  = _benchmark_mercato_singola("ELE", pun_bt_val, cons_3_medio,   coeff_perdita=coeff_BT)
+    bench_bt40 = _benchmark_mercato_singola("ELE", pun_bt_val, cons_40_medio,  coeff_perdita=coeff_BT)
+    bench_btH  = _benchmark_mercato_singola("ELE", pun_bt_val, cons_btH_medio, coeff_perdita=coeff_BT)
+    bench_mt   = _benchmark_mercato_singola("ELE", pun_mt_val, cons_mt_medio,  coeff_perdita=coeff_MT)
 
-    # Consumi totali simulati
-    cons_btL_sim = n_btL * cons_btL_medio
-    cons_btH_sim = n_btH * cons_btH_medio
-    cons_mt_sim  = n_mt  * cons_mt_medio
-    cons_tot = cons_btL_sim + cons_btH_sim + cons_mt_sim
+    # Consumi totali simulati per categoria
+    cons_bt3_sim  = n_bt3  * cons_3_medio
+    cons_bt40_sim = n_bt40 * cons_40_medio
+    cons_btH_sim  = n_btH  * cons_btH_medio
+    cons_mt_sim   = n_mt   * cons_mt_medio
+    cons_tot = cons_bt3_sim + cons_bt40_sim + cons_btH_sim + cons_mt_sim
+    cons_bt_sim = cons_bt3_sim + cons_bt40_sim + cons_btH_sim  # tutte le BT
 
-    # Quante categorie attive
-    attive = sum(1 for n in (n_btL, n_btH, n_mt) if n > 0)
+    attive_n = [n_bt3, n_bt40, n_btH, n_mt]
+    attive = sum(1 for n in attive_n if n > 0)
     if attive == 1:
-        # Singola categoria -> barra singola con prezzo Conv e bench della categoria
-        if n_btL > 0:
-            etichetta = f"⚡ Solo BT ≤40 kW ({n_btL} POD × {_fmt_thousands(round(cons_btL_medio))} kWh)"
-            conv_v, merc_v = mp_conv_bt, (bench_btL or 0)
+        if n_bt3 > 0:
+            etichetta = f"⚡ Solo BT ≤3 kW ({n_bt3} POD × {_fmt_thousands(round(cons_3_medio))} kWh)"
+            conv_v, merc_v = mp_conv_bt, (bench_bt3 or 0)
+        elif n_bt40 > 0:
+            etichetta = f"⚡ Solo BT 4,5–40 kW ({n_bt40} POD × {_fmt_thousands(round(cons_40_medio))} kWh)"
+            conv_v, merc_v = mp_conv_bt, (bench_bt40 or 0)
         elif n_btH > 0:
             etichetta = f"⚡ Solo BT >40 kW ({n_btH} POD × {_fmt_thousands(round(cons_btH_medio))} kWh)"
             conv_v, merc_v = mp_conv_bt, (bench_btH or 0)
@@ -989,17 +982,16 @@ else:
             conv_v, merc_v = mp_conv_mt, (bench_mt or 0)
     else:
         # Aggregato: media ponderata sui consumi simulati
-        # Conv: BT condiviso, MT separato
-        cons_bt_sim = cons_btL_sim + cons_btH_sim
         if cons_tot > 0:
             conv_v = (mp_conv_bt * cons_bt_sim + mp_conv_mt * cons_mt_sim) / cons_tot
-            bb_num = ((bench_btL or 0) * cons_btL_sim
-                      + (bench_btH or 0) * cons_btH_sim
-                      + (bench_mt or 0)  * cons_mt_sim)
+            bb_num = ((bench_bt3 or 0)  * cons_bt3_sim
+                      + (bench_bt40 or 0) * cons_bt40_sim
+                      + (bench_btH or 0)  * cons_btH_sim
+                      + (bench_mt or 0)   * cons_mt_sim)
             merc_v = bb_num / cons_tot
         else:
             conv_v = merc_v = 0
-        etichetta = (f"⚡ Aggregato {n_btL} BT≤40 + {n_btH} BT>40 + {n_mt} MT "
+        etichetta = (f"⚡ Aggregato {n_bt3}+{n_bt40}+{n_btH} BT + {n_mt} MT "
                      f"({_fmt_thousands(round(cons_tot))} kWh totali)")
     unit = "€/MWh"
 
@@ -1015,12 +1007,12 @@ else:
         use_container_width=True,
     )
 
-    # Etichetta mese-anno compatta (es. mar-26), 'tutti' per aggregato
     _mese_aa_str = _mese_aa(meta["mese"])
-
     pezzi = []
-    if n_btL > 0 and bench_btL is not None:
-        pezzi.append(f"<b>BT ≤40</b>: {bench_btL:.2f} €/MWh")
+    if n_bt3 > 0 and bench_bt3 is not None:
+        pezzi.append(f"<b>BT ≤3</b>: {bench_bt3:.2f} €/MWh")
+    if n_bt40 > 0 and bench_bt40 is not None:
+        pezzi.append(f"<b>BT 4,5–40</b>: {bench_bt40:.2f} €/MWh")
     if n_btH > 0 and bench_btH is not None:
         pezzi.append(f"<b>BT &gt;40</b>: {bench_btH:.2f} €/MWh")
     if n_mt > 0 and bench_mt is not None:
