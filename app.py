@@ -538,56 +538,33 @@ _pun_f2  = meta.get("PUN_F2_eur_kWh") or 0
 _pun_f3  = meta.get("PUN_F3_eur_kWh") or 0
 _is_aggregato = (mese_sel == KEY_AGGREGATO)
 
-if _is_aggregato:
-    # Per l'aggregato: PUN ponderato ai consumi (F1/F2/F3 sono medie pesate),
-    # PSV ponderato ai consumi gas
-    _prezzi_html = f"""
-    <span style="color:#374151; font-size:.9rem;">
-      <span style="color:#6B7280;">PUN ponderato ai consumi per fasce</span>
-      &nbsp;&nbsp;
-      <b style="color:#16A34A;">F1 {_pun_f1:.4f}</b>
-      &nbsp;·&nbsp;
-      <b style="color:#16A34A;">F2 {_pun_f2:.4f}</b>
-      &nbsp;·&nbsp;
-      <b style="color:#16A34A;">F3 {_pun_f3:.4f}</b>
-      &nbsp;<b style="color:#16A34A;">€/kWh</b>
-    </span>
-    <span style="color:#374151; font-size:.9rem;">
-      <span style="color:#6B7280;">PSV ponderato ai consumi</span>
-      &nbsp;<b style="color:#16A34A;">{meta['PSV_eur_Smc']:.4f} €/Smc</b>
-    </span>"""
-else:
-    _prezzi_html = f"""
-    <span style="color:#374151; font-size:.9rem;">
-      <span style="color:#6B7280;">PUN per fasce</span>
-      &nbsp;&nbsp;
-      <b style="color:#16A34A;">F1 {_pun_f1:.4f}</b>
-      &nbsp;·&nbsp;
-      <b style="color:#16A34A;">F2 {_pun_f2:.4f}</b>
-      &nbsp;·&nbsp;
-      <b style="color:#16A34A;">F3 {_pun_f3:.4f}</b>
-      &nbsp;<b style="color:#16A34A;">€/kWh</b>
-    </span>
-    <span style="color:#374151; font-size:.9rem;">
-      <span style="color:#6B7280;">PSV</span>
-      &nbsp;<b style="color:#16A34A;">{meta['PSV_eur_Smc']:.4f} €/Smc</b>
-    </span>"""
+_label_pun = "PUN ponderato ai consumi per fasce" if _is_aggregato else "PUN per fasce"
+_label_psv = "PSV ponderato ai consumi" if _is_aggregato else "PSV"
 
-st.markdown(
-    f"""
-<div class="periodo-box">
-  <div style="display:flex; flex-direction:column; flex:1;">
-    <span class="periodo-label">📅 Periodo di osservazione</span>
-    <span class="periodo-value">{mese_label(meta['mese'])}</span>
-  </div>
-  <div style="display:flex; flex-direction:column; gap:.25rem; text-align:right;
-              border-left:1px solid #CBD5E1; padding-left:1.2rem;">
-    {_prezzi_html}
-  </div>
-</div>
-""",
-    unsafe_allow_html=True,
+# IMPORTANTE: tutto l'HTML del riquadro deve stare su una sola riga (o senza
+# indentazione iniziale) per non essere interpretato come code block da Streamlit.
+_html_periodo = (
+    f'<div class="periodo-box">'
+    f'<div style="display:flex; flex-direction:column; flex:1;">'
+    f'<span class="periodo-label">📅 Periodo di osservazione</span>'
+    f'<span class="periodo-value">{mese_label(meta["mese"])}</span>'
+    f'</div>'
+    f'<div style="display:flex; flex-direction:column; gap:.25rem; text-align:right; '
+    f'border-left:1px solid #CBD5E1; padding-left:1.2rem;">'
+    f'<span style="color:#374151; font-size:.9rem;">'
+    f'<span style="color:#6B7280;">{_label_pun}</span>&nbsp;&nbsp;'
+    f'<b style="color:#16A34A;">F1 {_pun_f1:.4f}</b>&nbsp;·&nbsp;'
+    f'<b style="color:#16A34A;">F2 {_pun_f2:.4f}</b>&nbsp;·&nbsp;'
+    f'<b style="color:#16A34A;">F3 {_pun_f3:.4f}</b>&nbsp;'
+    f'<b style="color:#16A34A;">€/kWh</b>'
+    f'</span>'
+    f'<span style="color:#374151; font-size:.9rem;">'
+    f'<span style="color:#6B7280;">{_label_psv}</span>&nbsp;'
+    f'<b style="color:#16A34A;">{meta["PSV_eur_Smc"]:.4f} €/Smc</b>'
+    f'</span>'
+    f'</div></div>'
 )
+st.markdown(_html_periodo, unsafe_allow_html=True)
 
 
 # ------------------------------------------------------------------
@@ -601,8 +578,8 @@ st.markdown(
 Confronto a colpo d'occhio fra il <b>prezzo della materia prima riconosciuta dalle
 Convenzioni</b> e il <b>benchmark</b> calcolato come media delle <b>10 migliori offerte
 attive sul mercato libero</b>. Per ciascuna offerta il prezzo è ricostruito come
-<i>PUN/PSV indicizzato + spread + quota fissa unitaria</i>; per il solo <b>elettrico</b>
-si aggiungono le <b>perdite di rete</b>.
+<i>PUN/PSV indicizzato + spread + eventuali corrispettivi fissi</i>; per il solo
+<b>elettrico</b> si aggiungono le <b>perdite di rete</b>.
 </div>
 """,
     unsafe_allow_html=True,
@@ -745,8 +722,9 @@ st.markdown(
 Dettaglio per <b>classe di potenza impegnata</b>. Il Prezzo per la materia prima
 della Convenzione è calcolato per ciascuna delle tre classi di potenza (media
 ponderata sui consumi dei POD di ciascuna classe); le <b>Top 10 di mercato</b>
-sono invece ricalcolate per ciascuna categoria, in quanto le offerte migliori
-possono variare in funzione delle loro caratteristiche di consumo tipico.
+sono invece ricalcolate per ciascuna classe di potenza, in quanto le migliori
+offerte possono variare in funzione delle caratteristiche di consumo tipico
+delle classi indicate.
 </div>
 """,
     unsafe_allow_html=True,
@@ -780,8 +758,8 @@ Dettaglio per <b>tipologia d'uso del gas</b>. Il Prezzo per la materia prima
 della Convenzione è calcolato distintamente <b>per ciascuna delle quattro
 tipologie d'uso</b> (media ponderata sui consumi e importi reali del mese, per
 ogni tipologia); le <b>Top 10 di mercato</b> sono ricalcolate per ciascuna
-tipologia, in quanto le offerte migliori possono variare in funzione delle
-loro caratteristiche di consumo tipico.
+tipologia, in quanto le migliori offerte possono variare in funzione delle
+caratteristiche di consumo tipico delle tipologie indicate.
 </div>
 """,
     unsafe_allow_html=True,
@@ -813,7 +791,7 @@ Questa sezione consente di <b>simulare scenari di mix di utenze</b> a partire da
 consumi medi reali del campione convenzionato. Selezionando il numero di utenze
 desiderato per ciascuna classe o tipologia si ottiene una proiezione immediata di
 quanto il prezzo della materia prima della Convenzione e del benchmark di mercato
-si sposterebbero al variare della composizione del portafoglio di utenze,
+varierebbero al variare della composizione del portafoglio di utenze,
 mantenendo costanti i predetti consumi medi rilevati nel periodo di osservazione.
 <ul>
   <li>per il <b>4.1 Elettrico</b>, il prezzo aggregato corrisponderà alla media
@@ -910,40 +888,52 @@ def _slider_intero(label, vmin, vmax, default, step, key_prefix, unit=""):
     return st.session_state[sk]
 
 
-# Consumi MEDI reali per POD/PDR del mese selezionato (FISSI, non modificabili).
-# Sono i valori di "una singola utenza media" della propria categoria.
-n_bt_real = int(df_conf[(df_conf["commodity"] == "ELE")
-                        & (df_conf["tipologia"].str.startswith("BT", na=False))]["n_utenze"].sum())
-n_mt_real = int(df_conf[(df_conf["commodity"] == "ELE")
-                        & (df_conf["tipologia"] == "MT")]["n_utenze"].sum())
-cons_bt_tot_real = float(df_conf[(df_conf["commodity"] == "ELE")
-                                  & (df_conf["tipologia"].str.startswith("BT", na=False))]["consumo_mese"].sum())
-cons_mt_tot_real = float(df_conf[(df_conf["commodity"] == "ELE")
-                                  & (df_conf["tipologia"] == "MT")]["consumo_mese"].sum())
-cons_bt_medio = cons_bt_tot_real / n_bt_real if n_bt_real else 2000.0
-cons_mt_medio = cons_mt_tot_real / n_mt_real if n_mt_real else 40000.0
+# =====================================================================
+# Consumi medi per POD - aggregati in 3 categorie (BT<=40 / BT>40 / MT)
+# in modo da matchare la stessa suddivisione usata nella sezione 2.
+# =====================================================================
+def _agg_cat(filter_tip):
+    """Somma consumi e n_utenze sulle righe ELE che soddisfano la condizione."""
+    sub = df_conf[(df_conf["commodity"] == "ELE")
+                   & df_conf["tipologia"].apply(filter_tip)]
+    n = int(sub["n_utenze"].sum())
+    cons = float(sub["consumo_mese"].sum())
+    return cons, n
+
+# BT <=40 kW = somma di "BT <=3 kW" + "BT 4.5-40 kW"
+cons_btL_tot, n_btL_real = _agg_cat(lambda t: t in ("BT <=3 kW", "BT 4.5-40 kW"))
+# BT >40 kW
+cons_btH_tot, n_btH_real = _agg_cat(lambda t: t == "BT >40 kW")
+# MT
+cons_mt_tot_real, n_mt_real = _agg_cat(lambda t: t == "MT")
+
+cons_btL_medio = cons_btL_tot / n_btL_real if n_btL_real else 1500.0
+cons_btH_medio = cons_btH_tot / n_btH_real if n_btH_real else 10000.0
+cons_mt_medio  = cons_mt_tot_real / n_mt_real if n_mt_real else 40000.0
 
 n_pdr_real = int(df_conf[df_conf["commodity"] == "GAS"]["n_utenze"].sum())
 cons_gas_tot_real = float(df_conf[df_conf["commodity"] == "GAS"]["consumo_mese"].sum())
 cons_pdr_medio = cons_gas_tot_real / n_pdr_real if n_pdr_real else 2500.0
 
 
-# =================================================================
-# 4.1 Elettrico — 2 slider (n_BT, n_MT) sui numeri di utenze.
+# =====================================================================
+# 4.1 Elettrico — 3 slider (BT<=40 / BT>40 / MT) sui numeri di utenze.
 #   I consumi medi per POD sono FISSI (medi reali del mese selezionato).
-#   Si parte con 1 BT + 1 MT (utenze medie).
-# =================================================================
+#   Si parte con 1 utenza per ciascuna categoria.
+# =====================================================================
 st.subheader(f"4.1 {ICON_ELE} Elettrico — Simulatore Prezzo Materia prima per n° Utenze (per Tensione)")
 
 st.markdown(
     f"""
 <div style="background:#F8FAFC; border:1px solid #E5E7EB; border-radius:8px;
             padding:.8rem 1rem; margin: .4rem 0 1rem 0; font-size:.92rem;">
-🧮 Consumo medio per Classe di Tensione del Periodo d'osservazione
+🧮 Consumo medio per Classe di Potenza del Periodo d'osservazione
 <b>{mese_label(meta['mese'])}</b>
 (media reale sulle utenze POD del campione):<br>
-&nbsp;&nbsp;⚡ Consumo medio di un'Utenza in <b>Bassa Tensione (BT)</b>:
-{_fmt_thousands(round(cons_bt_medio))} kWh<br>
+&nbsp;&nbsp;⚡ Consumo medio di un'Utenza <b>BT ≤40 kW</b>:
+{_fmt_thousands(round(cons_btL_medio))} kWh<br>
+&nbsp;&nbsp;⚡ Consumo medio di un'Utenza <b>BT &gt;40 kW</b>:
+{_fmt_thousands(round(cons_btH_medio))} kWh<br>
 &nbsp;&nbsp;⚡ Consumo medio di un'Utenza in <b>Media Tensione (MT)</b>:
 {_fmt_thousands(round(cons_mt_medio))} kWh
 </div>
@@ -951,55 +941,67 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-cE1, cE2 = st.columns(2)
+cE1, cE2, cE3 = st.columns(3)
 with cE1:
-    n_bt = _slider_intero("BT", vmin=0, vmax=2000,
-                           default=1, step=1, key_prefix="n_bt")
+    n_btL = _slider_intero("BT ≤40 kW", vmin=0, vmax=2000,
+                            default=1, step=1, key_prefix="n_btL")
 with cE2:
+    n_btH = _slider_intero("BT >40 kW", vmin=0, vmax=2000,
+                            default=1, step=1, key_prefix="n_btH")
+with cE3:
     n_mt = _slider_intero("MT", vmin=0, vmax=500,
                            default=1, step=1, key_prefix="n_mt")
 
-if n_bt == 0 and n_mt == 0:
-    st.warning("Seleziona almeno una utenza BT o MT per visualizzare il confronto.")
+if n_btL == 0 and n_btH == 0 and n_mt == 0:
+    st.warning("Seleziona almeno una utenza per visualizzare il confronto.")
 else:
-    # Uso PUN_BT e PUN_MT pesati (sui consumi storici per fascia oraria)
+    # PUNx per tensione + Conv per tensione (BT condiviso fra BT<=40 e BT>40)
     pun_bt_val = float(meta.get("PUN_BT_eur_kWh") or meta.get("PUN_eur_kWh", 0))
     pun_mt_val = float(meta.get("PUN_MT_eur_kWh") or meta.get("PUN_eur_kWh", 0))
-    mp_conv_bt = float(meta.get("mp_conv_BT", 0))    # €/MWh, fisso
+    mp_conv_bt = float(meta.get("mp_conv_BT", 0))
     mp_conv_mt = float(meta.get("mp_conv_MT", 0))
+    coeff_BT = meta.get("coeff_perdita_BT", 0.10)
+    coeff_MT = meta.get("coeff_perdita_MT", 0.038)
 
-    # Benchmark di mercato a consumo medio fisso (per fascia)
-    bench_bt = _benchmark_mercato_singola(
-        "ELE", pun_bt_val, cons_bt_medio,
-        coeff_perdita=meta.get("coeff_perdita_BT", 0.10),
-    )
-    bench_mt = _benchmark_mercato_singola(
-        "ELE", pun_mt_val, cons_mt_medio,
-        coeff_perdita=meta.get("coeff_perdita_MT", 0.038),
-    )
+    # Benchmark di mercato a consumo medio della categoria (perdite BT per le 2 BT, MT per MT)
+    bench_btL = _benchmark_mercato_singola("ELE", pun_bt_val, cons_btL_medio, coeff_perdita=coeff_BT)
+    bench_btH = _benchmark_mercato_singola("ELE", pun_bt_val, cons_btH_medio, coeff_perdita=coeff_BT)
+    bench_mt  = _benchmark_mercato_singola("ELE", pun_mt_val, cons_mt_medio,  coeff_perdita=coeff_MT)
 
     # Consumi totali simulati
-    cons_bt_sim = n_bt * cons_bt_medio
-    cons_mt_sim = n_mt * cons_mt_medio
-    cons_tot = cons_bt_sim + cons_mt_sim
+    cons_btL_sim = n_btL * cons_btL_medio
+    cons_btH_sim = n_btH * cons_btH_medio
+    cons_mt_sim  = n_mt  * cons_mt_medio
+    cons_tot = cons_btL_sim + cons_btH_sim + cons_mt_sim
 
-    # Caso "solo BT" o "solo MT": una singola barra (no media ponderata)
-    if n_bt > 0 and n_mt == 0:
-        etichetta = f"⚡ Solo BT ({n_bt} POD × {_fmt_thousands(round(cons_bt_medio))} kWh)"
-        conv_v, merc_v, unit = mp_conv_bt, (bench_bt or 0), "€/MWh"
-    elif n_mt > 0 and n_bt == 0:
-        etichetta = f"⚡ Solo MT ({n_mt} POD × {_fmt_thousands(round(cons_mt_medio))} kWh)"
-        conv_v, merc_v, unit = mp_conv_mt, (bench_mt or 0), "€/MWh"
-    else:
-        # Aggregato BT + MT (media ponderata sui consumi simulati)
-        conv_v = (mp_conv_bt * cons_bt_sim + mp_conv_mt * cons_mt_sim) / max(cons_tot, 1)
-        if bench_bt is not None and bench_mt is not None:
-            merc_v = (bench_bt * cons_bt_sim + bench_mt * cons_mt_sim) / max(cons_tot, 1)
+    # Quante categorie attive
+    attive = sum(1 for n in (n_btL, n_btH, n_mt) if n > 0)
+    if attive == 1:
+        # Singola categoria -> barra singola con prezzo Conv e bench della categoria
+        if n_btL > 0:
+            etichetta = f"⚡ Solo BT ≤40 kW ({n_btL} POD × {_fmt_thousands(round(cons_btL_medio))} kWh)"
+            conv_v, merc_v = mp_conv_bt, (bench_btL or 0)
+        elif n_btH > 0:
+            etichetta = f"⚡ Solo BT >40 kW ({n_btH} POD × {_fmt_thousands(round(cons_btH_medio))} kWh)"
+            conv_v, merc_v = mp_conv_bt, (bench_btH or 0)
         else:
-            merc_v = bench_bt or bench_mt or 0
-        etichetta = (f"⚡ Aggregato {n_bt} BT + {n_mt} MT "
+            etichetta = f"⚡ Solo MT ({n_mt} POD × {_fmt_thousands(round(cons_mt_medio))} kWh)"
+            conv_v, merc_v = mp_conv_mt, (bench_mt or 0)
+    else:
+        # Aggregato: media ponderata sui consumi simulati
+        # Conv: BT condiviso, MT separato
+        cons_bt_sim = cons_btL_sim + cons_btH_sim
+        if cons_tot > 0:
+            conv_v = (mp_conv_bt * cons_bt_sim + mp_conv_mt * cons_mt_sim) / cons_tot
+            bb_num = ((bench_btL or 0) * cons_btL_sim
+                      + (bench_btH or 0) * cons_btH_sim
+                      + (bench_mt or 0)  * cons_mt_sim)
+            merc_v = bb_num / cons_tot
+        else:
+            conv_v = merc_v = 0
+        etichetta = (f"⚡ Aggregato {n_btL} BT≤40 + {n_btH} BT>40 + {n_mt} MT "
                      f"({_fmt_thousands(round(cons_tot))} kWh totali)")
-        unit = "€/MWh"
+    unit = "€/MWh"
 
     st.markdown(
         "<h5 style='text-align:center; color:#1F2937; margin: 1.2rem 0 .3rem 0; "
@@ -1017,13 +1019,15 @@ else:
     _mese_aa_str = _mese_aa(meta["mese"])
 
     pezzi = []
-    if n_bt > 0 and bench_bt is not None:
-        pezzi.append(f"<b>BT</b>: {bench_bt:.2f} €/MWh")
+    if n_btL > 0 and bench_btL is not None:
+        pezzi.append(f"<b>BT ≤40</b>: {bench_btL:.2f} €/MWh")
+    if n_btH > 0 and bench_btH is not None:
+        pezzi.append(f"<b>BT &gt;40</b>: {bench_btH:.2f} €/MWh")
     if n_mt > 0 and bench_mt is not None:
         pezzi.append(f"<b>MT</b>: {bench_mt:.2f} €/MWh")
     if pezzi:
         st.caption(
-            f"<span style='color:#6B7280;'>Prezzo Materia Prima per Classe di Tensione "
+            f"<span style='color:#6B7280;'>Prezzo Materia Prima per Classe di Potenza "
             f"{_mese_aa_str} &mdash; " + " · ".join(pezzi) + "</span>",
             unsafe_allow_html=True,
         )
@@ -1206,10 +1210,7 @@ raccolta il prezzo è ricostruito distintamente per i due vettori:<br><br>
 &nbsp;&nbsp;&nbsp;&nbsp;dove <code>coeff_perdita</code> = {meta['coeff_perdita_BT']*100:.0f}%
 per le utenze BT e {meta['coeff_perdita_MT']*100:.1f}% per quelle MT.<br><br>
 &nbsp;&nbsp;&nbsp;🔥 <b>Gas</b>:
-<code>P = PSV + spread + (quota_fissa_annua × n_utenze) ÷ (12 × consumo_mese)</code>.<br><br>
-<span style="color:#6B7280; font-size:.92rem;">I prezzi PUN e PSV all'ingrosso
-utilizzati nelle formule sono pubblicati da
-<a href="https://www.arera.it/dati-e-statistiche/dettaglio/prezzi-finali-energia-elettrica-per-i-consumatori-domestici-tipo" target="_blank"><b>ARERA — PLACET</b></a>.</span></li>
+<code>P = PSV + spread + (quota_fissa_annua × n_utenze) ÷ (12 × consumo_mese)</code>.</li>
 
 <li style="margin-bottom: 1.2rem;"><b>PUNx: PUN Ponderato per Fasce</b> — Anziché
 applicare il PUN monorario all'intero campione, viene utilizzato un <b>PUNx</b>
@@ -1228,6 +1229,11 @@ periodo di osservazione del campione corrente; i prezzi <b>PUN BT</b> e
 <b>PUN MT</b> corrispondono alle medie ponderate dei prezzi PUN per fascia ARERA
 per le percentuali dei consumi storici per fascia, del mese osservato, delle
 utenze convenzionate.</li>
+
+<li style="margin-bottom: 1.2rem;"><b>Fonte dei prezzi all'ingrosso</b> — I prezzi
+PUN e PSV utilizzati nelle formule e nei calcoli del PUNx sono quelli pubblicati
+da
+<a href="https://www.arera.it/dati-e-statistiche/dettaglio/prezzi-finali-energia-elettrica-per-i-consumatori-domestici-tipo" target="_blank"><b>ARERA — PLACET</b></a>.</li>
 
 <li style="margin-bottom: 1.2rem;"><b>Selezione del Top 10</b> — Per ciascuna
 classe di potenza (elettrico) o tipologia d'uso (gas) si ordinano in modo crescente
