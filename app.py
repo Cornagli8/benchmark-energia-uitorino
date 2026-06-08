@@ -814,6 +814,11 @@ else:
                      f"({_fmt_thousands(round(cons_tot))} kWh totali)")
         unit = "€/MWh"
 
+    st.markdown(
+        "<h5 style='text-align:center; color:#1F2937; margin: 1.2rem 0 .3rem 0; "
+        "font-weight:600;'>📊 Prezzo medio ponderato per singola utenza</h5>",
+        unsafe_allow_html=True,
+    )
     st.plotly_chart(
         bar_gruppi([etichetta], [conv_v], [merc_v],
                    C_CONV_ELE, C_MERC_ELE,
@@ -934,6 +939,11 @@ else:
 
     etichetta_gas = (f"🔥 {totale_n} PDR totali "
                      f"({_fmt_thousands(round(cons_tot_gas_sim))} Smc totali)")
+    st.markdown(
+        "<h5 style='text-align:center; color:#1F2937; margin: 1.2rem 0 .3rem 0; "
+        "font-weight:600;'>📊 Prezzo medio ponderato per singola utenza</h5>",
+        unsafe_allow_html=True,
+    )
     st.plotly_chart(
         bar_gruppi([etichetta_gas], [conv_gas_v], [merc_gas_v],
                    C_CONV_GAS, C_MERC_GAS,
@@ -1082,19 +1092,13 @@ st.markdown(
     f"""
 <div class="footer-block" style="margin-top:1rem;">
 
-<h4 style="margin-top:0;">🏢 Offerte e Fornitori monitorati</h4>
+<h4 style="margin-top:0;">🏢 Offerte monitorate</h4>
 
 <p>In data <b>{data_estr_it or '—'}</b> sono state raccolte e analizzate
 complessivamente <span class="num-evidenza">{n_off_tot} offerte indicizzate</span>
 attive sul mercato libero italiano, provenienti sia dai siti istituzionali dei
 fornitori sia dai principali portali comparatori, di cui
 <b>{n_off_ele}</b> per l'energia elettrica e <b>{n_off_gas}</b> per il gas.</p>
-
-<p>I fornitori per cui è stato possibile rilevare almeno una delle {n_off_tot}
-offerte raccolte sono
-{testo_con if testo_con else "<i>nessuno (rigenera i dati)</i>"}.
-{("Sono stati monitorati ma non è stato possibile rilevare alcuna offerta "
-  "indicizzata sul mercato per " + testo_senza + ".") if testo_senza else ""}</p>
 
 </div>
 """,
@@ -1259,32 +1263,8 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# 2) PDF riservato delle offerte (download, no tabella inline)
-pdf_path = Path(__file__).parent / (D.get("meta", {}).get("pdf_offerte_path")
-                                     or "offerte_riservate.pdf")
-st.markdown("<br><b>📄 Elenco completo delle offerte raccolte</b>",
-            unsafe_allow_html=True)
-if pdf_path.exists():
-    pdf_bytes = pdf_path.read_bytes()
-    st.markdown(
-        "<p style='color:#6B7280; font-size:.92rem;'>Il dettaglio delle offerte "
-        "indicizzate raccolte è disponibile in un documento PDF <b>riservato</b>, "
-        "protetto da password. Per ottenere la password contattare l'Unione "
-        "Industriali Torino — Gas & Power.</p>",
-        unsafe_allow_html=True,
-    )
-    st.download_button(
-        label="🔒 Scarica il PDF riservato delle offerte",
-        data=pdf_bytes,
-        file_name="offerte_indicizzate_riservate.pdf",
-        mime="application/pdf",
-        type="primary",
-    )
-else:
-    st.info(
-        "Il PDF riservato delle offerte non è ancora stato generato. "
-        "Esegui la cella **5.6** del notebook per produrlo."
-    )
+# Sezione PDF rimossa: il documento delle offerte resta riservato e disponibile
+# solo all'Area Gas & Power (non scaricabile dalla pagina).
 
 st.markdown(
     f"""
