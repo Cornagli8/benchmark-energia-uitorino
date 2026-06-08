@@ -222,8 +222,21 @@ if not mesi_disp:
 def mese_label(yyyymm: str) -> str:
     mesi = ["", "Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno",
             "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"]
+    # Caso aggregato: ritorna stringa speciale
+    if yyyymm == "__aggregato__" or "-" not in str(yyyymm):
+        return "Tutti i mesi disponibili"
     y, m = yyyymm.split("-")
     return f"{mesi[int(m)]} {y}"
+
+
+def _mese_aa(yyyymm: str) -> str:
+    """Etichetta compatta 'mar-26'; per l'aggregato ritorna 'tutti'."""
+    ab = ["", "gen", "feb", "mar", "apr", "mag", "giu",
+          "lug", "ago", "set", "ott", "nov", "dic"]
+    if yyyymm == "__aggregato__" or "-" not in str(yyyymm):
+        return "tutti"
+    y, m = yyyymm.split("-")
+    return f"{ab[int(m)]}-{y[-2:]}"
 
 
 def interp_sens(key: str, fattore: float, fallback_value: float = None) -> float:
@@ -321,6 +334,154 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+# --- Funzione: calcola un mese sintetico 'aggregato' su tutti i mesi disponibili,
+#               con prezzi mediati ponderando sui consumi del mese. ---
+KEY_AGGREGATO = "__aggregato__"
+
+
+def aggrega_mesi(D_in):
+    """Ritorna un dict con la struttura di dati_per_mese[m] aggregato sui mesi
+    disponibili. Pesi = consumi (kWh per ELE, Smc per GAS) di ciascun mese.
+    consumo_mese di confronto = SOMMA dei consumi del mese per (commodity, tipologia);
+    n_utenze = MEDIA arrotondata (le stesse utenze nei mesi)."""
+    mesi_dict = D_in.get("dati_per_mese", {})
+    if not mesi_dict:
+        return None
+    mesi_keys = sorted(mesi_dict.keys())
+    metas = [mesi_dict[k]["meta_mese"] for k in mesi_keys]
+
+    # Pesi totali ELE/GAS/BT/MT
+    cons_ele = [float(m.get("consumo_ele_totale_kwh", 0)) for m in metas]
+    cons_gas = [float(m.get("consumo_gas_totale_smc", 0)) for m in metas]
+    cons_bt = []
+    cons_mt = []
+    for k in mesi_keys:
+        ele_recs = [r for r in mesi_dict[k]["confronto"] if r["commodity"] == "ELE"]
+        cons_bt.append(sum(float(r["consumo_mese"])
+                            for r in ele_recs if str(r["tipologia"]).startswith("BT")))
+        cons_mt.append(sum(float(r["consumo_mese"])
+                            for r in ele_recs if r["tipologia"] == "MT"))
+    tot_ele, tot_gas = sum(cons_ele), sum(cons_gas)
+    tot_bt, tot_mt = sum(cons_bt), sum(cons_mt)
+
+    def _wa(values, weights):
+        s = sum(weights)
+        if s == 0:
+            return sum(values) / len(values) if values else 0.0
+        return sum(v * w for v, w in zip(values, weights)) / s
+
+    def _ele(key): return _wa([float(m.get(key, 0)) for m in metas], cons_ele)
+    def _gas(key): return _wa([float(m.get(key, 0)) for m in metas], cons_gas)
+    def _bt(key):  return _wa([float(m.get(key, 0)) for m in metas], cons_bt)
+    def _mt(key):  return _wa([float(m.get(key, 0)) for m in metas], cons_mt)
+
+    meta_aggr = {
+        "mese": KEY_AGGREGATO,
+        "PUN_eur_kWh":      _ele("PUN_eur_kWh"),
+        "PSV_eur_Smc":      _gas("PSV_eur_Smc"),
+        "generazione_BT":   _bt("generazione_BT"),
+        "perdite_BT":       _bt("perdite_BT"),
+        "mp_conv_BT":       _bt("mp_conv_BT"),
+        "generazione_MT":   _mt("generazione_MT"),
+        "perdite_MT":       _mt("perdite_MT"),
+        "mp_conv_MT":       _mt("mp_conv_MT"),
+        "consumo_ele_totale_kwh": tot_ele,
+        "consumo_gas_totale_smc": tot_gas,
+        "PUN_TOT_eur_kWh":  _ele("PUN_TOT_eur_kWh"),
+        "PUN_BT_eur_kWh":   _bt("PUN_BT_eur_kWh"),
+        "PUN_MT_eur_kWh":   _mt("PUN_MT_eur_kWh"),
+        "PUN_F1_eur_kWh":   _ele("PUN_F1_eur_kWh"),
+        "PUN_F2_eur_kWh":   _ele("PUN_F2_eur_kWh"),
+        "PUN_F3_eur_kWh":   _ele("PUN_F3_eur_kWh"),
+    }
+
+    # Aggrega confronto per (commodity, tipologia)
+    by_tip = {}
+    for k in mesi_keys:
+        for r in mesi_dict[k]["confronto"]:
+            by_tip.setdefault((r["commodity"], r["tipologia"]), []).append(r)
+    new_conf = []
+    for (comm, tip), recs in by_tip.items():
+        cons = [float(r["consumo_mese"]) for r in recs]
+        mp_avg = _wa([float(r["materia_prima_conv"]) for r in recs], cons)
+        merc_avg = _wa([float(r["benchmark_mercato"]) for r in recs], cons)
+        n_avg = round(sum(int(r["n_utenze"]) for r in recs) / len(recs))
+        new_conf.append({
+            "commodity": comm, "tipologia": tip,
+            "generazione_conv": None, "perdite_conv": None,
+            "materia_prima_conv": round(mp_avg, 2), "unita_mp": recs[0]["unita_mp"],
+            "consumo_mese": sum(cons), "n_utenze": int(n_avg),
+            "benchmark_mercato": round(merc_avg, 2),
+            "n_offerte_usate": recs[0].get("n_offerte_usate", 10),
+            "delta_mercato_vs_conv": round(merc_avg - mp_avg, 2),
+            "delta_%": round((merc_avg - mp_avg) / mp_avg * 100, 1) if mp_avg else 0,
+        })
+
+    # Generale aggregato
+    new_gen = []
+    ele_sub = [r for r in new_conf if r["commodity"] == "ELE"]
+    gas_sub = [r for r in new_conf if r["commodity"] == "GAS"]
+    if ele_sub:
+        mp_c = sum(r["materia_prima_conv"] for r in ele_sub) / len(ele_sub)
+        m_c = sum(r["benchmark_mercato"] for r in ele_sub) / len(ele_sub)
+        new_gen.append({"commodity": "ELE", "unita": "€/MWh",
+                         "MP_convenzione": round(mp_c, 2),
+                         "benchmark_mercato": round(m_c, 2),
+                         "criterio": "media semplice 4 fasce (BT/MT equo)",
+                         "delta": round(m_c - mp_c, 2),
+                         "delta_%": round((m_c - mp_c) / mp_c * 100, 1) if mp_c else 0})
+    if gas_sub:
+        w_tot = sum(r["consumo_mese"] for r in gas_sub)
+        mp_c = sum(r["materia_prima_conv"] * r["consumo_mese"]
+                    for r in gas_sub) / w_tot if w_tot else 0
+        m_c = sum(r["benchmark_mercato"] * r["consumo_mese"]
+                   for r in gas_sub) / w_tot if w_tot else 0
+        new_gen.append({"commodity": "GAS", "unita": "c€/Smc",
+                         "MP_convenzione": round(mp_c, 2),
+                         "benchmark_mercato": round(m_c, 2),
+                         "criterio": "media ponderata sui consumi",
+                         "delta": round(m_c - mp_c, 2),
+                         "delta_%": round((m_c - mp_c) / mp_c * 100, 1) if mp_c else 0})
+
+    # Sensitivity per_fascia: media ponderata sui consumi della fascia attraverso i mesi
+    fattori = mesi_dict[mesi_keys[0]].get("sensitivity", {}).get("fattori", [])
+    sens_per = {}
+    for (comm, tip), recs in by_tip.items():
+        key = f"{comm}|{tip}"
+        weights = [float(r["consumo_mese"]) for r in recs]
+        all_vals = []
+        for k in mesi_keys:
+            v = mesi_dict[k].get("sensitivity", {}).get("per_fascia", {}).get(key)
+            if v:
+                all_vals.append(v)
+        if not all_vals:
+            continue
+        # Allinea al numero di fattori del mese piu' breve
+        n = min(len(v) for v in all_vals)
+        agg_vals = []
+        for i in range(n):
+            vs = [v[i] for v in all_vals]
+            ws = weights[:len(vs)]
+            agg_vals.append(round(_wa(vs, ws), 3))
+        sens_per[key] = agg_vals
+    sens_aggr = {"fattori": fattori, "per_fascia": sens_per}
+
+    return {"meta_mese": meta_aggr, "confronto": new_conf,
+            "generale": new_gen, "sensitivity": sens_aggr}
+
+
+# --- Lista mesi + opzione 'Tutti i mesi disponibili' ---
+mesi_options = list(mesi_disp)
+if len(mesi_disp) > 1:
+    mesi_options.append(KEY_AGGREGATO)
+
+
+def _label_mese_o_aggregato(m):
+    if m == KEY_AGGREGATO:
+        return f"📊 Tutti i mesi disponibili ({len(mesi_disp)})"
+    return mese_label(m)
+
+
 # --- Dropdown SELEZIONE MESE (in alto, governa tutti i grafici) ---
 mese_default = D.get("meta", {}).get("mese_default", mesi_disp[-1])
 if mese_default not in mesi_disp:
@@ -334,10 +495,11 @@ with col_sel_lbl:
         unsafe_allow_html=True,
     )
 with col_sel_drop:
-    if len(mesi_disp) > 1:
+    if len(mesi_options) > 1:
         mese_sel = st.selectbox(
-            "Mese", mesi_disp, index=mesi_disp.index(mese_default),
-            format_func=mese_label, key="mese_sel", label_visibility="collapsed",
+            "Mese", mesi_options, index=mesi_options.index(mese_default),
+            format_func=_label_mese_o_aggregato, key="mese_sel",
+            label_visibility="collapsed",
         )
     else:
         mese_sel = mese_default
@@ -348,8 +510,11 @@ with col_sel_drop:
             unsafe_allow_html=True,
         )
 
-# --- Estrai i dati del mese selezionato ---
-dati_mese = D["dati_per_mese"][mese_sel]
+# --- Estrai i dati del mese selezionato (o aggregato calcolato al volo) ---
+if mese_sel == KEY_AGGREGATO:
+    dati_mese = aggrega_mesi(D)
+else:
+    dati_mese = D["dati_per_mese"][mese_sel]
 meta = dati_mese["meta_mese"]
 df_conf = pd.DataFrame(dati_mese["confronto"])
 df_gen = pd.DataFrame(dati_mese["generale"])
@@ -826,11 +991,8 @@ else:
         use_container_width=True,
     )
 
-    # Etichetta mese-anno compatta (es. mar-26)
-    _MESI_AB = ["", "gen", "feb", "mar", "apr", "mag", "giu",
-                "lug", "ago", "set", "ott", "nov", "dic"]
-    _y, _m = map(int, meta["mese"].split("-"))
-    _mese_aa = f"{_MESI_AB[_m]}-{str(_y)[-2:]}"
+    # Etichetta mese-anno compatta (es. mar-26), 'tutti' per aggregato
+    _mese_aa_str = _mese_aa(meta["mese"])
 
     pezzi = []
     if n_bt > 0 and bench_bt is not None:
@@ -840,7 +1002,7 @@ else:
     if pezzi:
         st.caption(
             f"<span style='color:#6B7280;'>Prezzo Materia Prima per Classe di Tensione "
-            f"{_mese_aa} &mdash; " + " · ".join(pezzi) + "</span>",
+            f"{_mese_aa_str} &mdash; " + " · ".join(pezzi) + "</span>",
             unsafe_allow_html=True,
         )
 
@@ -951,10 +1113,7 @@ else:
         use_container_width=True,
     )
     # Caption: SEMPRE i 4 bench per tipologia (anche se n_gas=0), in label abbreviato
-    _MESI_AB_G = ["", "gen", "feb", "mar", "apr", "mag", "giu",
-                  "lug", "ago", "set", "ott", "nov", "dic"]
-    _yg, _mg = map(int, meta["mese"].split("-"))
-    _mese_aa_g = f"{_MESI_AB_G[_mg]}-{str(_yg)[-2:]}"
+    _mese_aa_g = _mese_aa(meta["mese"])
 
     pezzi_full = []
     for g in gas_tipi:
