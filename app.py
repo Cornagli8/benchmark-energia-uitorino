@@ -230,11 +230,12 @@ def mese_label(yyyymm: str) -> str:
 
 
 def _mese_aa(yyyymm: str) -> str:
-    """Etichetta compatta 'mar-26'; per l'aggregato ritorna 'tutti'."""
+    """Etichetta compatta 'mar-26'; per l'aggregato ritorna stringa vuota
+    (il caption omette la parte 'mese-aa')."""
     ab = ["", "gen", "feb", "mar", "apr", "mag", "giu",
           "lug", "ago", "set", "ott", "nov", "dic"]
     if yyyymm == "__aggregato__" or "-" not in str(yyyymm):
-        return "tutti"
+        return ""
     y, m = yyyymm.split("-")
     return f"{ab[int(m)]}-{y[-2:]}"
 
@@ -927,13 +928,14 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-cE1, cE2, cE3, cE4 = st.columns(4)
+cE1, cE2 = st.columns(2)
 with cE1:
     n_bt3 = _slider_intero("BT ≤3 kW", vmin=0, vmax=2000,
                             default=1, step=1, key_prefix="n_bt3")
 with cE2:
     n_bt40 = _slider_intero("BT 4,5–40 kW", vmin=0, vmax=2000,
                              default=1, step=1, key_prefix="n_bt40")
+cE3, cE4 = st.columns(2)
 with cE3:
     n_btH = _slider_intero("BT >40 kW", vmin=0, vmax=2000,
                             default=1, step=1, key_prefix="n_btH")
@@ -1018,9 +1020,10 @@ else:
     if n_mt > 0 and bench_mt is not None:
         pezzi.append(f"<b>MT</b>: {bench_mt:.2f} €/MWh")
     if pezzi:
+        _ts = f"{_mese_aa_str} " if _mese_aa_str else ""
         st.caption(
             f"<span style='color:#6B7280;'>Prezzo Materia Prima per Classe di Potenza "
-            f"{_mese_aa_str} &mdash; " + " · ".join(pezzi) + "</span>",
+            f"{_ts}&mdash; " + " · ".join(pezzi) + "</span>",
             unsafe_allow_html=True,
         )
 
@@ -1141,9 +1144,10 @@ else:
         if b_tip is not None:
             pezzi_full.append(f"<b>{g['label_short']}</b>: {b_tip:.2f} c€/Smc")
     if pezzi_full:
+        _tg = f"{_mese_aa_g} " if _mese_aa_g else ""
         st.caption(
             f"<span style='color:#6B7280;'>Prezzo Materia Prima per Tipologia d'uso "
-            f"{_mese_aa_g} &mdash; " + " · ".join(pezzi_full) + "</span>",
+            f"{_tg}&mdash; " + " · ".join(pezzi_full) + "</span>",
             unsafe_allow_html=True,
         )
 
