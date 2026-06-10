@@ -777,7 +777,7 @@ varierebbero al variare della composizione del portafoglio di utenze,
 mantenendo costanti i predetti consumi medi rilevati nel periodo di osservazione.
 <ul>
   <li>per il <b>4.1 Elettrico</b>, il prezzo aggregato corrisponderà alla media
-  ponderata sui consumi al variare del numero e della classe di tensione delle
+  ponderata sui consumi al variare del numero e della classe di potenza delle
   utenze indicate;</li>
   <li>per il <b>4.2 Gas</b>, il prezzo aggregato corrisponderà alla media ponderata
   sui consumi al variare del numero e della tipologia d'uso delle utenze indicate.</li>
