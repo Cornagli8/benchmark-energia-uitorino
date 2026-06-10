@@ -578,7 +578,8 @@ st.markdown(
 Confronto a colpo d'occhio fra il <b>prezzo della materia prima riconosciuta dalle
 Convenzioni</b> e il <b>benchmark</b> calcolato come media delle <b>10 migliori offerte
 attive sul mercato libero</b>. Per ciascuna offerta il prezzo è ricostruito come
-<i>PUN/PSV indicizzato + spread + eventuali corrispettivi fissi</i>; per il solo
+<i>PUN/PSV indicizzato + spread + eventuali altri corrispettivi fissi o
+variabili al consumo</i>; per il solo
 <b>elettrico</b> si aggiungono le <b>perdite di rete</b>.
 </div>
 """,
