@@ -1359,6 +1359,59 @@ fornitura alla prima data utile prevista in accordo col fornitore.
 # integrati nella Metodologia. Il PDF delle offerte resta riservato e disponibile
 # solo all'Area Gas & Power (non pubblicato sulla pagina).
 
+# ------------------------------------------------------------------
+# METODOLOGIA APPROFONDITA (download PDF + sorgente .tex)
+# ------------------------------------------------------------------
+st.header("📘 Metodologia approfondita")
+
+st.markdown(
+    """
+<div class="desc-box">
+Per una descrizione completa di passaggi, formule e parametri utilizzati nel
+benchmark, è disponibile un documento separato di metodologia. Il PDF include
+anche l'elenco completo delle <b>offerte indicizzate raccolte</b>, in forma
+<b>anonimizzata</b>: ciascuna offerta è identificata come <i>Offerta N EE</i>
+(o <i>GAS</i>), con relativa <b>Fonte</b> (Sito Fornitore o Sito Comparatore)
+e le condizioni economiche (spread e quota fissa).
+È fornito anche il sorgente LaTeX <code>.tex</code> per chi voglia ricompilare
+il documento (es. su <a href="https://overleaf.com" target="_blank">Overleaf</a>)
+o modificarne il contenuto.
+</div>
+""",
+    unsafe_allow_html=True,
+)
+
+_metodo_dir = Path(__file__).parent / "metodologia"
+_pdf_path = _metodo_dir / "metodologia.pdf"
+_tex_path = _metodo_dir / "metodologia.tex"
+
+cM1, cM2 = st.columns(2)
+with cM1:
+    if _pdf_path.exists():
+        st.download_button(
+            label="📄 Scarica metodologia (PDF)",
+            data=_pdf_path.read_bytes(),
+            file_name="Metodologia_Benchmark_MateriaPrima.pdf",
+            mime="application/pdf",
+            type="primary",
+            key="dl_metodo_pdf",
+            use_container_width=True,
+        )
+    else:
+        st.info("Metodologia PDF non disponibile.")
+with cM2:
+    if _tex_path.exists():
+        st.download_button(
+            label="📝 Scarica sorgente LaTeX (.tex)",
+            data=_tex_path.read_text(encoding="utf-8").encode("utf-8"),
+            file_name="Metodologia_Benchmark_MateriaPrima.tex",
+            mime="text/x-tex",
+            key="dl_metodo_tex",
+            use_container_width=True,
+        )
+    else:
+        st.info("Sorgente .tex non disponibile.")
+
 st.markdown(
     f"""
 <hr style="margin-top:2rem;">
