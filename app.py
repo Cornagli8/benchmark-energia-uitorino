@@ -1372,7 +1372,7 @@ benchmark, è disponibile un documento separato di metodologia. Il PDF include
 anche l'elenco completo delle <b>offerte indicizzate raccolte</b>, in forma
 <b>anonimizzata</b>: ciascuna offerta è identificata come <i>Offerta N EE</i>
 (o <i>GAS</i>), con relativa <b>Fonte</b> (Sito Fornitore o Sito Comparatore)
-e le condizioni economiche (spread e quota fissa).
+e le condizioni economiche applicate.
 </div>
 """,
     unsafe_allow_html=True,
