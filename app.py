@@ -42,8 +42,7 @@ LABEL_CONV_GAS = "Convenzione MMGAS"
 LABEL_MERC_GAS = "Top 10 Offerte attive sul Mercato (GAS)"
 
 # Ordini canonici
-ORDINE_ELE = ["BT <=3 kW", "BT 4.5-40 kW", "BT >40 kW", "MT"]
-ORDINE_ELE_TEST = ["BT <=40 kW", "BT >40 kW", "MT"]
+ORDINE_ELE = ["BT <=6 kW", "BT 6-50 kW", "BT >50 kW", "MT"]
 ORDINE_GAS = ["Acqua Calda", "Riscaldamento + Acqua Calda",
               "Riscaldamento", "Uso Tecnologico + Riscaldamento"]
 
@@ -886,15 +885,15 @@ def _stat_cat(tip):
 
 
 # 4 classi di potenza ELE: dati base
-_cons_3,   _n_3,   cons_3_medio   = _stat_cat("BT <=3 kW")
-_cons_40,  _n_40,  cons_40_medio  = _stat_cat("BT 4.5-40 kW")
-_cons_btH, _n_btH, cons_btH_medio = _stat_cat("BT >40 kW")
+_cons_3,   _n_3,   cons_3_medio   = _stat_cat("BT <=6 kW")
+_cons_40,  _n_40,  cons_40_medio  = _stat_cat("BT 6-50 kW")
+_cons_btH, _n_btH, cons_btH_medio = _stat_cat("BT >50 kW")
 _cons_mt,  _n_mt,  cons_mt_medio  = _stat_cat("MT")
 
 # fallback di sicurezza per evitare slider con default=0
-if cons_3_medio   == 0: cons_3_medio   = 200.0
-if cons_40_medio  == 0: cons_40_medio  = 1500.0
-if cons_btH_medio == 0: cons_btH_medio = 10000.0
+if cons_3_medio   == 0: cons_3_medio   = 300.0
+if cons_40_medio  == 0: cons_40_medio  = 2500.0
+if cons_btH_medio == 0: cons_btH_medio = 11000.0
 if cons_mt_medio  == 0: cons_mt_medio  = 40000.0
 
 n_pdr_real = int(df_conf[df_conf["commodity"] == "GAS"]["n_utenze"].sum())
@@ -915,11 +914,11 @@ st.markdown(
 🧮 Consumo medio per Classe di Potenza del Periodo d'osservazione
 <b>{mese_label(meta['mese'])}</b>
 (media reale sulle utenze POD del campione):<br>
-&nbsp;&nbsp;⚡ Consumo medio di un'Utenza <b>BT ≤3 kW</b>:
+&nbsp;&nbsp;⚡ Consumo medio di un'Utenza <b>BT ≤6 kW</b>:
 {_fmt_thousands(round(cons_3_medio))} kWh<br>
-&nbsp;&nbsp;⚡ Consumo medio di un'Utenza <b>BT 4,5–40 kW</b>:
+&nbsp;&nbsp;⚡ Consumo medio di un'Utenza <b>BT 6–50 kW</b>:
 {_fmt_thousands(round(cons_40_medio))} kWh<br>
-&nbsp;&nbsp;⚡ Consumo medio di un'Utenza <b>BT &gt;40 kW</b>:
+&nbsp;&nbsp;⚡ Consumo medio di un'Utenza <b>BT &gt;50 kW</b>:
 {_fmt_thousands(round(cons_btH_medio))} kWh<br>
 &nbsp;&nbsp;⚡ Consumo medio di un'Utenza in <b>Media Tensione (MT)</b>:
 {_fmt_thousands(round(cons_mt_medio))} kWh
@@ -930,14 +929,14 @@ st.markdown(
 
 cE1, cE2 = st.columns(2)
 with cE1:
-    n_bt3 = _slider_intero("BT ≤3 kW", vmin=0, vmax=2000,
+    n_bt3 = _slider_intero("BT ≤6 kW", vmin=0, vmax=2000,
                             default=1, step=1, key_prefix="n_bt3")
 with cE2:
-    n_bt40 = _slider_intero("BT 4,5–40 kW", vmin=0, vmax=2000,
+    n_bt40 = _slider_intero("BT 6–50 kW", vmin=0, vmax=2000,
                              default=1, step=1, key_prefix="n_bt40")
 cE3, cE4 = st.columns(2)
 with cE3:
-    n_btH = _slider_intero("BT >40 kW", vmin=0, vmax=2000,
+    n_btH = _slider_intero("BT >50 kW", vmin=0, vmax=2000,
                             default=1, step=1, key_prefix="n_btH")
 with cE4:
     n_mt = _slider_intero("MT", vmin=0, vmax=500,
@@ -971,13 +970,13 @@ else:
     attive = sum(1 for n in attive_n if n > 0)
     if attive == 1:
         if n_bt3 > 0:
-            etichetta = f"⚡ Solo BT ≤3 kW ({n_bt3} POD × {_fmt_thousands(round(cons_3_medio))} kWh)"
+            etichetta = f"⚡ Solo BT ≤6 kW ({n_bt3} POD × {_fmt_thousands(round(cons_3_medio))} kWh)"
             conv_v, merc_v = mp_conv_bt, (bench_bt3 or 0)
         elif n_bt40 > 0:
-            etichetta = f"⚡ Solo BT 4,5–40 kW ({n_bt40} POD × {_fmt_thousands(round(cons_40_medio))} kWh)"
+            etichetta = f"⚡ Solo BT 6–50 kW ({n_bt40} POD × {_fmt_thousands(round(cons_40_medio))} kWh)"
             conv_v, merc_v = mp_conv_bt, (bench_bt40 or 0)
         elif n_btH > 0:
-            etichetta = f"⚡ Solo BT >40 kW ({n_btH} POD × {_fmt_thousands(round(cons_btH_medio))} kWh)"
+            etichetta = f"⚡ Solo BT >50 kW ({n_btH} POD × {_fmt_thousands(round(cons_btH_medio))} kWh)"
             conv_v, merc_v = mp_conv_bt, (bench_btH or 0)
         else:
             etichetta = f"⚡ Solo MT ({n_mt} POD × {_fmt_thousands(round(cons_mt_medio))} kWh)"
@@ -993,7 +992,8 @@ else:
             merc_v = bb_num / cons_tot
         else:
             conv_v = merc_v = 0
-        etichetta = (f"⚡ Aggregato {n_bt3}+{n_bt40}+{n_btH} BT + {n_mt} MT "
+        etichetta = (f"⚡ Aggregato {n_bt3} BT≤6 + {n_bt40} BT 6–50 + "
+                     f"{n_btH} BT&gt;50 + {n_mt} MT "
                      f"({_fmt_thousands(round(cons_tot))} kWh totali)")
     unit = "€/MWh"
 
@@ -1012,11 +1012,11 @@ else:
     _mese_aa_str = _mese_aa(meta["mese"])
     pezzi = []
     if n_bt3 > 0 and bench_bt3 is not None:
-        pezzi.append(f"<b>BT ≤3</b>: {bench_bt3:.2f} €/MWh")
+        pezzi.append(f"<b>BT ≤6</b>: {bench_bt3:.2f} €/MWh")
     if n_bt40 > 0 and bench_bt40 is not None:
-        pezzi.append(f"<b>BT 4,5–40</b>: {bench_bt40:.2f} €/MWh")
+        pezzi.append(f"<b>BT 6–50</b>: {bench_bt40:.2f} €/MWh")
     if n_btH > 0 and bench_btH is not None:
-        pezzi.append(f"<b>BT &gt;40</b>: {bench_btH:.2f} €/MWh")
+        pezzi.append(f"<b>BT &gt;50</b>: {bench_btH:.2f} €/MWh")
     if n_mt > 0 and bench_mt is not None:
         pezzi.append(f"<b>MT</b>: {bench_mt:.2f} €/MWh")
     if pezzi:
