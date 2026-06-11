@@ -322,7 +322,7 @@ st.markdown(
   <p style="font-family: Georgia, 'Bookman Old Style', Cambria, serif;
             font-style: italic; font-size: 1.05rem; line-height: 1.55;
             color:#4B5563; margin: 0 auto; max-width: 880px;">
-    Confronto fra il prezzo della materia prima delle Convenzioni
+    Confronto fra il Prezzo per la Materia prima delle Convenzioni
     <span style="color:#6BAED6; font-style:normal; font-weight:700;">MMPOWER</span> e
     <span style="color:#F0A35E; font-style:normal; font-weight:700;">MMGAS</span>
     dell'Unione Industriali Torino e quello di cui alle 10 migliori offerte
@@ -695,13 +695,13 @@ st.header("1️⃣ Confronto generale")
 st.markdown(
     f"""
 <div class="desc-box">
-Confronto fra il <b>prezzo della materia prima riconosciuta dalle
+Confronto fra il <b>Prezzo per la Materia prima riconosciuta dalle
 Convenzioni</b> e il <b>benchmark</b> calcolato come media delle <b>{TOP_N_GENERALE} migliori
 offerte attive sul mercato libero</b>, applicate a un'utenza media del campione
 convenzionato. Per ciascuna offerta il prezzo è ricostruito come
 <i>PUN/PSV indicizzato + spread + eventuali altri corrispettivi fissi o
 variabili al consumo</i>; per il solo <b>elettrico</b> si aggiungono le
-<b>perdite di rete</b> con coefficiente <b>ponderato BT/MT sui consumi</b> del periodo.
+<b>perdite di rete</b>.
 La quotazione di riferimento è il <b>PUN&nbsp;TOT</b> (PUN ponderato per fasce, mediato
 BT/MT sui consumi reali) per l'elettrico e il <b>PSV</b> per il gas.
 </div>
@@ -860,13 +860,14 @@ _cons_mt,  _n_mt,  cons_mt_medio  = _stat_cat("ELE", "MT")
 
 def _cons_label(cons_aggr, unita_singola):
     """Etichetta del consumo medio per il riquadro descrittivo.
-    Su 'Tutti i mesi': 'X u/mese (Y u totali sul periodo)'. Su singolo mese: 'Y u'."""
+    Su 'Tutti i mesi': 'X u totali sul periodo (media di Y u/mese)'.
+    Su singolo mese: 'Y u'."""
     if _is_aggregato:
-        medio = _fmt_thousands(round(cons_aggr / _n_mesi_aggr))
         totale = _fmt_thousands(round(cons_aggr))
-        return (f"{medio} {unita_singola}/mese "
-                f"<span style='color:#6B7280;'>({totale} {unita_singola} "
-                f"totali sul periodo)</span>")
+        medio = _fmt_thousands(round(cons_aggr / _n_mesi_aggr))
+        return (f"{totale} {unita_singola} totali sul periodo "
+                f"<span style='color:#6B7280;'>(media di {medio} "
+                f"{unita_singola}/mese)</span>")
     return f"{_fmt_thousands(round(cons_aggr))} {unita_singola}"
 
 
@@ -885,7 +886,7 @@ df_ele = df_ele.sort_values("_order").reset_index(drop=True)
 st.markdown(
     f"""
 <div class="desc-box">
-Dettaglio per <b>classe di potenza impegnata</b>. Il Prezzo per la materia prima
+Dettaglio per <b>classe di potenza impegnata</b>. Il Prezzo per la Materia prima
 della Convenzione è calcolato per ciascuna delle quattro classi di potenza (media
 ponderata sui consumi dei POD di ciascuna classe); le <b>Top N di mercato</b>
 sono ricalcolate per ciascuna classe di potenza, in quanto le performance delle
@@ -956,7 +957,7 @@ for _tip_gas in ORDINE_GAS:
 st.markdown(
     f"""
 <div class="desc-box gas">
-Dettaglio per <b>tipologia d'uso del gas</b>. Il Prezzo per la materia prima
+Dettaglio per <b>tipologia d'uso del gas</b>. Il Prezzo per la Materia prima
 della Convenzione è calcolato distintamente <b>per ciascuna delle quattro
 tipologie d'uso</b> (media ponderata sui consumi e importi reali del mese, per
 ogni tipologia); le <b>Top N di mercato</b> sono ricalcolate per ciascuna
@@ -1055,15 +1056,13 @@ Materia prima del gas è calcolato per ciascuna tipologia d'uso a partire dai
 prima" diviso per i Smc consumati del mese).</li>
 
 <li style="margin-bottom: 1.2rem;"><b>Mercato</b> — Per ogni offerta indicizzata
-raccolta il prezzo è ricostruito distintamente per i due vettori (formule esposte
-in versione integrale nel <a href="metodologia/metodologia.pdf" target="_blank">documento
-di metodologia approfondita</a>):<br><br>
+raccolta il prezzo è ricostruito distintamente per i due vettori:<br><br>
 &nbsp;&nbsp;&nbsp;⚡ <b>Energia elettrica</b>:&nbsp;
-<code>P = PUNx + s + altri_corr_var + (PUNx + s) × k + (altri_corr_fissi × n_u) ÷ (12 × C_e,m)</code><br>
+<code>P = PUNx + spread + altri_corr_var + (PUNx + spread) × k + (altri_corr_fissi × n_utenze) ÷ (12 × consumo_mensile)</code><br>
 &nbsp;&nbsp;&nbsp;&nbsp;<i>dove k è il coefficiente di perdite di rete
 ({meta['coeff_perdita_BT']*100:.0f}&nbsp;% BT, {meta['coeff_perdita_MT']*100:.1f}&nbsp;% MT).</i><br><br>
 &nbsp;&nbsp;&nbsp;🔥 <b>Gas</b>:&nbsp;
-<code>P = PSV + s + altri_corr_var + (altri_corr_fissi × n_u) ÷ (12 × C_g,m)</code>.</li>
+<code>P = PSV + spread + altri_corr_var + (altri_corr_fissi × n_utenze) ÷ (12 × consumo_mensile)</code>.</li>
 
 <li style="margin-bottom: 1.2rem;"><b>PUNx: PUN Ponderato per Fasce</b> — Viene
 utilizzato un <b>PUNx ponderato secondo le Fasce orarie</b> ex Delibera ARERA
@@ -1080,12 +1079,12 @@ Per il periodo di osservazione <b>{mese_label(meta['mese'])}</b>:<br>
 Il <b>PUN TOT</b> è la media ponderata tra PUN BT e PUN MT sui consumi reali del
 periodo di osservazione del campione corrente; i prezzi <b>PUN BT</b> e
 <b>PUN MT</b> corrispondono alle medie ponderate dei prezzi PUN per fascia ARERA
-per le percentuali dei consumi storici per fascia, del mese osservato, delle
+per le percentuali dei consumi storici per fascia, del periodo osservato, delle
 utenze convenzionate.</li>
 
 <li style="margin-bottom: 1.2rem;"><b>Fonte dei prezzi all'ingrosso</b> — I prezzi
-PUN e PSV utilizzati nelle formule e nei calcoli del PUNx sono quelli pubblicati
-da ARERA nella sezione
+PUN utilizzati nei calcoli del PUNx al paragrafo 4 e il prezzo PSV utilizzato
+nella formula al paragrafo 3 corrispondono ai prezzi pubblicati da ARERA al link
 <a href="https://www.arera.it/consumatori/offerte-standard-per-i-clienti-finali-placet" target="_blank"><b>"Offerte standard per i clienti finali — PLACET"</b></a>.</li>
 
 <li style="margin-bottom: 1.2rem;"><b>Selezione delle migliori offerte</b> —
@@ -1094,11 +1093,11 @@ calcolata la media aritmetica delle più convenienti. Il numero di offerte
 considerate varia per sezione:
 <ul>
   <li><b>Sezione 1</b> (confronto generale): <b>Top 5</b>, applicate a un'utenza
-  media del campione convenzionato, con base <b>PUN&nbsp;TOT</b> (elettrico) o
-  <b>PSV</b> (gas).</li>
+  media del campione convenzionato, con base <b>PUN&nbsp;TOT</b> con perdite di
+  rete BT/MT ponderate sui consumi del periodo (elettrico) o <b>PSV</b> (gas).</li>
   <li><b>Sezioni 2 e 3</b> (per classe di potenza / tipologia d'uso): <b>Top N
   configurabile da 1 a 10</b> tramite slider dedicato. Le offerte vengono
-  ricalcolate per ciascuna classe/tipologia, utilizzando <b>PUN BT/MT e PSV</b>.</li>
+  ricalcolate per ciascuna classe/tipologia, utilizzando PUN BT/MT o PSV.</li>
 </ul></li>
 
 <li style="margin-bottom: 1.2rem;"><b>Offerte monitorate</b> — In data
@@ -1237,8 +1236,7 @@ Per una descrizione completa di algoritmi e parametri utilizzati nel benchmark,
 è disponibile un documento metodologico separato. Quest'ultimo include anche
 l'elenco completo delle offerte indicizzate raccolte, in forma anonima: ciascuna
 offerta è identificata come <i>Offerta N EE</i> (o <i>GAS</i>), con relativa
-<b>Fonte</b> (Sito Fornitore o Sito Comparatore) e le condizioni economiche
-applicate.
+Fonte (Sito Fornitore o Sito Comparatore) e le condizioni economiche applicate.
 </div>
 """,
     unsafe_allow_html=True,
