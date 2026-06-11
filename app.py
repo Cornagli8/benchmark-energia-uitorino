@@ -1058,16 +1058,17 @@ prima" diviso per i Smc consumati del mese).</li>
 <li style="margin-bottom: 1.2rem;"><b>Mercato</b> — Per ogni offerta indicizzata
 raccolta il prezzo è ricostruito <b>per ciascun mese del periodo di osservazione</b>,
 distintamente per i due vettori:<br><br>
-&nbsp;&nbsp;&nbsp;⚡ <b>Energia elettrica</b> (prezzo mensile):&nbsp;
+&nbsp;&nbsp;&nbsp;⚡ <b>Prezzo mensile Energia Elettrica</b>:&nbsp;
 <code>P_mese = PUNx + spread + altri_corr_var + (PUNx + spread) × k + (altri_corr_fissi × n_utenze) ÷ (12 × consumo_mensile)</code><br>
 &nbsp;&nbsp;&nbsp;&nbsp;<i>dove k è il coefficiente di perdite di rete
 ({meta['coeff_perdita_BT']*100:.0f}&nbsp;% BT, {meta['coeff_perdita_MT']*100:.1f}&nbsp;% MT).</i><br><br>
-&nbsp;&nbsp;&nbsp;🔥 <b>Gas</b> (prezzo mensile):&nbsp;
+&nbsp;&nbsp;&nbsp;🔥 <b>Prezzo mensile Gas</b>:&nbsp;
 <code>P_mese = PSV + spread + altri_corr_var + (altri_corr_fissi × n_utenze) ÷ (12 × consumo_mensile)</code>.<br><br>
 Quando si seleziona <b>"Tutti i periodi disponibili"</b>, il benchmark
 aggregato sull'intero periodo è la <b>media ponderata sui consumi dei
-benchmark mensili</b> (= Σ costo / Σ volume):<br>
-&nbsp;&nbsp;&nbsp;<code>Prezzo_aggregato_periodo = somma(Prezzo_mese × Consumo_mese) ÷ somma(Consumo_mese)</code>
+benchmark mensili</b>:<br><br>
+&nbsp;&nbsp;&nbsp;⚡🔥 <b>Prezzo Aggregato</b>:&nbsp;
+<code>Prezzo_aggregato = somma(Prezzo_mese × Consumo_mese) ÷ somma(Consumo_mese)</code>
 &nbsp;<i>per ogni mese del periodo</i>.</li>
 
 <li style="margin-bottom: 1.2rem;"><b>PUNx: PUN Ponderato per Fasce</b> — Viene
