@@ -741,23 +741,19 @@ with col_gas:
 # ------------------------------------------------------------------
 # Grafico a barre raggruppate (riusato in §2, §3, §4)
 # ------------------------------------------------------------------
-def _auto_yrange(y_conv, y_merc, pad_low=0.10, pad_high=0.14):
-    """Calcola un range Y dinamico per massimizzare la visibilità delle differenze.
-    Lascia un margine sotto al minimo e sopra al massimo (quest'ultimo più ampio
-    per non far uscire le etichette numeriche fuori dal frame)."""
+def _auto_yrange(y_conv, y_merc, floor=0, step=5, pad=0.12):
+    """Range Y con floor fisso (100 €/MWh per ELE, 20 c€/Smc per GAS) e top
+    calcolato dinamicamente sui valori del mese visualizzato, lasciando un
+    margine in alto per non far uscire le etichette numeriche dal frame."""
     vals = [v for v in (list(y_conv) + list(y_merc)) if v is not None]
     if not vals:
         return None
-    vmin, vmax = min(vals), max(vals)
-    rng = max(vmax - vmin, 1.0)
-    ymin = vmin - rng * pad_low
-    ymax = vmax + rng * pad_high
-    # Arrotonda a multipli "puliti" per leggibilità (5 per ELE, 1 per GAS)
-    step = 5 if vmax > 50 else 1
+    vmax = max(vals)
+    rng = max(vmax - floor, 1.0)
+    ymax = vmax + rng * pad
     import math
-    ymin = max(0, math.floor(ymin / step) * step)
     ymax = math.ceil(ymax / step) * step
-    return [ymin, ymax]
+    return [floor, ymax]
 
 
 def bar_gruppi(x_labels, y_conv, y_merc, color_conv, color_merc,
@@ -894,7 +890,7 @@ LABEL_TOPN_ELE = f"Top {top_n_ele} Offerte attive sul Mercato (ELE)"
 st.plotly_chart(
     bar_gruppi(cat, y_c, y_m, C_CONV_ELE, C_MERC_ELE,
                LABEL_CONV_ELE, LABEL_TOPN_ELE, "€/MWh",
-               yrange=_auto_yrange(y_c, y_m)),
+               yrange=_auto_yrange(y_c, y_m, floor=100, step=5)),
     use_container_width=True,
 )
 
@@ -963,7 +959,7 @@ st.plotly_chart(
     bar_gruppi([_short_gas(t) for t in df_gas["tipologia"].tolist()],
                _y_c_gas, _y_m_gas,
                C_CONV_GAS, C_MERC_GAS, LABEL_CONV_GAS, LABEL_TOPN_GAS, "c€/Smc",
-               yrange=_auto_yrange(_y_c_gas, _y_m_gas)),
+               yrange=_auto_yrange(_y_c_gas, _y_m_gas, floor=20, step=2)),
     use_container_width=True,
 )
 
