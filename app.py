@@ -657,7 +657,7 @@ st.markdown(
 <div class="desc-box">
 Confronto a colpo d'occhio fra il <b>prezzo della materia prima riconosciuta dalle
 Convenzioni</b> e il <b>benchmark</b> calcolato come media delle <b>{TOP_N_GENERALE} migliori
-offerte attive sul mercato libero</b>, applicate a un'<b>utenza media</b> del portafoglio
+offerte attive sul mercato libero</b>, applicate a un'utenza media del campione
 convenzionato. Per ciascuna offerta il prezzo è ricostruito come
 <i>PUN/PSV indicizzato + spread + eventuali altri corrispettivi fissi o
 variabili al consumo</i>; per il solo <b>elettrico</b> si aggiungono le
@@ -990,13 +990,15 @@ fornitura delle aziende convenzionate (importo "materia prima" diviso per i Smc
 consumati del mese).</li>
 
 <li style="margin-bottom: 1.2rem;"><b>Mercato</b> — Per ogni offerta indicizzata
-raccolta il prezzo è ricostruito distintamente per i due vettori:<br><br>
-&nbsp;&nbsp;&nbsp;⚡ <b>Energia elettrica</b>:
-<code>P = PUNx + spread + (PUNx + spread) × coeff_perdita + (quota_fissa_annua × n_utenze) ÷ (12 × consumo_mese)</code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;dove <code>coeff_perdita</code> = {meta['coeff_perdita_BT']*100:.0f}%
-per le utenze BT e {meta['coeff_perdita_MT']*100:.1f}% per quelle MT.<br><br>
-&nbsp;&nbsp;&nbsp;🔥 <b>Gas</b>:
-<code>P = PSV + spread + (quota_fissa_annua × n_utenze) ÷ (12 × consumo_mese)</code>.</li>
+raccolta il prezzo è ricostruito distintamente per i due vettori (formule esposte
+in versione integrale nel <a href="metodologia/metodologia.pdf" target="_blank">documento
+di metodologia approfondita</a>):<br><br>
+&nbsp;&nbsp;&nbsp;⚡ <b>Energia elettrica</b>:&nbsp;
+<code>P = PUNx + s + altri_corr_var + (PUNx + s) × k + (altri_corr_fissi × n_u) ÷ (12 × C_e,m)</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<i>dove k è il coefficiente di perdite di rete
+({meta['coeff_perdita_BT']*100:.0f}&nbsp;% BT, {meta['coeff_perdita_MT']*100:.1f}&nbsp;% MT).</i><br><br>
+&nbsp;&nbsp;&nbsp;🔥 <b>Gas</b>:&nbsp;
+<code>P = PSV + s + altri_corr_var + (altri_corr_fissi × n_u) ÷ (12 × C_g,m)</code>.</li>
 
 <li style="margin-bottom: 1.2rem;"><b>PUNx: PUN Ponderato per Fasce</b> — Anziché
 applicare il PUN monorario all'intero campione, viene utilizzato un <b>PUNx</b>
@@ -1007,7 +1009,7 @@ composizione oraria del consumo è strutturalmente diversa fra utenze a Bassa
 Tensione e a Media Tensione: il PUNx così ponderato si avvicina di più al costo
 effettivo che ciascun segmento sostiene per l'energia ritirata dal mercato.<br><br>
 Per il periodo di osservazione <b>{mese_label(meta['mese'])}</b>:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;⚡ <b>PUN TOT</b>: {_pun_tot:.4f} €/kWh — usato per il benchmark generale (sezione 1) sull'utenza media del portafoglio<br>
+&nbsp;&nbsp;&nbsp;&nbsp;⚡ <b>PUN TOT</b>: {_pun_tot:.4f} €/kWh — usato per il benchmark generale (sezione 1) sull'utenza media del campione convenzionato<br>
 &nbsp;&nbsp;&nbsp;&nbsp;⚡ <b>PUN BT</b>: {_pun_bt:.4f} €/kWh — usato per le classi BT (sezione 2)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;⚡ <b>PUN MT</b>: {_pun_mt:.4f} €/kWh — usato per la classe MT (sezione 2)<br><br>
 Il <b>PUN TOT</b> è la media ponderata tra PUN BT e PUN MT sui consumi reali del
@@ -1026,12 +1028,12 @@ I prezzi delle offerte raccolte vengono ordinati in modo crescente e ne viene
 calcolata la media aritmetica delle più convenienti. Il numero di offerte
 considerate varia per sezione:
 <ul>
-  <li><b>Sezione 1</b> (confronto generale): <b>Top 5</b>, applicate a
-  un'<b>utenza media</b> del portafoglio, con base <b>PUN&nbsp;TOT</b>
-  (elettrico) o <b>PSV</b> (gas).</li>
+  <li><b>Sezione 1</b> (confronto generale): <b>Top 5</b>, applicate a un'utenza
+  media del campione convenzionato, con base <b>PUN&nbsp;TOT</b> (elettrico) o
+  <b>PSV</b> (gas).</li>
   <li><b>Sezioni 2 e 3</b> (per classe di potenza / tipologia d'uso): <b>Top N
   configurabile da 1 a 10</b> tramite slider dedicato. Le offerte vengono
-  ricalcolate per ciascuna classe/tipologia, utilizzando PUN BT/MT e PSV.</li>
+  ricalcolate per ciascuna classe/tipologia, utilizzando <b>PUN BT/MT e PSV</b>.</li>
 </ul></li>
 
 <li style="margin-bottom: 1.2rem;"><b>Offerte monitorate</b> — In data
