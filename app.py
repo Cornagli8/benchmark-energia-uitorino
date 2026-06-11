@@ -890,7 +890,7 @@ LABEL_TOPN_ELE = f"Top {top_n_ele} Offerte attive sul Mercato (ELE)"
 st.plotly_chart(
     bar_gruppi(cat, y_c, y_m, C_CONV_ELE, C_MERC_ELE,
                LABEL_CONV_ELE, LABEL_TOPN_ELE, "€/MWh",
-               yrange=_auto_yrange(y_c, y_m, floor=100, step=5)),
+               yrange=_auto_yrange(y_c, y_m, floor=60, step=5)),
     use_container_width=True,
 )
 
