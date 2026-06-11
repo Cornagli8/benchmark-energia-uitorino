@@ -1063,16 +1063,10 @@ raccolta il prezzo è ricostruito distintamente per i due vettori:<br><br>
 ({meta['coeff_perdita_BT']*100:.0f}&nbsp;% BT, {meta['coeff_perdita_MT']*100:.1f}&nbsp;% MT).</i><br><br>
 &nbsp;&nbsp;&nbsp;🔥 <b>Gas</b>:&nbsp;
 <code>P = PSV + spread + altri_corr_var + (altri_corr_fissi × n_utenze) ÷ (12 × consumo_mensile)</code>.<br><br>
-Quando si seleziona <b>"Tutti i periodi disponibili"</b>, il benchmark del
-periodo non si calcola applicando le formule sopra a valori medi sintetici,
-bensì come <b>media ponderata sui consumi dei benchmark mensili</b>: per ciascun
-mese disponibile si calcola il benchmark con i dati reali di quel mese
-(PUN/PSV, consumi medi per utenza, perdite di rete), poi si fa la media
-ponderata sui consumi mensili. Questo garantisce che il valore aggregato
-corrisponda al prezzo medio effettivamente sostenuto dalle utenze nel periodo
-(=&nbsp;Σ costo / Σ volume) e non a una stima parametrica su un "mese
-sintetico", risultando più affidabile soprattutto in caso di forte
-variabilità del PUN/PSV o dei consumi tra i mesi del periodo.</li>
+Quando si seleziona <b>"Tutti i periodi disponibili"</b>, il benchmark aggregato
+è la <b>media ponderata sui consumi dei benchmark mensili</b>:<br>
+&nbsp;&nbsp;&nbsp;<code>P_aggr = Σ_t (P_t × C_t) ÷ Σ_t C_t</code>&nbsp;
+<i>(P_t = benchmark del mese t; C_t = consumo della classe/tipologia nel mese t)</i>.</li>
 
 <li style="margin-bottom: 1.2rem;"><b>PUNx: PUN Ponderato per Fasce</b> — Viene
 utilizzato un <b>PUNx ponderato secondo le Fasce orarie</b> ex Delibera ARERA
