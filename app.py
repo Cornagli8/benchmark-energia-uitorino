@@ -741,8 +741,28 @@ with col_gas:
 # ------------------------------------------------------------------
 # Grafico a barre raggruppate (riusato in §2, §3, §4)
 # ------------------------------------------------------------------
+def _auto_yrange(y_conv, y_merc, pad_low=0.10, pad_high=0.14):
+    """Calcola un range Y dinamico per massimizzare la visibilità delle differenze.
+    Lascia un margine sotto al minimo e sopra al massimo (quest'ultimo più ampio
+    per non far uscire le etichette numeriche fuori dal frame)."""
+    vals = [v for v in (list(y_conv) + list(y_merc)) if v is not None]
+    if not vals:
+        return None
+    vmin, vmax = min(vals), max(vals)
+    rng = max(vmax - vmin, 1.0)
+    ymin = vmin - rng * pad_low
+    ymax = vmax + rng * pad_high
+    # Arrotonda a multipli "puliti" per leggibilità (5 per ELE, 1 per GAS)
+    step = 5 if vmax > 50 else 1
+    import math
+    ymin = max(0, math.floor(ymin / step) * step)
+    ymax = math.ceil(ymax / step) * step
+    return [ymin, ymax]
+
+
 def bar_gruppi(x_labels, y_conv, y_merc, color_conv, color_merc,
-               label_conv, label_merc, unita, height=480, xtickangle=0):
+               label_conv, label_merc, unita, height=480, xtickangle=0,
+               yrange=None):
     fig = go.Figure()
     fig.add_trace(go.Bar(
         name=label_conv, x=x_labels, y=y_conv,
@@ -756,10 +776,13 @@ def bar_gruppi(x_labels, y_conv, y_merc, color_conv, color_merc,
         text=[f"<b>{v:.2f}</b>" for v in y_merc],
         textposition="outside", textfont=dict(size=12, color=C_TEXT_DARK),
     ))
+    yaxis_kwargs = dict(title=unita, gridcolor="#E5E7EB")
+    if yrange is not None:
+        yaxis_kwargs["range"] = yrange
     fig.update_layout(
         barmode="group", height=height,
         plot_bgcolor="#FFFFFF", paper_bgcolor="#FFFFFF",
-        yaxis=dict(title=unita, gridcolor="#E5E7EB"),
+        yaxis=yaxis_kwargs,
         xaxis=dict(title="", tickangle=xtickangle), bargap=0.25, bargroupgap=0.08,
         # Legenda in basso al centro (stessa forma del grafico 1)
         showlegend=True,
@@ -870,7 +893,8 @@ y_m = df_ele["benchmark_mercato"].astype(float).tolist()
 LABEL_TOPN_ELE = f"Top {top_n_ele} Offerte attive sul Mercato (ELE)"
 st.plotly_chart(
     bar_gruppi(cat, y_c, y_m, C_CONV_ELE, C_MERC_ELE,
-               LABEL_CONV_ELE, LABEL_TOPN_ELE, "€/MWh"),
+               LABEL_CONV_ELE, LABEL_TOPN_ELE, "€/MWh",
+               yrange=_auto_yrange(y_c, y_m)),
     use_container_width=True,
 )
 
@@ -933,11 +957,13 @@ def _recompute_bench_gas(row):
 df_gas["benchmark_mercato"] = df_gas.apply(_recompute_bench_gas, axis=1)
 
 LABEL_TOPN_GAS = f"Top {top_n_gas} Offerte attive sul Mercato (GAS)"
+_y_c_gas = df_gas["materia_prima_conv"].tolist()
+_y_m_gas = df_gas["benchmark_mercato"].tolist()
 st.plotly_chart(
     bar_gruppi([_short_gas(t) for t in df_gas["tipologia"].tolist()],
-               df_gas["materia_prima_conv"].tolist(),
-               df_gas["benchmark_mercato"].tolist(),
-               C_CONV_GAS, C_MERC_GAS, LABEL_CONV_GAS, LABEL_TOPN_GAS, "c€/Smc"),
+               _y_c_gas, _y_m_gas,
+               C_CONV_GAS, C_MERC_GAS, LABEL_CONV_GAS, LABEL_TOPN_GAS, "c€/Smc",
+               yrange=_auto_yrange(_y_c_gas, _y_m_gas)),
     use_container_width=True,
 )
 
