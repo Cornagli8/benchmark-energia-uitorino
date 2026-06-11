@@ -959,7 +959,7 @@ st.plotly_chart(
     bar_gruppi([_short_gas(t) for t in df_gas["tipologia"].tolist()],
                _y_c_gas, _y_m_gas,
                C_CONV_GAS, C_MERC_GAS, LABEL_CONV_GAS, LABEL_TOPN_GAS, "c€/Smc",
-               yrange=_auto_yrange(_y_c_gas, _y_m_gas, floor=20, step=2)),
+               yrange=_auto_yrange(_y_c_gas, _y_m_gas, floor=30, step=2)),
     use_container_width=True,
 )
 
