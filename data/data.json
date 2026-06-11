@@ -166,20 +166,20 @@
         {
           "commodity": "ELE",
           "unita": "€/MWh",
-          "MP_convenzione": 152.08,
-          "benchmark_mercato": 202.59,
-          "criterio": "media semplice 4 classi (BT/MT equo)",
-          "delta": 50.51,
-          "delta_%": 33.2
+          "MP_convenzione": 151.94,
+          "benchmark_mercato": 170.99,
+          "criterio": "media ponderata sui consumi — benchmark con PUN TOT, utenza media, coeff. perdite ponderato BT/MT, top 5",
+          "delta": 19.05,
+          "delta_%": 12.5
         },
         {
           "commodity": "GAS",
           "unita": "c€/Smc",
           "MP_convenzione": 45.08,
-          "benchmark_mercato": 51.6,
-          "criterio": "media ponderata sui consumi",
-          "delta": 6.52,
-          "delta_%": 14.5
+          "benchmark_mercato": 49.1,
+          "criterio": "media ponderata sui consumi — benchmark con PSV, utenza media, top 5",
+          "delta": 4.02,
+          "delta_%": 8.9
         }
       ],
       "sensitivity": {
@@ -461,20 +461,20 @@
         {
           "commodity": "ELE",
           "unita": "€/MWh",
-          "MP_convenzione": 129.4,
-          "benchmark_mercato": 180.62,
-          "criterio": "media semplice 4 classi (BT/MT equo)",
-          "delta": 51.22,
-          "delta_%": 39.6
+          "MP_convenzione": 128.48,
+          "benchmark_mercato": 146.96,
+          "criterio": "media ponderata sui consumi — benchmark con PUN TOT, utenza media, coeff. perdite ponderato BT/MT, top 5",
+          "delta": 18.48,
+          "delta_%": 14.4
         },
         {
           "commodity": "GAS",
           "unita": "c€/Smc",
           "MP_convenzione": 42.4,
-          "benchmark_mercato": 49.04,
-          "criterio": "media ponderata sui consumi",
-          "delta": 6.64,
-          "delta_%": 15.7
+          "benchmark_mercato": 46.54,
+          "criterio": "media ponderata sui consumi — benchmark con PSV, utenza media, top 5",
+          "delta": 4.14,
+          "delta_%": 9.8
         }
       ],
       "sensitivity": {
@@ -756,20 +756,20 @@
         {
           "commodity": "ELE",
           "unita": "€/MWh",
-          "MP_convenzione": 158.88,
-          "benchmark_mercato": 208.01,
-          "criterio": "media semplice 4 classi (BT/MT equo)",
-          "delta": 49.13,
-          "delta_%": 30.9
+          "MP_convenzione": 156.99,
+          "benchmark_mercato": 175.33,
+          "criterio": "media ponderata sui consumi — benchmark con PUN TOT, utenza media, coeff. perdite ponderato BT/MT, top 5",
+          "delta": 18.34,
+          "delta_%": 11.7
         },
         {
           "commodity": "GAS",
           "unita": "c€/Smc",
           "MP_convenzione": 61.0,
-          "benchmark_mercato": 67.28,
-          "criterio": "media ponderata sui consumi",
-          "delta": 6.28,
-          "delta_%": 10.3
+          "benchmark_mercato": 64.78,
+          "criterio": "media ponderata sui consumi — benchmark con PSV, utenza media, top 5",
+          "delta": 3.78,
+          "delta_%": 6.2
         }
       ],
       "sensitivity": {

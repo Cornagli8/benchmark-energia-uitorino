@@ -325,7 +325,7 @@ st.markdown(
     Confronto fra il prezzo della materia prima delle Convenzioni
     <span style="color:#6BAED6; font-style:normal; font-weight:700;">MMPOWER</span> e
     <span style="color:#F0A35E; font-style:normal; font-weight:700;">MMGAS</span>
-    dell'Unione Industriali Torino e le 10 migliori offerte indicizzate attive sul
+    dell'Unione Industriali Torino e le migliori offerte indicizzate attive sul
     mercato libero italiano. Pagina interattiva con grafici per fascia&nbsp;/&nbsp;tipologia,
     simulatori di scenari personalizzati e schede operative delle convenzioni in essere.
   </p>
@@ -527,6 +527,86 @@ if len(df_conf) == 0:
     st.warning(f"⚠️ Nessun dato per il mese {mese_label(mese_sel)}.")
     st.stop()
 
+
+# ------------------------------------------------------------------
+# Helper benchmark: ricalcola live il prezzo "all-in" delle offerte
+#   p = base + spread + (base+spread)*coeff_perdita + (quota_anno/12)/cons_singolo
+# ordina le 14 (ELE) / 12 (GAS) e restituisce la media delle prime top_n.
+# ------------------------------------------------------------------
+offerte_anon = D.get("offerte_anonime", [])
+TOP_N_GENERALE = 5
+
+
+def _benchmark_mercato_singola(commodity: str, base_price: float,
+                               cons_singolo: float, coeff_perdita: float,
+                               top_n: int = 10):
+    """Prezzo medio (in €/MWh ELE o c€/Smc GAS) delle top_n offerte."""
+    if cons_singolo <= 0 or not offerte_anon:
+        return None
+    prezzi = []
+    for o in offerte_anon:
+        if o["commodity"] != commodity:
+            continue
+        spread = float(o["spread"])
+        quota = float(o["quota_eur_anno"])
+        quota_unit = (quota / 12.0) / cons_singolo if cons_singolo else 0.0
+        p = base_price + spread + (base_price + spread) * coeff_perdita + quota_unit
+        prezzi.append(p)
+    if not prezzi:
+        return None
+    prezzi.sort()
+    top = prezzi[:min(top_n, len(prezzi))]
+    return (sum(top) / len(top)) * (1000 if commodity == "ELE" else 100)
+
+
+def _coeff_perdita_misto(df_conf_ele: pd.DataFrame) -> float:
+    """Coefficiente perdite ponderato BT/MT sui consumi del periodo:
+       (10% * cons_BT + 3,8% * cons_MT) / cons_TOT_ELE."""
+    cons_bt = float(df_conf_ele[df_conf_ele["tipologia"].str.startswith("BT")]
+                    ["consumo_mese"].astype(float).sum())
+    cons_mt = float(df_conf_ele[df_conf_ele["tipologia"] == "MT"]
+                    ["consumo_mese"].astype(float).sum())
+    tot = cons_bt + cons_mt
+    if tot <= 0:
+        return float(meta["coeff_perdita_BT"])
+    cb = float(meta["coeff_perdita_BT"])
+    cm = float(meta["coeff_perdita_MT"])
+    return (cb * cons_bt + cm * cons_mt) / tot
+
+
+def _generale_top5(commodity: str):
+    """Sezione 1: Materia Prima Convenzione e benchmark Mercato per il PORTAFOGLIO
+    aggregato (utenza media). Usa:
+      - base = PUN_TOT (ELE) | PSV (GAS)
+      - cons_singolo = cons_totale / n_utenze_totale
+      - coeff_perdita = coeff_mix (ELE) | 0 (GAS)
+      - top 5 sulle 14 (ELE) / 12 (GAS) offerte.
+    MP_convenzione = media ponderata sui consumi delle 4 classi/tipologie."""
+    df_c = df_conf[df_conf["commodity"] == commodity].copy()
+    if df_c.empty:
+        return {"MP_convenzione": 0.0, "benchmark_mercato": 0.0,
+                "n_utenze": 0, "cons_medio_utenza": 0.0,
+                "coeff_perdita": 0.0, "base_price": 0.0}
+    cons = df_c["consumo_mese"].astype(float)
+    mp_conv = float((df_c["materia_prima_conv"].astype(float) * cons).sum()
+                    / cons.sum()) if cons.sum() > 0 else 0.0
+    n_ut = int(df_c["n_utenze"].astype(int).sum())
+    cons_singolo = (cons.sum() / n_ut) if n_ut > 0 else 0.0
+    if commodity == "ELE":
+        base = float(meta.get("PUN_TOT_eur_kWh") or meta.get("PUN_eur_kWh", 0))
+        coeff = _coeff_perdita_misto(df_c)
+    else:
+        base = float(meta.get("PSV_eur_Smc", 0))
+        coeff = 0.0
+    bench = _benchmark_mercato_singola(commodity, base, cons_singolo, coeff,
+                                       top_n=TOP_N_GENERALE)
+    return {"MP_convenzione": round(mp_conv, 2),
+            "benchmark_mercato": round(float(bench or 0), 2),
+            "n_utenze": n_ut,
+            "cons_medio_utenza": cons_singolo,
+            "coeff_perdita": coeff,
+            "base_price": base}
+
 # --- Riquadro PERIODO DI OSSERVAZIONE ---
 # Singolo mese: mostra i PUN ARERA per fasce orarie (F1/F2/F3) e il PSV.
 # Aggregato 'Tutti i mesi': mostra PUN/PSV ponderati ai consumi.
@@ -573,21 +653,26 @@ st.markdown(_html_periodo, unsafe_allow_html=True)
 st.header("1️⃣ Confronto generale")
 
 st.markdown(
-    """
+    f"""
 <div class="desc-box">
 Confronto a colpo d'occhio fra il <b>prezzo della materia prima riconosciuta dalle
-Convenzioni</b> e il <b>benchmark</b> calcolato come media delle <b>10 migliori offerte
-attive sul mercato libero</b>. Per ciascuna offerta il prezzo è ricostruito come
+Convenzioni</b> e il <b>benchmark</b> calcolato come media delle <b>{TOP_N_GENERALE} migliori
+offerte attive sul mercato libero</b>, applicate a un'<b>utenza media</b> del portafoglio
+convenzionato. Per ciascuna offerta il prezzo è ricostruito come
 <i>PUN/PSV indicizzato + spread + eventuali altri corrispettivi fissi o
-variabili al consumo</i>; per il solo
-<b>elettrico</b> si aggiungono le <b>perdite di rete</b>.
+variabili al consumo</i>; per il solo <b>elettrico</b> si aggiungono le
+<b>perdite di rete</b> con coefficiente <b>ponderato BT/MT sui consumi</b> del periodo.
+La quotazione di riferimento è il <b>PUN&nbsp;TOT</b> (PUN ponderato per fasce, mediato
+BT/MT sui consumi reali) per l'elettrico e il <b>PSV</b> per il gas.
 </div>
 """,
     unsafe_allow_html=True,
 )
 
-ele_row = df_gen[df_gen["commodity"] == "ELE"].iloc[0]
-gas_row = df_gen[df_gen["commodity"] == "GAS"].iloc[0]
+g_ele = _generale_top5("ELE")
+g_gas = _generale_top5("GAS")
+LABEL_TOP5_ELE = f"Top {TOP_N_GENERALE} Offerte attive sul Mercato (ELE)"
+LABEL_TOP5_GAS = f"Top {TOP_N_GENERALE} Offerte attive sul Mercato (GAS)"
 
 
 def bar_confronto_v2(val_conv, val_merc, color_conv, color_merc, titolo,
@@ -639,17 +724,17 @@ def bar_confronto_v2(val_conv, val_merc, color_conv, color_merc, titolo,
 col_ele, col_gas = st.columns(2)
 with col_ele:
     st.plotly_chart(bar_confronto_v2(
-        ele_row["MP_convenzione"], ele_row["benchmark_mercato"],
+        g_ele["MP_convenzione"], g_ele["benchmark_mercato"],
         C_CONV_ELE, C_MERC_ELE,
         f"{ICON_ELE} Elettrico — €/MWh",
-        LABEL_CONV_ELE, LABEL_MERC_ELE, "€/MWh",
+        LABEL_CONV_ELE, LABEL_TOP5_ELE, "€/MWh",
     ), use_container_width=True)
 with col_gas:
     st.plotly_chart(bar_confronto_v2(
-        gas_row["MP_convenzione"], gas_row["benchmark_mercato"],
+        g_gas["MP_convenzione"], g_gas["benchmark_mercato"],
         C_CONV_GAS, C_MERC_GAS,
         f"{ICON_GAS} Gas — c€/Smc",
-        LABEL_CONV_GAS, LABEL_MERC_GAS, "c€/Smc",
+        LABEL_CONV_GAS, LABEL_TOP5_GAS, "c€/Smc",
     ), use_container_width=True)
 
 
@@ -706,23 +791,48 @@ st.markdown(
 <div class="desc-box">
 Dettaglio per <b>classe di potenza impegnata</b>. Il Prezzo per la materia prima
 della Convenzione è calcolato per ciascuna delle quattro classi di potenza (media
-ponderata sui consumi dei POD di ciascuna classe); le <b>Top 10 di mercato</b>
-sono invece ricalcolate per ciascuna classe di potenza, in quanto le migliori
-offerte possono variare in funzione delle caratteristiche di consumo tipico
-delle classi indicate.
+ponderata sui consumi dei POD di ciascuna classe); le <b>Top N di mercato</b>
+sono ricalcolate per ciascuna classe di potenza, in quanto le migliori offerte
+possono variare in funzione delle caratteristiche di consumo tipico delle classi
+indicate. Utilizza lo slider qui sotto per scegliere il numero di offerte da
+considerare nella media (da 1 a 10).
 </div>
 """,
     unsafe_allow_html=True,
 )
+
+top_n_ele = st.slider(
+    "🔢 Numero di offerte considerate nella Top N (Elettrico)",
+    min_value=1, max_value=10, value=10, step=1, key="top_n_ele",
+    help="La media è calcolata sulle Top N offerte più convenienti, "
+         "ricalcolate per ciascuna classe di potenza. Default: 10.",
+)
+
+
+def _recompute_bench_ele(row):
+    if row["tipologia"] == "MT":
+        base = float(meta.get("PUN_MT_eur_kWh") or meta.get("PUN_eur_kWh", 0))
+        coeff = float(meta["coeff_perdita_MT"])
+    else:
+        base = float(meta.get("PUN_BT_eur_kWh") or meta.get("PUN_eur_kWh", 0))
+        coeff = float(meta["coeff_perdita_BT"])
+    n_ut = max(1, int(row.get("n_utenze") or 1))
+    cons_singolo = float(row["consumo_mese"]) / n_ut
+    b = _benchmark_mercato_singola("ELE", base, cons_singolo, coeff, top_n=top_n_ele)
+    return round(float(b or 0), 2)
+
+
+df_ele["benchmark_mercato"] = df_ele.apply(_recompute_bench_ele, axis=1)
 
 # 4 classi di potenza dirette dal df_ele (ordinato secondo ORDINE_ELE)
 cat = df_ele["tipologia"].tolist()
 y_c = df_ele["materia_prima_conv"].astype(float).tolist()
 y_m = df_ele["benchmark_mercato"].astype(float).tolist()
 
+LABEL_TOPN_ELE = f"Top {top_n_ele} Offerte attive sul Mercato (ELE)"
 st.plotly_chart(
     bar_gruppi(cat, y_c, y_m, C_CONV_ELE, C_MERC_ELE,
-               LABEL_CONV_ELE, LABEL_MERC_ELE, "€/MWh"),
+               LABEL_CONV_ELE, LABEL_TOPN_ELE, "€/MWh"),
     use_container_width=True,
 )
 
@@ -739,12 +849,20 @@ st.markdown(
 Dettaglio per <b>tipologia d'uso del gas</b>. Il Prezzo per la materia prima
 della Convenzione è calcolato distintamente <b>per ciascuna delle quattro
 tipologie d'uso</b> (media ponderata sui consumi e importi reali del mese, per
-ogni tipologia); le <b>Top 10 di mercato</b> sono ricalcolate per ciascuna
+ogni tipologia); le <b>Top N di mercato</b> sono ricalcolate per ciascuna
 tipologia, in quanto le migliori offerte possono variare in funzione delle
-caratteristiche di consumo tipico delle tipologie indicate.
+caratteristiche di consumo tipico delle tipologie indicate. Utilizza lo slider
+qui sotto per scegliere il numero di offerte da considerare nella media (da 1 a 10).
 </div>
 """,
     unsafe_allow_html=True,
+)
+
+top_n_gas = st.slider(
+    "🔢 Numero di offerte considerate nella Top N (Gas)",
+    min_value=1, max_value=10, value=10, step=1, key="top_n_gas",
+    help="La media è calcolata sulle Top N offerte più convenienti, "
+         "ricalcolate per ciascuna tipologia d'uso. Default: 10.",
 )
 
 df_gas = df_conf[df_conf["commodity"] == "GAS"].copy()
@@ -752,11 +870,23 @@ df_gas["_order"] = df_gas["tipologia"].apply(
     lambda t: ORDINE_GAS.index(t) if t in ORDINE_GAS else 99)
 df_gas = df_gas.sort_values("_order").reset_index(drop=True)
 
+
+def _recompute_bench_gas(row):
+    base = float(meta.get("PSV_eur_Smc", 0))
+    n_ut = max(1, int(row.get("n_utenze") or 1))
+    cons_singolo = float(row["consumo_mese"]) / n_ut
+    b = _benchmark_mercato_singola("GAS", base, cons_singolo, 0.0, top_n=top_n_gas)
+    return round(float(b or 0), 2)
+
+
+df_gas["benchmark_mercato"] = df_gas.apply(_recompute_bench_gas, axis=1)
+
+LABEL_TOPN_GAS = f"Top {top_n_gas} Offerte attive sul Mercato (GAS)"
 st.plotly_chart(
     bar_gruppi([_short_gas(t) for t in df_gas["tipologia"].tolist()],
                df_gas["materia_prima_conv"].tolist(),
                df_gas["benchmark_mercato"].tolist(),
-               C_CONV_GAS, C_MERC_GAS, LABEL_CONV_GAS, LABEL_MERC_GAS, "c€/Smc"),
+               C_CONV_GAS, C_MERC_GAS, LABEL_CONV_GAS, LABEL_TOPN_GAS, "c€/Smc"),
     use_container_width=True,
 )
 
@@ -787,38 +917,6 @@ mantenendo costanti i predetti consumi medi rilevati nel periodo di osservazione
     unsafe_allow_html=True,
 )
 
-
-# --- Helper: ricalcola benchmark Mercato in tempo reale dalle offerte_anonime ---
-offerte_anon = D.get("offerte_anonime", [])
-
-
-def _benchmark_mercato_singola(commodity: str, base_price: float,
-                               cons_singolo: float, coeff_perdita: float,
-                               top_n: int = 10):
-    """Calcola il benchmark Mercato per UN tipo di utenza (BT, MT, o GAS aggregato).
-    base_price: PUN (€/kWh) per ELE, PSV (€/Smc) per gas.
-    cons_singolo: consumo medio mensile per POD/PDR (kWh o Smc).
-    coeff_perdita: 0.10 (BT), 0.038 (MT), 0 (gas).
-    Ritorna prezzo medio top-N in €/MWh (ELE) o c€/Smc (gas).
-    """
-    if cons_singolo <= 0 or not offerte_anon:
-        return None
-    prezzi = []
-    for o in offerte_anon:
-        if o["commodity"] != commodity:
-            continue
-        spread = float(o["spread"])
-        quota = float(o["quota_eur_anno"])
-        # quota fissa annua diluita sul consumo annuo singolo = quota/12 / cons_mese
-        quota_unit = (quota / 12.0) / cons_singolo if cons_singolo else 0.0
-        p = base_price + spread + (base_price + spread) * coeff_perdita + quota_unit
-        prezzi.append(p)
-    if not prezzi:
-        return None
-    prezzi.sort()
-    top = prezzi[:min(top_n, len(prezzi))]
-    media = sum(top) / len(top)
-    return media * (1000 if commodity == "ELE" else 100)
 
 # --------------- Helper formattazione + widget ---------------
 def _fmt_thousands(n) -> str:
@@ -1218,7 +1316,7 @@ composizione oraria del consumo è strutturalmente diversa fra utenze a Bassa
 Tensione e a Media Tensione: il PUNx così ponderato si avvicina di più al costo
 effettivo che ciascun segmento sostiene per l'energia ritirata dal mercato.<br><br>
 Per il periodo di osservazione <b>{mese_label(meta['mese'])}</b>:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;⚡ <b>PUN TOT</b>: {_pun_tot:.4f} €/kWh — usato nel grafico Generale (sezione 1)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;⚡ <b>PUN TOT</b>: {_pun_tot:.4f} €/kWh — usato per il benchmark generale (sezione 1) sull'utenza media del portafoglio<br>
 &nbsp;&nbsp;&nbsp;&nbsp;⚡ <b>PUN BT</b>: {_pun_bt:.4f} €/kWh — usato per le classi BT (sezioni 2 e 4.1)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;⚡ <b>PUN MT</b>: {_pun_mt:.4f} €/kWh — usato per la classe MT (sezioni 2 e 4.1)<br><br>
 Il <b>PUN TOT</b> è la media ponderata tra PUN BT e PUN MT sui consumi reali del
@@ -1232,11 +1330,20 @@ PUN e PSV utilizzati nelle formule e nei calcoli del PUNx sono quelli pubblicati
 da
 <a href="https://www.arera.it/dati-e-statistiche/dettaglio/prezzi-finali-energia-elettrica-per-i-consumatori-domestici-tipo" target="_blank"><b>ARERA — PLACET</b></a>.</li>
 
-<li style="margin-bottom: 1.2rem;"><b>Selezione del Top 10</b> — Per ciascuna
-classe di potenza (elettrico) o tipologia d'uso (gas) si ordinano in modo crescente
-tutti i prezzi ricostruiti delle offerte raccolte sul mercato e si selezionano le
-<b>10 più convenienti</b>. La loro media aritmetica costituisce il valore di
-benchmark di mercato esposto nei grafici.</li>
+<li style="margin-bottom: 1.2rem;"><b>Selezione delle migliori offerte</b> —
+I prezzi delle offerte raccolte vengono ordinati in modo crescente e ne viene
+calcolata la media aritmetica delle più convenienti. Il numero di offerte
+considerate varia per sezione:
+<ul>
+  <li><b>Sezione 1</b> (confronto generale): <b>Top 5</b>, applicate a
+  un'<b>utenza media</b> del portafoglio, con base <b>PUN&nbsp;TOT</b> (elettrico) o
+  <b>PSV</b> (gas) e coefficiente perdite <b>ponderato BT/MT</b> sui consumi.</li>
+  <li><b>Sezioni 2 e 3</b> (per classe di potenza / tipologia d'uso): <b>Top N
+  configurabile da 1 a 10</b> tramite slider dedicato. Le offerte vengono
+  ricalcolate per ciascuna classe/tipologia, utilizzando PUN BT / PUN MT / PSV
+  e il rispettivo coefficiente perdite.</li>
+  <li><b>Sezione 4</b> (simulatore): <b>Top 10</b> fissa.</li>
+</ul></li>
 
 <li style="margin-bottom: 1.2rem;"><b>Offerte monitorate</b> — In data
 <b>{data_estr_it or '—'}</b> sono state raccolte e analizzate complessivamente
