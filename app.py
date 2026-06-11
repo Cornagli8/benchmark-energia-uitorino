@@ -820,10 +820,20 @@ _cons_mt,  _n_mt,  cons_mt_medio  = _stat_cat("ELE", "MT")
 
 # Quando è selezionato "Tutti i mesi disponibili", il consumo medio aggregato
 # è la SOMMA dei consumi mensili: lo normalizziamo a media-per-mese e
-# aggiungiamo il suffisso "/mese" alle unità.
+# aggiungiamo il suffisso "/mese" alle unità + il totale tra parentesi.
 _n_mesi_aggr = len(mesi_disp) if _is_aggregato else 1
-_unita_ele = "kWh/mese" if _is_aggregato else "kWh"
-_unita_gas = "Smc/mese" if _is_aggregato else "Smc"
+
+
+def _cons_label(cons_aggr, unita_singola):
+    """Etichetta del consumo medio per il riquadro descrittivo.
+    Su 'Tutti i mesi': 'X u/mese (Y u totali sul periodo)'. Su singolo mese: 'Y u'."""
+    if _is_aggregato:
+        medio = _fmt_thousands(round(cons_aggr / _n_mesi_aggr))
+        totale = _fmt_thousands(round(cons_aggr))
+        return (f"{medio} {unita_singola}/mese "
+                f"<span style='color:#6B7280;'>({totale} {unita_singola} "
+                f"totali sul periodo)</span>")
+    return f"{_fmt_thousands(round(cons_aggr))} {unita_singola}"
 
 
 # ------------------------------------------------------------------
@@ -853,13 +863,13 @@ considerare nella media (da 1 a 10).
 <b>{mese_label(meta['mese'])}</b>
 (media reale sulle utenze POD del campione):<br>
 &nbsp;&nbsp;⚡ Consumo medio di un'Utenza <b>BT ≤6 kW</b>:
-{_fmt_thousands(round(cons_3_medio / _n_mesi_aggr))} {_unita_ele}<br>
+{_cons_label(cons_3_medio, "kWh")}<br>
 &nbsp;&nbsp;⚡ Consumo medio di un'Utenza <b>BT 6–50 kW</b>:
-{_fmt_thousands(round(cons_40_medio / _n_mesi_aggr))} {_unita_ele}<br>
+{_cons_label(cons_40_medio, "kWh")}<br>
 &nbsp;&nbsp;⚡ Consumo medio di un'Utenza <b>BT &gt;50 kW</b>:
-{_fmt_thousands(round(cons_btH_medio / _n_mesi_aggr))} {_unita_ele}<br>
+{_cons_label(cons_btH_medio, "kWh")}<br>
 &nbsp;&nbsp;⚡ Consumo medio di un'Utenza in <b>Media Tensione (MT)</b>:
-{_fmt_thousands(round(cons_mt_medio / _n_mesi_aggr))} {_unita_ele}
+{_cons_label(cons_mt_medio, "kWh")}
 </div>
 """,
     unsafe_allow_html=True,
@@ -914,7 +924,7 @@ for _tip_gas in ORDINE_GAS:
     _, _, _cons_med_g = _stat_cat("GAS", _tip_gas)
     _gas_rows.append(
         f"&nbsp;&nbsp;🔥 Consumo medio di un'Utenza con <b>Tipologia {_tip_gas}</b>: "
-        f"{_fmt_thousands(round(_cons_med_g / _n_mesi_aggr))} {_unita_gas}"
+        f"{_cons_label(_cons_med_g, 'Smc')}"
     )
 st.markdown(
     f"""
