@@ -591,7 +591,8 @@ def _generale_top5(commodity: str):
     mp_conv = float((df_c["materia_prima_conv"].astype(float) * cons).sum()
                     / cons.sum()) if cons.sum() > 0 else 0.0
     n_ut = int(df_c["n_utenze"].astype(int).sum())
-    cons_singolo = (cons.sum() / n_ut) if n_ut > 0 else 0.0
+    # In aggregato consumo_mese è la SOMMA sui N mesi: normalizziamo a per-mese.
+    cons_singolo = (cons.sum() / n_ut / _n_mesi_aggr) if n_ut > 0 else 0.0
     if commodity == "ELE":
         base = float(meta.get("PUN_TOT_eur_kWh") or meta.get("PUN_eur_kWh", 0))
         coeff = _coeff_perdita_misto(df_c)
@@ -617,6 +618,11 @@ _pun_f1  = meta.get("PUN_F1_eur_kWh") or 0
 _pun_f2  = meta.get("PUN_F2_eur_kWh") or 0
 _pun_f3  = meta.get("PUN_F3_eur_kWh") or 0
 _is_aggregato = (mese_sel == KEY_AGGREGATO)
+# Numero di mesi su cui è calcolato il dato corrente. Serve a normalizzare
+# i consumi-per-utenza nei ricalcoli del benchmark: la formula impiega un
+# consumo MENSILE (quota fissa annua / 12), ma in modalità aggregata il
+# campo "consumo_mese" è la SOMMA su N mesi → va divisa per N.
+_n_mesi_aggr = len(mesi_disp) if _is_aggregato else 1
 
 _label_pun = "PUN ponderato ai consumi per fasce" if _is_aggregato else "PUN per fasce"
 _label_psv = "PSV ponderato ai consumi" if _is_aggregato else "PSV"
@@ -818,12 +824,6 @@ _cons_40,  _n_40,  cons_40_medio  = _stat_cat("ELE", "BT 6-50 kW")
 _cons_btH, _n_btH, cons_btH_medio = _stat_cat("ELE", "BT >50 kW")
 _cons_mt,  _n_mt,  cons_mt_medio  = _stat_cat("ELE", "MT")
 
-# Quando è selezionato "Tutti i mesi disponibili", il consumo medio aggregato
-# è la SOMMA dei consumi mensili: lo normalizziamo a media-per-mese e
-# aggiungiamo il suffisso "/mese" alle unità + il totale tra parentesi.
-_n_mesi_aggr = len(mesi_disp) if _is_aggregato else 1
-
-
 def _cons_label(cons_aggr, unita_singola):
     """Etichetta del consumo medio per il riquadro descrittivo.
     Su 'Tutti i mesi': 'X u/mese (Y u totali sul periodo)'. Su singolo mese: 'Y u'."""
@@ -891,7 +891,8 @@ def _recompute_bench_ele(row):
         base = float(meta.get("PUN_BT_eur_kWh") or meta.get("PUN_eur_kWh", 0))
         coeff = float(meta["coeff_perdita_BT"])
     n_ut = max(1, int(row.get("n_utenze") or 1))
-    cons_singolo = float(row["consumo_mese"]) / n_ut
+    # In aggregato consumo_mese è la SOMMA sui N mesi: normalizziamo a per-mese.
+    cons_singolo = float(row["consumo_mese"]) / n_ut / _n_mesi_aggr
     b = _benchmark_mercato_singola("ELE", base, cons_singolo, coeff, top_n=top_n_ele)
     return round(float(b or 0), 2)
 
@@ -962,7 +963,8 @@ df_gas = df_gas.sort_values("_order").reset_index(drop=True)
 def _recompute_bench_gas(row):
     base = float(meta.get("PSV_eur_Smc", 0))
     n_ut = max(1, int(row.get("n_utenze") or 1))
-    cons_singolo = float(row["consumo_mese"]) / n_ut
+    # In aggregato consumo_mese è la SOMMA sui N mesi: normalizziamo a per-mese.
+    cons_singolo = float(row["consumo_mese"]) / n_ut / _n_mesi_aggr
     b = _benchmark_mercato_singola("GAS", base, cons_singolo, 0.0, top_n=top_n_gas)
     return round(float(b or 0), 2)
 
