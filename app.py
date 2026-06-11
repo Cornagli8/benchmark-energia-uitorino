@@ -325,9 +325,10 @@ st.markdown(
     Confronto fra il prezzo della materia prima delle Convenzioni
     <span style="color:#6BAED6; font-style:normal; font-weight:700;">MMPOWER</span> e
     <span style="color:#F0A35E; font-style:normal; font-weight:700;">MMGAS</span>
-    dell'Unione Industriali Torino e le migliori offerte indicizzate attive sul
-    mercato libero italiano. Pagina interattiva con grafici per fascia&nbsp;/&nbsp;tipologia,
-    simulatori di scenari personalizzati e schede operative delle convenzioni in essere.
+    dell'Unione Industriali Torino e quello di cui alle 10 migliori offerte
+    indicizzate attive sul mercato libero italiano, su diversi periodi di
+    osservazione. Pagina interattiva con grafici per classe&nbsp;/&nbsp;tipologia
+    e schede operative delle convenzioni in essere.
   </p>
 </div>
 """,
@@ -694,7 +695,7 @@ st.header("1️⃣ Confronto generale")
 st.markdown(
     f"""
 <div class="desc-box">
-Confronto a colpo d'occhio fra il <b>prezzo della materia prima riconosciuta dalle
+Confronto fra il <b>prezzo della materia prima riconosciuta dalle
 Convenzioni</b> e il <b>benchmark</b> calcolato come media delle <b>{TOP_N_GENERALE} migliori
 offerte attive sul mercato libero</b>, applicate a un'utenza media del campione
 convenzionato. Per ciascuna offerta il prezzo è ricostruito come
@@ -870,9 +871,9 @@ def _cons_label(cons_aggr, unita_singola):
 
 
 # ------------------------------------------------------------------
-# SEZIONE 2 — Per fascia di potenza (Elettrico)
+# SEZIONE 2 — Per classe di potenza (Elettrico)
 # ------------------------------------------------------------------
-st.header(f"2️⃣ {ICON_ELE} Per fascia di potenza (Elettrico)")
+st.header(f"2️⃣ {ICON_ELE} Per classe di potenza (Elettrico)")
 
 # Prepara df_ele ordinato secondo ORDINE_ELE
 df_ele = df_conf[df_conf["commodity"] == "ELE"].copy()
@@ -887,10 +888,10 @@ st.markdown(
 Dettaglio per <b>classe di potenza impegnata</b>. Il Prezzo per la materia prima
 della Convenzione è calcolato per ciascuna delle quattro classi di potenza (media
 ponderata sui consumi dei POD di ciascuna classe); le <b>Top N di mercato</b>
-sono ricalcolate per ciascuna classe di potenza, in quanto le migliori offerte
-possono variare in funzione delle caratteristiche di consumo tipico delle classi
-indicate. Utilizza lo slider qui sotto per scegliere il numero di offerte da
-considerare nella media (da 1 a 10).
+sono ricalcolate per ciascuna classe di potenza, in quanto le performance delle
+migliori offerte possono variare in funzione delle caratteristiche di consumo
+tipico delle classi indicate. Utilizza lo slider qui sotto per scegliere il
+numero di offerte da considerare nella media (da 1 a 10).
 <hr style="border:none; border-top:1px solid #E5E7EB; margin:.8rem 0 .7rem 0;">
 🧮 Consumo medio per Classe di Potenza del Periodo d'osservazione
 <b>{mese_label(meta['mese'])}</b>
@@ -959,9 +960,10 @@ Dettaglio per <b>tipologia d'uso del gas</b>. Il Prezzo per la materia prima
 della Convenzione è calcolato distintamente <b>per ciascuna delle quattro
 tipologie d'uso</b> (media ponderata sui consumi e importi reali del mese, per
 ogni tipologia); le <b>Top N di mercato</b> sono ricalcolate per ciascuna
-tipologia, in quanto le migliori offerte possono variare in funzione delle
-caratteristiche di consumo tipico delle tipologie indicate. Utilizza lo slider
-qui sotto per scegliere il numero di offerte da considerare nella media (da 1 a 10).
+tipologia, in quanto le performance delle migliori offerte possono variare in
+funzione delle caratteristiche di consumo tipico delle tipologie indicate.
+Utilizza lo slider qui sotto per scegliere il numero di offerte da considerare
+nella media (da 1 a 10).
 <hr style="border:none; border-top:1px solid #E5E7EB; margin:.8rem 0 .7rem 0;">
 🧮 Consumo medio per Tipologia d'uso del Periodo d'osservazione
 <b>{mese_label(meta['mese'])}</b>
@@ -1047,10 +1049,10 @@ Materia prima è composto dalle voci <i>Generazione</i> e <i>Perdite di rete</i>
 calcolate a partire dai <b>dati reali</b> di fornitura delle aziende
 convenzionate (media ponderata sui consumi effettivi del periodo di osservazione).</li>
 
-<li style="margin-bottom: 1.2rem;"><b>Convenzione MMGAS</b> — Materia prima del
-gas calcolata per ciascuna tipologia d'uso a partire dai <b>dati reali</b> di
-fornitura delle aziende convenzionate (importo "materia prima" diviso per i Smc
-consumati del mese).</li>
+<li style="margin-bottom: 1.2rem;"><b>Convenzione MMGAS</b> — Il Prezzo della
+Materia prima del gas è calcolato per ciascuna tipologia d'uso a partire dai
+<b>dati reali</b> di fornitura delle aziende convenzionate (importo "materia
+prima" diviso per i Smc consumati del mese).</li>
 
 <li style="margin-bottom: 1.2rem;"><b>Mercato</b> — Per ogni offerta indicizzata
 raccolta il prezzo è ricostruito distintamente per i due vettori (formule esposte
@@ -1063,14 +1065,14 @@ di metodologia approfondita</a>):<br><br>
 &nbsp;&nbsp;&nbsp;🔥 <b>Gas</b>:&nbsp;
 <code>P = PSV + s + altri_corr_var + (altri_corr_fissi × n_u) ÷ (12 × C_g,m)</code>.</li>
 
-<li style="margin-bottom: 1.2rem;"><b>PUNx: PUN Ponderato per Fasce</b> — Anziché
-applicare il PUN monorario all'intero campione, viene utilizzato un <b>PUNx</b>
-differenziato per classe di tensione (PUN BT, PUN MT) e un PUNx aggregato totale
-(PUN TOT). Questo consente di rappresentare in modo più aderente alla realtà il
-prezzo all'ingrosso del mercato elettrico italiano, riconoscendo che la
-composizione oraria del consumo è strutturalmente diversa fra utenze a Bassa
-Tensione e a Media Tensione: il PUNx così ponderato si avvicina di più al costo
-effettivo che ciascun segmento sostiene per l'energia ritirata dal mercato.<br><br>
+<li style="margin-bottom: 1.2rem;"><b>PUNx: PUN Ponderato per Fasce</b> — Viene
+utilizzato un <b>PUNx ponderato secondo le Fasce orarie</b> ex Delibera ARERA
+n.&nbsp;181/06 e s.m.i., sia differenziato per classe di tensione (PUN&nbsp;BT,
+PUN&nbsp;MT) sia aggregato totale (PUN&nbsp;TOT). Questo consente di rappresentare
+in modo più aderente alla realtà il prezzo effettivamente pagato per l'energia
+prelevata da rete pubblica, considerato che la distribuzione temporale del
+consumo può risultare statisticamente diversa fra utenze a Bassa Tensione e a
+Media Tensione.<br><br>
 Per il periodo di osservazione <b>{mese_label(meta['mese'])}</b>:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;⚡ <b>PUN TOT</b>: {_pun_tot:.4f} €/kWh — usato per il benchmark generale (sezione 1) sull'utenza media del campione convenzionato<br>
 &nbsp;&nbsp;&nbsp;&nbsp;⚡ <b>PUN BT</b>: {_pun_bt:.4f} €/kWh — usato per le classi BT (sezione 2)<br>
@@ -1083,8 +1085,8 @@ utenze convenzionate.</li>
 
 <li style="margin-bottom: 1.2rem;"><b>Fonte dei prezzi all'ingrosso</b> — I prezzi
 PUN e PSV utilizzati nelle formule e nei calcoli del PUNx sono quelli pubblicati
-da
-<a href="https://www.arera.it/dati-e-statistiche/dettaglio/prezzi-finali-energia-elettrica-per-i-consumatori-domestici-tipo" target="_blank"><b>ARERA — PLACET</b></a>.</li>
+da ARERA nella sezione
+<a href="https://www.arera.it/consumatori/offerte-standard-per-i-clienti-finali-placet" target="_blank"><b>"Offerte standard per i clienti finali — PLACET"</b></a>.</li>
 
 <li style="margin-bottom: 1.2rem;"><b>Selezione delle migliori offerte</b> —
 I prezzi delle offerte raccolte vengono ordinati in modo crescente e ne viene
@@ -1124,12 +1126,14 @@ st.header("📰 Le Convenzioni in essere")
 st.markdown(
     """
 <div class="desc-box">
-Le Convenzioni MMPOWER e MMGAS sono contratti <b>riservati esclusivamente alle aziende
-associate</b> all'Unione Industriali Torino. Si tratta di <b>contratti a tempo
-determinato senza tacito rinnovo</b> e sono <b>tuttora attivi ed è possibile
+Le Convenzioni <b>MMPOWER</b> (per l'energia elettrica) e <b>MMGAS</b> (per il
+gas) sono contratti <b>biennali di fornitura a prezzo variabile</b>,
+rispettivamente indicizzati al <b>PUN</b> e al <b>PSV</b>, riservati esclusivamente
+alle aziende associate all'Unione Industriali Torino. Si tratta di <b>contratti a
+tempo determinato senza tacito rinnovo</b>, sono <b>tuttora attivi ed è possibile
 aderirvi</b>. In prossimità della scadenza l'Area Gas &amp; Power proporrà, sempre
-per le aziende associate e con priorità alle aziende già convenzionate, un nuovo
-accordo per il biennio successivo perfezionato tramite gara tra i principali
+per le aziende associate e con priorità alle aziende già convenzionate, una nuova
+convenzione per il biennio successivo selezionata tramite gara tra i principali
 fornitori del mercato.
 </div>
 """,
@@ -1229,12 +1233,12 @@ st.header("📘 Metodologia approfondita")
 st.markdown(
     """
 <div class="desc-box">
-Per una descrizione completa di passaggi, formule e parametri utilizzati nel
-benchmark, è disponibile un documento separato di metodologia. Il PDF include
-anche l'elenco completo delle <b>offerte indicizzate raccolte</b>, in forma
-<b>anonimizzata</b>: ciascuna offerta è identificata come <i>Offerta N EE</i>
-(o <i>GAS</i>), con relativa <b>Fonte</b> (Sito Fornitore o Sito Comparatore)
-e le condizioni economiche applicate.
+Per una descrizione completa di algoritmi e parametri utilizzati nel benchmark,
+è disponibile un documento metodologico separato. Quest'ultimo include anche
+l'elenco completo delle offerte indicizzate raccolte, in forma anonima: ciascuna
+offerta è identificata come <i>Offerta N EE</i> (o <i>GAS</i>), con relativa
+<b>Fonte</b> (Sito Fornitore o Sito Comparatore) e le condizioni economiche
+applicate.
 </div>
 """,
     unsafe_allow_html=True,
