@@ -559,54 +559,87 @@ def _benchmark_mercato_singola(commodity: str, base_price: float,
     return (sum(top) / len(top)) * (1000 if commodity == "ELE" else 100)
 
 
-def _coeff_perdita_misto(df_conf_ele: pd.DataFrame) -> float:
-    """Coefficiente perdite ponderato BT/MT sui consumi del periodo:
-       (10% * cons_BT + 3,8% * cons_MT) / cons_TOT_ELE."""
-    cons_bt = float(df_conf_ele[df_conf_ele["tipologia"].str.startswith("BT")]
-                    ["consumo_mese"].astype(float).sum())
-    cons_mt = float(df_conf_ele[df_conf_ele["tipologia"] == "MT"]
-                    ["consumo_mese"].astype(float).sum())
-    tot = cons_bt + cons_mt
-    if tot <= 0:
-        return float(meta["coeff_perdita_BT"])
-    cb = float(meta["coeff_perdita_BT"])
-    cm = float(meta["coeff_perdita_MT"])
-    return (cb * cons_bt + cm * cons_mt) / tot
+def _bench_periodo(commodity: str, tipologia=None, top_n: int = 10) -> float:
+    """Approccio B: benchmark del periodo come MEDIA PONDERATA sui consumi
+    dei benchmark MENSILI. Per ogni mese del periodo (singolo o aggregato),
+    si calcola il benchmark con i dati reali di quel mese (PUN/PSV mensile,
+    cons singolo medio del mese, coeff. perdite). Quindi si aggrega per media
+    ponderata sui consumi mensili.
+
+    tipologia=None → vista generale (sezione 1): considera tutte le
+        classi/tipologie del commodity, base = PUN_TOT (ELE) | PSV (GAS),
+        coeff = coeff_mix BT/MT del mese (ELE) | 0 (GAS).
+    tipologia="..." → singola classe/tipologia (sezioni 2/3): base = PUN della
+        classe (BT/MT) | PSV, coeff specifico della classe.
+    """
+    mesi_iter = list(mesi_disp) if _is_aggregato else [mese_sel]
+    bench_vals: list[float] = []
+    cons_vals: list[float] = []
+    cb_default = float(D.get("meta", {}).get("coeff_perdita_BT", 0.10))
+    cm_default = float(D.get("meta", {}).get("coeff_perdita_MT", 0.038))
+    for mese in mesi_iter:
+        dm = D.get("dati_per_mese", {}).get(mese)
+        if not dm:
+            continue
+        meta_m = dm["meta_mese"]
+        recs = [r for r in dm["confronto"] if r["commodity"] == commodity]
+        if tipologia is not None:
+            recs = [r for r in recs if r["tipologia"] == tipologia]
+        if not recs:
+            continue
+        cons_mese = sum(float(r["consumo_mese"]) for r in recs)
+        n_ut = sum(int(r["n_utenze"]) for r in recs)
+        if cons_mese <= 0 or n_ut <= 0:
+            continue
+        cons_singolo = cons_mese / n_ut
+        if commodity == "ELE":
+            if tipologia is None:
+                base = float(meta_m.get("PUN_TOT_eur_kWh")
+                             or meta_m.get("PUN_eur_kWh", 0))
+                cons_bt = sum(float(r["consumo_mese"]) for r in recs
+                              if str(r["tipologia"]).startswith("BT"))
+                cons_mt = sum(float(r["consumo_mese"]) for r in recs
+                              if r["tipologia"] == "MT")
+                coeff = ((cb_default * cons_bt + cm_default * cons_mt)
+                         / cons_mese) if cons_mese > 0 else cb_default
+            elif tipologia == "MT":
+                base = float(meta_m.get("PUN_MT_eur_kWh")
+                             or meta_m.get("PUN_eur_kWh", 0))
+                coeff = cm_default
+            else:
+                base = float(meta_m.get("PUN_BT_eur_kWh")
+                             or meta_m.get("PUN_eur_kWh", 0))
+                coeff = cb_default
+        else:
+            base = float(meta_m.get("PSV_eur_Smc", 0))
+            coeff = 0.0
+        b = _benchmark_mercato_singola(commodity, base, cons_singolo,
+                                       coeff, top_n=top_n)
+        if b is None:
+            continue
+        bench_vals.append(float(b))
+        cons_vals.append(cons_mese)
+    if not bench_vals:
+        return 0.0
+    s = sum(cons_vals)
+    if s == 0:
+        return sum(bench_vals) / len(bench_vals)
+    return sum(b * c for b, c in zip(bench_vals, cons_vals)) / s
 
 
 def _generale_top5(commodity: str):
-    """Sezione 1: Materia Prima Convenzione e benchmark Mercato per il PORTAFOGLIO
-    aggregato (utenza media). Usa:
-      - base = PUN_TOT (ELE) | PSV (GAS)
-      - cons_singolo = cons_totale / n_utenze_totale
-      - coeff_perdita = coeff_mix (ELE) | 0 (GAS)
-      - top 5 sulle 14 (ELE) / 12 (GAS) offerte.
-    MP_convenzione = media ponderata sui consumi delle 4 classi/tipologie."""
+    """Sezione 1 — Confronto generale. MP_convenzione = media ponderata sui
+    consumi delle 4 classi/tipologie. Benchmark calcolato con Approccio B
+    (media ponderata dei benchmark mensili)."""
     df_c = df_conf[df_conf["commodity"] == commodity].copy()
     if df_c.empty:
-        return {"MP_convenzione": 0.0, "benchmark_mercato": 0.0,
-                "n_utenze": 0, "cons_medio_utenza": 0.0,
-                "coeff_perdita": 0.0, "base_price": 0.0}
+        return {"MP_convenzione": 0.0, "benchmark_mercato": 0.0}
     cons = df_c["consumo_mese"].astype(float)
     mp_conv = float((df_c["materia_prima_conv"].astype(float) * cons).sum()
                     / cons.sum()) if cons.sum() > 0 else 0.0
-    n_ut = int(df_c["n_utenze"].astype(int).sum())
-    # In aggregato consumo_mese è la SOMMA sui N mesi: normalizziamo a per-mese.
-    cons_singolo = (cons.sum() / n_ut / _n_mesi_aggr) if n_ut > 0 else 0.0
-    if commodity == "ELE":
-        base = float(meta.get("PUN_TOT_eur_kWh") or meta.get("PUN_eur_kWh", 0))
-        coeff = _coeff_perdita_misto(df_c)
-    else:
-        base = float(meta.get("PSV_eur_Smc", 0))
-        coeff = 0.0
-    bench = _benchmark_mercato_singola(commodity, base, cons_singolo, coeff,
-                                       top_n=TOP_N_GENERALE)
+    bench = _bench_periodo(commodity, tipologia=None, top_n=TOP_N_GENERALE)
     return {"MP_convenzione": round(mp_conv, 2),
-            "benchmark_mercato": round(float(bench or 0), 2),
-            "n_utenze": n_ut,
-            "cons_medio_utenza": cons_singolo,
-            "coeff_perdita": coeff,
-            "base_price": base}
+            "benchmark_mercato": round(float(bench or 0), 2)}
 
 # --- Riquadro PERIODO DI OSSERVAZIONE ---
 # Singolo mese: mostra i PUN ARERA per fasce orarie (F1/F2/F3) e il PSV.
@@ -884,17 +917,9 @@ top_n_ele = st.slider(
 
 
 def _recompute_bench_ele(row):
-    if row["tipologia"] == "MT":
-        base = float(meta.get("PUN_MT_eur_kWh") or meta.get("PUN_eur_kWh", 0))
-        coeff = float(meta["coeff_perdita_MT"])
-    else:
-        base = float(meta.get("PUN_BT_eur_kWh") or meta.get("PUN_eur_kWh", 0))
-        coeff = float(meta["coeff_perdita_BT"])
-    n_ut = max(1, int(row.get("n_utenze") or 1))
-    # In aggregato consumo_mese è la SOMMA sui N mesi: normalizziamo a per-mese.
-    cons_singolo = float(row["consumo_mese"]) / n_ut / _n_mesi_aggr
-    b = _benchmark_mercato_singola("ELE", base, cons_singolo, coeff, top_n=top_n_ele)
-    return round(float(b or 0), 2)
+    # Approccio B: media ponderata dei benchmark mensili per QUESTA classe.
+    return round(_bench_periodo("ELE", tipologia=row["tipologia"],
+                                top_n=top_n_ele), 2)
 
 
 df_ele["benchmark_mercato"] = df_ele.apply(_recompute_bench_ele, axis=1)
@@ -961,12 +986,9 @@ df_gas = df_gas.sort_values("_order").reset_index(drop=True)
 
 
 def _recompute_bench_gas(row):
-    base = float(meta.get("PSV_eur_Smc", 0))
-    n_ut = max(1, int(row.get("n_utenze") or 1))
-    # In aggregato consumo_mese è la SOMMA sui N mesi: normalizziamo a per-mese.
-    cons_singolo = float(row["consumo_mese"]) / n_ut / _n_mesi_aggr
-    b = _benchmark_mercato_singola("GAS", base, cons_singolo, 0.0, top_n=top_n_gas)
-    return round(float(b or 0), 2)
+    # Approccio B: media ponderata dei benchmark mensili per QUESTA tipologia.
+    return round(_bench_periodo("GAS", tipologia=row["tipologia"],
+                                top_n=top_n_gas), 2)
 
 
 df_gas["benchmark_mercato"] = df_gas.apply(_recompute_bench_gas, axis=1)
