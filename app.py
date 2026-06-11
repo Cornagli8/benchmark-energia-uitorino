@@ -1104,7 +1104,8 @@ considerate varia per sezione:
   rete BT/MT ponderate sui consumi del periodo (elettrico) o <b>PSV</b> (gas).</li>
   <li><b>Sezioni 2 e 3</b> (per classe di potenza / tipologia d'uso): <b>Top N
   configurabile da 1 a 10</b> tramite slider dedicato. Le offerte vengono
-  ricalcolate per ciascuna classe/tipologia, utilizzando PUN BT/MT o PSV.</li>
+  ricalcolate per ciascuna classe/tipologia, utilizzando PUN BT/MT con
+  rispettive perdite di rete o PSV.</li>
 </ul></li>
 
 <li style="margin-bottom: 1.2rem;"><b>Offerte monitorate</b> — In data
