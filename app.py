@@ -1058,11 +1058,11 @@ prima" diviso per i Smc consumati del mese).</li>
 <li style="margin-bottom: 1.2rem;"><b>Mercato</b> — Per ogni offerta indicizzata
 raccolta il prezzo è ricostruito <b>per ciascun mese del periodo di osservazione</b>,
 distintamente per i due vettori:<br><br>
-&nbsp;&nbsp;&nbsp;⚡ <b>Prezzo Energia Elettrica</b>:&nbsp;
+&nbsp;&nbsp;&nbsp;⚡ <b>Prezzo mese EE</b>:&nbsp;
 <code>P_mese = PUNx + spread + altri_corr_var + (PUNx + spread) × k + (altri_corr_fissi × n_utenze) ÷ (12 × consumo_mensile)</code><br>
 &nbsp;&nbsp;&nbsp;&nbsp;<i>dove k è il coefficiente di perdite di rete
 ({meta['coeff_perdita_BT']*100:.0f}&nbsp;% BT, {meta['coeff_perdita_MT']*100:.1f}&nbsp;% MT).</i><br><br>
-&nbsp;&nbsp;&nbsp;🔥 <b>Prezzo Gas</b>:&nbsp;
+&nbsp;&nbsp;&nbsp;🔥 <b>Prezzo mese Gas</b>:&nbsp;
 <code>P_mese = PSV + spread + altri_corr_var + (altri_corr_fissi × n_utenze) ÷ (12 × consumo_mensile)</code>.<br><br>
 Quando si seleziona <b>"Tutti i periodi disponibili"</b>, il benchmark
 aggregato sull'intero periodo è la <b>media ponderata sui consumi dei
