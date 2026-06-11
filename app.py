@@ -813,7 +813,7 @@ df_ele = df_ele.sort_values("_order").reset_index(drop=True)
 
 
 st.markdown(
-    """
+    f"""
 <div class="desc-box">
 Dettaglio per <b>classe di potenza impegnata</b>. Il Prezzo per la materia prima
 della Convenzione è calcolato per ciascuna delle quattro classi di potenza (media
@@ -822,15 +822,7 @@ sono ricalcolate per ciascuna classe di potenza, in quanto le migliori offerte
 possono variare in funzione delle caratteristiche di consumo tipico delle classi
 indicate. Utilizza lo slider qui sotto per scegliere il numero di offerte da
 considerare nella media (da 1 a 10).
-</div>
-""",
-    unsafe_allow_html=True,
-)
-
-st.markdown(
-    f"""
-<div style="background:#F8FAFC; border:1px solid #E5E7EB; border-radius:8px;
-            padding:.8rem 1rem; margin: .4rem 0 1rem 0; font-size:.92rem;">
+<hr style="border:none; border-top:1px solid #E5E7EB; margin:.8rem 0 .7rem 0;">
 🧮 Consumo medio per Classe di Potenza del Periodo d'osservazione
 <b>{mese_label(meta['mese'])}</b>
 (media reale sulle utenze POD del campione):<br>
@@ -889,21 +881,6 @@ st.plotly_chart(
 st.markdown("<h2 class='gas-section'>3️⃣ 🔥 Per tipologia d'uso (Gas)</h2>",
             unsafe_allow_html=True)
 
-st.markdown(
-    """
-<div class="desc-box gas">
-Dettaglio per <b>tipologia d'uso del gas</b>. Il Prezzo per la materia prima
-della Convenzione è calcolato distintamente <b>per ciascuna delle quattro
-tipologie d'uso</b> (media ponderata sui consumi e importi reali del mese, per
-ogni tipologia); le <b>Top N di mercato</b> sono ricalcolate per ciascuna
-tipologia, in quanto le migliori offerte possono variare in funzione delle
-caratteristiche di consumo tipico delle tipologie indicate. Utilizza lo slider
-qui sotto per scegliere il numero di offerte da considerare nella media (da 1 a 10).
-</div>
-""",
-    unsafe_allow_html=True,
-)
-
 # Riquadro consumi medi per tipologia d'uso (GAS) — dal df_conf nell'ordine canonico
 _gas_rows = []
 for _tip_gas in ORDINE_GAS:
@@ -914,8 +891,15 @@ for _tip_gas in ORDINE_GAS:
     )
 st.markdown(
     f"""
-<div style="background:#F8FAFC; border:1px solid #E5E7EB; border-radius:8px;
-            padding:.8rem 1rem; margin: .4rem 0 1rem 0; font-size:.92rem;">
+<div class="desc-box gas">
+Dettaglio per <b>tipologia d'uso del gas</b>. Il Prezzo per la materia prima
+della Convenzione è calcolato distintamente <b>per ciascuna delle quattro
+tipologie d'uso</b> (media ponderata sui consumi e importi reali del mese, per
+ogni tipologia); le <b>Top N di mercato</b> sono ricalcolate per ciascuna
+tipologia, in quanto le migliori offerte possono variare in funzione delle
+caratteristiche di consumo tipico delle tipologie indicate. Utilizza lo slider
+qui sotto per scegliere il numero di offerte da considerare nella media (da 1 a 10).
+<hr style="border:none; border-top:1px solid #E5E7EB; margin:.8rem 0 .7rem 0;">
 🧮 Consumo medio per Tipologia d'uso del Periodo d'osservazione
 <b>{mese_label(meta['mese'])}</b>
 (media reale sulle utenze PDR del campione):<br>
@@ -1043,12 +1027,11 @@ calcolata la media aritmetica delle più convenienti. Il numero di offerte
 considerate varia per sezione:
 <ul>
   <li><b>Sezione 1</b> (confronto generale): <b>Top 5</b>, applicate a
-  un'<b>utenza media</b> del portafoglio, con base <b>PUN&nbsp;TOT</b> (elettrico) o
-  <b>PSV</b> (gas) e coefficiente perdite <b>ponderato BT/MT</b> sui consumi.</li>
+  un'<b>utenza media</b> del portafoglio, con base <b>PUN&nbsp;TOT</b>
+  (elettrico) o <b>PSV</b> (gas).</li>
   <li><b>Sezioni 2 e 3</b> (per classe di potenza / tipologia d'uso): <b>Top N
   configurabile da 1 a 10</b> tramite slider dedicato. Le offerte vengono
-  ricalcolate per ciascuna classe/tipologia, utilizzando PUN BT / PUN MT / PSV
-  e il rispettivo coefficiente perdite.</li>
+  ricalcolate per ciascuna classe/tipologia, utilizzando PUN BT/MT e PSV.</li>
 </ul></li>
 
 <li style="margin-bottom: 1.2rem;"><b>Offerte monitorate</b> — In data
