@@ -8,6 +8,7 @@ Esecuzione locale:
 Deploy: https://share.streamlit.io  (repo Cornagli8/benchmark-energia-uitorino)
 """
 import base64
+import io
 import json
 import re
 from pathlib import Path
@@ -15,6 +16,20 @@ from pathlib import Path
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
+
+# ------------------------------------------------------------------
+# Config Plotly: disabilita zoom/pan/autoscale (UX mobile),
+# mantiene fullscreen Streamlit. Rimuove anche il bottone toImage di
+# Plotly: il download avviene tramite il custom button "Scarica PNG
+# sezione" sotto ogni grafico (composito titolo + descrizione + chart).
+# ------------------------------------------------------------------
+CHART_CONFIG_NO_TOUCH = {
+    "displayModeBar": False,
+    "displaylogo": False,
+    "scrollZoom": False,
+    "doubleClick": False,
+    "staticPlot": False,  # consentiamo hover per tooltip
+}
 
 # ------------------------------------------------------------------
 # Config pagina + palette
@@ -715,6 +730,146 @@ LABEL_TOP5_ELE = f"Top {TOP_N_GENERALE} Offerte attive sul Mercato (ELE)"
 LABEL_TOP5_GAS = f"Top {TOP_N_GENERALE} Offerte attive sul Mercato (GAS)"
 
 
+# ------------------------------------------------------------------
+# Composite PNG export: titolo sezione + descrizione + info-box + grafico
+# Server-side via kaleido (chart -> PNG) + Pillow (composizione).
+# ------------------------------------------------------------------
+def _load_font(size: int, bold: bool = False):
+    """Carica un TTF in modo cross-platform (Windows / Linux / fallback)."""
+    from PIL import ImageFont
+    candidates = (
+        ["calibrib.ttf", "Calibri Bold.ttf",
+         "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+         "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf",
+         "DejaVuSans-Bold.ttf", "Arial Bold.ttf", "arialbd.ttf"]
+        if bold else
+        ["calibri.ttf", "Calibri.ttf",
+         "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+         "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
+         "DejaVuSans.ttf", "Arial.ttf", "arial.ttf"]
+    )
+    for path in candidates:
+        try:
+            return ImageFont.truetype(path, size)
+        except (OSError, IOError):
+            continue
+    return ImageFont.load_default()
+
+
+def _wrap_text(draw, text: str, font, max_width: int) -> list[str]:
+    """Spezza un testo in righe che entrano in max_width pixel."""
+    words = text.split()
+    lines, current = [], ""
+    for w in words:
+        candidate = (current + " " + w).strip()
+        if draw.textlength(candidate, font=font) <= max_width:
+            current = candidate
+        else:
+            if current:
+                lines.append(current)
+            current = w
+    if current:
+        lines.append(current)
+    return lines or [""]
+
+
+def _export_section_png(section_title: str, description: str, fig,
+                         info_lines=None, top_n_info=None,
+                         chart_width: int = 1280, chart_height: int = 640) -> bytes:
+    """Genera un PNG con: titolo sezione + descrizione + info-box (opzionale) +
+    valore Top N (opzionale) + grafico Plotly. Tutto in un'unica immagine
+    bianca a larghezza fissa (1280px), pronta per download.
+
+    Args:
+        section_title: titolo della sezione (es. "Sezione 2 — Per classe di potenza (Elettrico)")
+        description: testo descrittivo (verrà wrappato in più righe se serve)
+        fig: figura Plotly da renderizzare
+        info_lines: list[str] di righe per l'info-box "Consumo medio..." (opzionale)
+        top_n_info: stringa per il valore dello slider (es. "Top N selezionata: 10")
+        chart_width / chart_height: dimensioni del grafico renderizzato
+
+    Returns:
+        bytes della PNG composita
+    """
+    from PIL import Image, ImageDraw
+
+    # 1) Render del chart via kaleido
+    chart_png = fig.to_image(format="png", width=chart_width,
+                              height=chart_height, scale=2)
+    chart_img = Image.open(io.BytesIO(chart_png))
+    canvas_w = chart_img.width  # = chart_width * scale = 2560 px
+
+    # 2) Setup font (scaled-up perché stiamo lavorando a 2× scale)
+    font_title = _load_font(56, bold=True)
+    font_body = _load_font(28, bold=False)
+    font_info = _load_font(26, bold=False)
+    font_topn = _load_font(28, bold=True)
+
+    pad_x = 80
+    pad_y = 60
+    max_text_w = canvas_w - 2 * pad_x
+
+    # 3) Pre-calcolo dimensioni (servono per allocare il canvas)
+    # Usa un'immagine temporanea per le misure
+    tmp_img = Image.new("RGB", (canvas_w, 1), "white")
+    tmp_draw = ImageDraw.Draw(tmp_img)
+
+    desc_lines = _wrap_text(tmp_draw, description, font_body, max_text_w)
+    info_text_lines: list[str] = list(info_lines) if info_lines else []
+
+    y_cursor = pad_y
+    # Titolo
+    title_h = font_title.size + 20
+    desc_h = len(desc_lines) * (font_body.size + 10) + 25
+    info_h = (len(info_text_lines) * (font_info.size + 8) + 30) if info_text_lines else 0
+    topn_h = (font_topn.size + 25) if top_n_info else 0
+    total_h = pad_y + title_h + desc_h + info_h + topn_h + chart_img.height + pad_y
+
+    # 4) Canvas finale
+    canvas = Image.new("RGB", (canvas_w, total_h), "white")
+    draw = ImageDraw.Draw(canvas)
+
+    # 5) Disegno titolo
+    draw.text((pad_x, y_cursor), section_title, fill="#0F172A", font=font_title)
+    y_cursor += title_h
+
+    # 6) Descrizione (multilinea)
+    for line in desc_lines:
+        draw.text((pad_x, y_cursor), line, fill="#374151", font=font_body)
+        y_cursor += font_body.size + 10
+    y_cursor += 25
+
+    # 7) Info-box (riquadro azzurrino con righe consumi medi)
+    if info_text_lines:
+        # Box di sfondo
+        box_x0 = pad_x - 20
+        box_y0 = y_cursor - 10
+        box_h = len(info_text_lines) * (font_info.size + 8) + 20
+        box_x1 = canvas_w - pad_x + 20
+        box_y1 = box_y0 + box_h
+        draw.rectangle((box_x0, box_y0, box_x1, box_y1),
+                        fill="#F8FAFC", outline="#CBD5E1", width=1)
+        for line in info_text_lines:
+            draw.text((pad_x, y_cursor), line, fill="#374151", font=font_info)
+            y_cursor += font_info.size + 8
+        y_cursor += 30
+
+    # 8) Top N info
+    if top_n_info:
+        draw.text((pad_x, y_cursor), top_n_info,
+                   fill="#1F2937", font=font_topn)
+        y_cursor += font_topn.size + 25
+
+    # 9) Incolla chart (centrato orizzontalmente)
+    chart_x = (canvas_w - chart_img.width) // 2
+    canvas.paste(chart_img, (chart_x, y_cursor))
+
+    # 10) Salva
+    out = io.BytesIO()
+    canvas.save(out, format="PNG", optimize=True)
+    return out.getvalue()
+
+
 def bar_confronto_v2(val_conv, val_merc, color_conv, color_merc, titolo,
                      label_conv, label_merc, unita):
     """Bar chart con legenda IN BASSO, barre piu' larghe, delta evidenziato."""
@@ -737,6 +892,7 @@ def bar_confronto_v2(val_conv, val_merc, color_conv, color_merc, titolo,
     fig.update_layout(
         title=dict(text=titolo, font=dict(size=16, color=C_TEXT_DARK)),
         showlegend=True,
+        dragmode=False,  # disabilita zoom/pan/select tramite drag o touch
         legend=dict(
             orientation="h", x=0.5, xanchor="center",
             y=-0.18, yanchor="top",
@@ -744,8 +900,9 @@ def bar_confronto_v2(val_conv, val_merc, color_conv, color_merc, titolo,
             font=dict(size=11),
         ),
         height=460, plot_bgcolor="#FFFFFF", paper_bgcolor="#FFFFFF",
-        yaxis=dict(title=unita, gridcolor="#E5E7EB", zerolinecolor="#E5E7EB"),
-        xaxis=dict(showticklabels=False, range=[-0.6, 1.6]),
+        yaxis=dict(title=unita, gridcolor="#E5E7EB", zerolinecolor="#E5E7EB",
+                    fixedrange=True),
+        xaxis=dict(showticklabels=False, range=[-0.6, 1.6], fixedrange=True),
         bargap=0.18,
         margin=dict(t=80, b=110, l=60, r=40),
         annotations=[
@@ -761,21 +918,77 @@ def bar_confronto_v2(val_conv, val_merc, color_conv, color_merc, titolo,
     return fig
 
 
+# Descrizioni sintetiche usate nei PNG composite delle 3 sezioni
+_DESC_SEZ1 = ("Confronto fra il Prezzo per la Materia prima delle Convenzioni "
+              "e il benchmark calcolato come media delle 5 migliori offerte "
+              "attive sul mercato libero, applicate a un'utenza media del "
+              "campione convenzionato.")
+_DESC_SEZ2 = ("Dettaglio per classe di potenza impegnata. Il Prezzo per la "
+              "Materia prima della Convenzione è calcolato per ciascuna delle "
+              "quattro classi di potenza; le Top N di mercato sono ricalcolate "
+              "per ciascuna classe.")
+_DESC_SEZ3 = ("Dettaglio per tipologia d'uso del gas. Il Prezzo per la Materia "
+              "prima della Convenzione è calcolato distintamente per ciascuna "
+              "delle quattro tipologie d'uso; le Top N di mercato sono "
+              "ricalcolate per ciascuna tipologia.")
+_PERIODO_LBL = mese_label(meta["mese"])
+
+
+@st.cache_data(show_spinner=False, max_entries=24)
+def _png_cached(cache_key, _fig, section_title, description, info_lines=None,
+                 top_n_info=None):
+    """Wrapper cachato di _export_section_png. cache_key è un tuple
+    hashable di tutti i parametri che determinano l'output: cambia →
+    rigenerazione, altrimenti hit istantanea."""
+    return _export_section_png(section_title, description, _fig,
+                                info_lines=info_lines, top_n_info=top_n_info)
+
+
 col_ele, col_gas = st.columns(2)
 with col_ele:
-    st.plotly_chart(bar_confronto_v2(
+    _fig_s1_ele = bar_confronto_v2(
         g_ele["MP_convenzione"], g_ele["benchmark_mercato"],
         C_CONV_ELE, C_MERC_ELE,
         f"{ICON_ELE} Elettrico — €/MWh",
         LABEL_CONV_ELE, LABEL_TOP5_ELE, "€/MWh",
-    ), use_container_width=True)
+    )
+    st.plotly_chart(_fig_s1_ele, use_container_width=True,
+                     config=CHART_CONFIG_NO_TOUCH)
+    _key_s1_ele = (mese_sel, "S1_ELE",
+                    g_ele["MP_convenzione"], g_ele["benchmark_mercato"])
+    _png_s1_ele = _png_cached(
+        _key_s1_ele, _fig_s1_ele,
+        f"Sezione 1 — Confronto generale (Elettrico) — {_PERIODO_LBL}",
+        _DESC_SEZ1, info_lines=None,
+        top_n_info=f"N = {TOP_N_GENERALE} offerte considerate",
+    )
+    st.download_button(
+        "📥 Scarica PNG sezione", data=_png_s1_ele,
+        file_name=f"benchmark_sez1_ELE_{mese_sel}.png",
+        mime="image/png", key="dl_s1_ele", use_container_width=True,
+    )
 with col_gas:
-    st.plotly_chart(bar_confronto_v2(
+    _fig_s1_gas = bar_confronto_v2(
         g_gas["MP_convenzione"], g_gas["benchmark_mercato"],
         C_CONV_GAS, C_MERC_GAS,
         f"{ICON_GAS} Gas — c€/Smc",
         LABEL_CONV_GAS, LABEL_TOP5_GAS, "c€/Smc",
-    ), use_container_width=True)
+    )
+    st.plotly_chart(_fig_s1_gas, use_container_width=True,
+                     config=CHART_CONFIG_NO_TOUCH)
+    _key_s1_gas = (mese_sel, "S1_GAS",
+                    g_gas["MP_convenzione"], g_gas["benchmark_mercato"])
+    _png_s1_gas = _png_cached(
+        _key_s1_gas, _fig_s1_gas,
+        f"Sezione 1 — Confronto generale (Gas) — {_PERIODO_LBL}",
+        _DESC_SEZ1, info_lines=None,
+        top_n_info=f"N = {TOP_N_GENERALE} offerte considerate",
+    )
+    st.download_button(
+        "📥 Scarica PNG sezione", data=_png_s1_gas,
+        file_name=f"benchmark_sez1_GAS_{mese_sel}.png",
+        mime="image/png", key="dl_s1_gas", use_container_width=True,
+    )
 
 
 # ------------------------------------------------------------------
@@ -815,11 +1028,14 @@ def bar_gruppi(x_labels, y_conv, y_merc, color_conv, color_merc,
     yaxis_kwargs = dict(title=unita, gridcolor="#E5E7EB")
     if yrange is not None:
         yaxis_kwargs["range"] = yrange
+    yaxis_kwargs["fixedrange"] = True  # blocca scroll/pinch verticali (mobile)
     fig.update_layout(
         barmode="group", height=height,
         plot_bgcolor="#FFFFFF", paper_bgcolor="#FFFFFF",
+        dragmode=False,  # disabilita zoom/pan/select tramite drag o touch
         yaxis=yaxis_kwargs,
-        xaxis=dict(title="", tickangle=xtickangle), bargap=0.25, bargroupgap=0.08,
+        xaxis=dict(title="", tickangle=xtickangle, fixedrange=True),
+        bargap=0.25, bargroupgap=0.08,
         # Legenda in basso al centro (stessa forma del grafico 1)
         showlegend=True,
         legend=dict(
@@ -932,11 +1148,46 @@ y_c = df_ele["materia_prima_conv"].astype(float).tolist()
 y_m = df_ele["benchmark_mercato"].astype(float).tolist()
 
 LABEL_TOPN_ELE = f"Top {top_n_ele} Offerte attive sul Mercato (ELE)"
-st.plotly_chart(
-    bar_gruppi(cat, y_c, y_m, C_CONV_ELE, C_MERC_ELE,
-               LABEL_CONV_ELE, LABEL_TOPN_ELE, "€/MWh",
-               yrange=_auto_yrange(y_c, y_m, floor=60, step=5)),
-    use_container_width=True,
+_fig_s2 = bar_gruppi(cat, y_c, y_m, C_CONV_ELE, C_MERC_ELE,
+                      LABEL_CONV_ELE, LABEL_TOPN_ELE, "€/MWh",
+                      yrange=_auto_yrange(y_c, y_m, floor=60, step=5))
+st.plotly_chart(_fig_s2, use_container_width=True,
+                 config=CHART_CONFIG_NO_TOUCH)
+
+# Info-box consumi medi ELE (per PNG)
+def _label_unita_ele():
+    """Etichetta consumo per la PNG: 'kWh' o 'kWh/mese (X totali)' su aggregato."""
+    return ("kWh totali sul periodo (media {medio} kWh/mese)"
+            if _is_aggregato else "kWh")
+_unita_ele_lbl = "kWh totali sul periodo" if _is_aggregato else "kWh"
+def _line_consumo(label, val_aggr):
+    # Usa "•" invece di emoji unicode (i font TTF standard non hanno
+    # i glyph delle emoji; nella web app si usano comunque emoji vere).
+    if _is_aggregato:
+        tot = _fmt_thousands(round(val_aggr))
+        med = _fmt_thousands(round(val_aggr / _n_mesi_aggr))
+        return f"  •  Consumo medio Utenza {label}: {tot} kWh totali (media {med} kWh/mese)"
+    return f"  •  Consumo medio Utenza {label}: {_fmt_thousands(round(val_aggr))} kWh"
+
+_info_s2 = [
+    f"Consumo medio per Classe di Potenza — {_PERIODO_LBL}:",
+    _line_consumo("BT ≤6 kW", cons_3_medio),
+    _line_consumo("BT 6-50 kW", cons_40_medio),
+    _line_consumo("BT >50 kW", cons_btH_medio),
+    _line_consumo("MT", cons_mt_medio),
+]
+_key_s2 = (mese_sel, "S2", top_n_ele, tuple(y_c), tuple(y_m),
+            cons_3_medio, cons_40_medio, cons_btH_medio, cons_mt_medio)
+_png_s2 = _png_cached(
+    _key_s2, _fig_s2,
+    f"Sezione 2 — Per classe di potenza (Elettrico) — {_PERIODO_LBL}",
+    _DESC_SEZ2, info_lines=_info_s2,
+    top_n_info=f"Top N selezionata: {top_n_ele}",
+)
+st.download_button(
+    "📥 Scarica PNG sezione", data=_png_s2,
+    file_name=f"benchmark_sez2_ELE_{mese_sel}_topN{top_n_ele}.png",
+    mime="image/png", key="dl_s2", use_container_width=True,
 )
 
 
@@ -999,12 +1250,42 @@ df_gas["benchmark_mercato"] = df_gas.apply(_recompute_bench_gas, axis=1)
 LABEL_TOPN_GAS = f"Top {top_n_gas} Offerte attive sul Mercato (GAS)"
 _y_c_gas = df_gas["materia_prima_conv"].tolist()
 _y_m_gas = df_gas["benchmark_mercato"].tolist()
-st.plotly_chart(
-    bar_gruppi([_short_gas(t) for t in df_gas["tipologia"].tolist()],
-               _y_c_gas, _y_m_gas,
-               C_CONV_GAS, C_MERC_GAS, LABEL_CONV_GAS, LABEL_TOPN_GAS, "c€/Smc",
-               yrange=_auto_yrange(_y_c_gas, _y_m_gas, floor=30, step=2)),
-    use_container_width=True,
+_fig_s3 = bar_gruppi([_short_gas(t) for t in df_gas["tipologia"].tolist()],
+                      _y_c_gas, _y_m_gas,
+                      C_CONV_GAS, C_MERC_GAS, LABEL_CONV_GAS,
+                      LABEL_TOPN_GAS, "c€/Smc",
+                      yrange=_auto_yrange(_y_c_gas, _y_m_gas, floor=30, step=2))
+st.plotly_chart(_fig_s3, use_container_width=True,
+                 config=CHART_CONFIG_NO_TOUCH)
+
+# Info-box consumi medi GAS (per PNG)
+def _line_consumo_gas(tip, val_aggr):
+    # Niente emoji unicode nel PNG: usiamo "•" (font TTF non ha glyph 🔥).
+    if _is_aggregato:
+        tot = _fmt_thousands(round(val_aggr))
+        med = _fmt_thousands(round(val_aggr / _n_mesi_aggr))
+        return f"  •  Tipologia {tip}: {tot} Smc totali (media {med} Smc/mese)"
+    return f"  •  Tipologia {tip}: {_fmt_thousands(round(val_aggr))} Smc"
+
+_info_s3 = [f"Consumo medio per Tipologia d'uso — {_PERIODO_LBL}:"]
+_cons_gas_per_tip = {}
+for _tip_g in ORDINE_GAS:
+    _, _, _cm = _stat_cat("GAS", _tip_g)
+    _cons_gas_per_tip[_tip_g] = _cm
+    _info_s3.append(_line_consumo_gas(_tip_g, _cm))
+
+_key_s3 = (mese_sel, "S3", top_n_gas, tuple(_y_c_gas), tuple(_y_m_gas),
+            tuple(sorted(_cons_gas_per_tip.items())))
+_png_s3 = _png_cached(
+    _key_s3, _fig_s3,
+    f"Sezione 3 — Per tipologia d'uso (Gas) — {_PERIODO_LBL}",
+    _DESC_SEZ3, info_lines=_info_s3,
+    top_n_info=f"Top N selezionata: {top_n_gas}",
+)
+st.download_button(
+    "📥 Scarica PNG sezione", data=_png_s3,
+    file_name=f"benchmark_sez3_GAS_{mese_sel}_topN{top_n_gas}.png",
+    mime="image/png", key="dl_s3", use_container_width=True,
 )
 
 
