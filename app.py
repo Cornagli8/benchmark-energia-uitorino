@@ -552,34 +552,41 @@ offerte_anon = D.get("offerte_anonime", [])
 TOP_N_GENERALE = 5
 
 
-def _benchmark_mercato_singola(commodity: str, base_price: float,
-                               cons_singolo: float, coeff_perdita: float,
-                               top_n: int = 10):
-    """Prezzo medio (in €/MWh ELE o c€/Smc GAS) delle top_n offerte."""
+def _prezzi_offerte_mese(commodity: str, base_price: float,
+                          cons_singolo: float, coeff_perdita: float):
+    """Ricostruisce i prezzi mensili di CIASCUNA offerta (non ordinati, con
+    indice globale preservato). Ritorna una lista [(idx, prezzo €/kWh o €/Smc), ...].
+    Se cons_singolo non è positivo o non ci sono offerte, ritorna [].
+    """
     if cons_singolo <= 0 or not offerte_anon:
-        return None
-    prezzi = []
-    for o in offerte_anon:
+        return []
+    out = []
+    for i, o in enumerate(offerte_anon):
         if o["commodity"] != commodity:
             continue
         spread = float(o["spread"])
         quota = float(o["quota_eur_anno"])
         quota_unit = (quota / 12.0) / cons_singolo if cons_singolo else 0.0
         p = base_price + spread + (base_price + spread) * coeff_perdita + quota_unit
-        prezzi.append(p)
-    if not prezzi:
-        return None
-    prezzi.sort()
-    top = prezzi[:min(top_n, len(prezzi))]
-    return (sum(top) / len(top)) * (1000 if commodity == "ELE" else 100)
+        out.append((i, p))
+    return out
 
 
 def _bench_periodo(commodity: str, tipologia=None, top_n: int = 10) -> float:
-    """Approccio B: benchmark del periodo come MEDIA PONDERATA sui consumi
-    dei benchmark MENSILI. Per ogni mese del periodo (singolo o aggregato),
-    si calcola il benchmark con i dati reali di quel mese (PUN/PSV mensile,
-    cons singolo medio del mese, coeff. perdite). Quindi si aggrega per media
-    ponderata sui consumi mensili.
+    """Benchmark del periodo (singolo o aggregato).
+
+    Vista singolo mese: per il mese selezionato, ricostruisce i prezzi di tutte
+    le offerte del commodity con i parametri della sezione, ordina crescente,
+    prende la media dei primi top_n → benchmark.
+
+    Vista aggregata ("Tutti i periodi disponibili"): per CIASCUNA offerta si
+    calcola il prezzo medio ponderato sui consumi mensili (l'offerta è quindi
+    valutata come 'contratto stabile sul periodo', non ricomposta mese per
+    mese). Le offerte così mediate vengono poi ordinate e le prime top_n
+    aggregate per media aritmetica → benchmark aggregato. Questo criterio
+    riflette la scelta contrattuale reale: un cliente non cambia offerta ogni
+    mese, quindi il benchmark aggregato deve rispecchiare la performance
+    dell'offerta come contratto duraturo sul periodo osservato.
 
     tipologia=None → vista generale (sezione 1): considera tutte le
         classi/tipologie del commodity, base = PUN_TOT (ELE) | PSV (GAS),
@@ -588,10 +595,14 @@ def _bench_periodo(commodity: str, tipologia=None, top_n: int = 10) -> float:
         classe (BT/MT) | PSV, coeff specifico della classe.
     """
     mesi_iter = list(mesi_disp) if _is_aggregato else [mese_sel]
-    bench_vals: list[float] = []
-    cons_vals: list[float] = []
     cb_default = float(D.get("meta", {}).get("coeff_perdita_BT", 0.10))
     cm_default = float(D.get("meta", {}).get("coeff_perdita_MT", 0.038))
+
+    # Per ogni mese: prezzi di ciascuna offerta + consumo totale del mese
+    # per la classe/tipologia richiesta.
+    prezzi_per_offerta: dict[int, list[float]] = {}
+    cons_per_mese_utile: list[float] = []  # allineato con l'ordine di riempimento
+
     for mese in mesi_iter:
         dm = D.get("dati_per_mese", {}).get(mese)
         if not dm:
@@ -628,18 +639,39 @@ def _bench_periodo(commodity: str, tipologia=None, top_n: int = 10) -> float:
         else:
             base = float(meta_m.get("PSV_eur_Smc", 0))
             coeff = 0.0
-        b = _benchmark_mercato_singola(commodity, base, cons_singolo,
-                                       coeff, top_n=top_n)
-        if b is None:
+
+        prezzi_mese = _prezzi_offerte_mese(commodity, base, cons_singolo, coeff)
+        if not prezzi_mese:
             continue
-        bench_vals.append(float(b))
-        cons_vals.append(cons_mese)
-    if not bench_vals:
+        for offer_idx, p in prezzi_mese:
+            prezzi_per_offerta.setdefault(offer_idx, []).append(p)
+        cons_per_mese_utile.append(cons_mese)
+
+    if not prezzi_per_offerta:
         return 0.0
-    s = sum(cons_vals)
-    if s == 0:
-        return sum(bench_vals) / len(bench_vals)
-    return sum(b * c for b, c in zip(bench_vals, cons_vals)) / s
+
+    # Media ponderata sui consumi mensili PER OGNI OFFERTA.
+    # Nel caso singolo mese la lista ha 1 elemento → prezzo del mese stesso.
+    prezzi_medi = []
+    tot_cons = sum(cons_per_mese_utile)
+    for offer_idx, prezzi_off in prezzi_per_offerta.items():
+        if len(prezzi_off) != len(cons_per_mese_utile):
+            # Offerta non calcolata in tutti i mesi (raro): media semplice
+            prezzo_medio = sum(prezzi_off) / len(prezzi_off)
+        elif tot_cons > 0:
+            prezzo_medio = sum(p * c for p, c in
+                                zip(prezzi_off, cons_per_mese_utile)) / tot_cons
+        else:
+            prezzo_medio = sum(prezzi_off) / len(prezzi_off)
+        prezzi_medi.append(prezzo_medio)
+
+    # Ordina crescente e prendi top_n.
+    prezzi_medi.sort()
+    top = prezzi_medi[:min(top_n, len(prezzi_medi))]
+    if not top:
+        return 0.0
+    mean_price = sum(top) / len(top)
+    return mean_price * (1000 if commodity == "ELE" else 100)
 
 
 def _generale_top5(commodity: str):
@@ -905,7 +937,7 @@ df_ele = df_ele.sort_values("_order").reset_index(drop=True)
 st.markdown(
     f"""
 <div class="desc-box">
-Dettaglio per <b>classe di potenza impegnata</b>. Il Prezzo per la Materia prima
+Dettaglio per <b>classe di potenza disponibile</b>. Il Prezzo per la Materia prima
 della Convenzione è calcolato per ciascuna delle quattro classi di potenza (media
 ponderata sui consumi dei POD di ciascuna classe); le <b>Top N di mercato</b>
 sono ricalcolate per ciascuna classe di potenza, in quanto le performance delle
@@ -1084,11 +1116,16 @@ distintamente per i due vettori:<br><br>
 &nbsp;&nbsp;&nbsp;🔥 <b>Prezzo mese Gas</b>:&nbsp;
 <code>P_mese = PSV + spread + altri_corr_var + (altri_corr_fissi × n_utenze) ÷ (12 × consumo_mensile)</code>.<br><br>
 Quando si seleziona <b>"Tutti i periodi disponibili"</b>, il benchmark
-aggregato sull'intero periodo è la <b>media ponderata sui consumi dei
-benchmark mensili</b>:<br><br>
-&nbsp;&nbsp;&nbsp;⚡🔥 <b>Prezzo Aggregato</b>:&nbsp;
-<code>Prezzo_aggregato = somma(Prezzo_mese × Consumo_mese) ÷ somma(Consumo_mese)</code>
-&nbsp;<i>per ogni mese del periodo</i>.</li>
+aggregato è costruito rispecchiando la <b>logica contrattuale della
+fornitura</b> (una singola offerta indicizzata è sottoscritta per l'intero
+periodo, non cambiata ogni mese): per ciascuna offerta si calcola il
+<b>prezzo medio ponderato sui consumi mensili</b>, e solo dopo si
+selezionano le <i>N</i> offerte più convenienti la cui media aritmetica
+costituisce il benchmark:<br><br>
+&nbsp;&nbsp;&nbsp;⚡🔥 <b>Prezzo medio dell'offerta sul periodo</b>:&nbsp;
+<code>P_offerta = somma(P_mese × Consumo_mese) ÷ somma(Consumo_mese)</code><br>
+&nbsp;&nbsp;&nbsp;⚡🔥 <b>Benchmark aggregato</b>:&nbsp; media aritmetica
+delle <i>N</i> P_offerta più basse (con <i>N</i> definito dalla sezione).</li>
 
 <li style="margin-bottom: 1.2rem;"><b>PUNx: PUN Ponderato per Fasce</b> — Viene
 utilizzato un <b>PUNx ponderato secondo le Fasce orarie</b> ex Delibera ARERA
@@ -1157,7 +1194,7 @@ gas) sono contratti <b>biennali di fornitura a prezzo variabile</b>,
 rispettivamente indicizzati al <b>PUN</b> e al <b>PSV</b>, riservati esclusivamente
 alle aziende associate all'Unione Industriali Torino. Si tratta di <b>contratti a
 tempo determinato senza tacito rinnovo</b>, sono <b>tuttora attivi ed è possibile
-aderirvi</b>. In prossimità della scadenza l'Area Gas &amp; Power proporrà, sempre
+aderirvi</b>. In prossimità della scadenza l'Area Gas &amp; Power Acquisti e Regolazione proporrà, sempre
 per le aziende associate e con priorità alle aziende già convenzionate, una nuova
 convenzione per il biennio successivo selezionata tramite gara tra i principali
 fornitori del mercato.
@@ -1249,7 +1286,7 @@ fornitura alla prima data utile prevista in accordo col fornitore.
 
 # Sezione Sitografia rimossa: i riferimenti rilevanti (ARERA PLACET) sono
 # integrati nella Metodologia. Il PDF delle offerte resta riservato e disponibile
-# solo all'Area Gas & Power (non pubblicato sulla pagina).
+# solo all'Area Gas & Power Acquisti e Regolazione (non pubblicato sulla pagina).
 
 # ------------------------------------------------------------------
 # METODOLOGIA APPROFONDITA (download PDF + sorgente .tex)
