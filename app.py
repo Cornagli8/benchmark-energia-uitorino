@@ -1324,7 +1324,7 @@ st.markdown(
     f"""
 <hr style="margin-top:2rem;">
 <p style="text-align:center; color:#9CA3AF; font-size:.85rem;">
-Unione Industriali Torino · Gas &amp; Power · periodo di osservazione {mese_label(meta['mese'])}
+Unione Industriali Torino · Gas &amp; Power Acquisti e Regolazione · periodo di osservazione {mese_label(meta['mese'])}
 </p>
 """,
     unsafe_allow_html=True,
