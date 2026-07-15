@@ -1227,7 +1227,7 @@ Fornitore: <b>Iren Mercato S.p.A.</b></p>
     )
     st.link_button(
         label="📰 Vai alla news completa MMPOWER *",
-        url="https://www.ui.torino.it/unione-per-te/energia-commodity/notizia/101781/prezzi-energia-elettrica-20262027-nuova/",
+        url="https://www.ui.torino.it/news/prezzi-energia-elettrica-2026-2027-nuova-convenzione-mmpower-con-iren-mercato-spa",
         type="primary",
     )
 
