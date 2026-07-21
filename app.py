@@ -1253,7 +1253,7 @@ Fornitore: <b>Eni Plenitude S.p.A.</b></p>
     )
     st.link_button(
         label="📰 Vai alla news completa MMGAS *",
-        url="https://www.ui.torino.it/unione-per-te/energia-commodity/notizia/100897/gas-nuova-convenzione-biennale-unioneeni-plenitude/",
+        url="https://www.ui.torino.it/news/gas-nuova-convenzione-biennale-unione-eni-plenitude-anni-termici-20252026-e-20262027",
         type="primary",
     )
 
