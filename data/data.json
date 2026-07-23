@@ -1,7 +1,7 @@
 {
   "version": 6,
   "meta": {
-    "mese_default": "2026-03",
+    "mese_default": "2026-05",
     "coeff_perdita_BT": 0.1,
     "coeff_perdita_MT": 0.038,
     "top_n": 10,

@@ -1,0 +1,47 @@
+name: keep-alive-streamlit
+
+# Pinga l'app Streamlit Cloud per mantenerla "sveglia".
+# Streamlit Cloud manda in sleep le app free dopo ~7 giorni di inattività:
+# questo workflow simula visite periodiche e mantiene l'app sempre pronta.
+#
+# Frequenza: 2 volte al giorno (alle 08:00 e 20:00 UTC). L'orario è UTC,
+# non italiano — su GitHub Actions non si può usare il TZ locale.
+# GitHub Actions è gratuito per repo pubblici; nessuna configurazione extra.
+#
+# Trigger manuale disponibile con workflow_dispatch (per test).
+
+on:
+  schedule:
+    - cron: "0 8,20 * * *"   # ogni giorno alle 08:00 e 20:00 UTC (10:00 e 22:00 IT estate; 09:00 e 21:00 IT inverno)
+  workflow_dispatch:          # permette esecuzione manuale dal tab Actions
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Ping app Streamlit Cloud
+        env:
+          APP_URL: "https://benchmark-energia-uitorino.streamlit.app/"
+        run: |
+          echo "Ping $APP_URL alle $(date -u)"
+          # Streamlit espone /_stcore/health che risponde 200 quando l'app è viva
+          # (o svegliata dopo lo sleep). Se sleep, la prima richiesta la sveglia
+          # ma potrebbe rispondere con 503 finché non finisce il boot: allora
+          # ripeto un paio di volte con backoff.
+          for attempt in 1 2 3 4; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" -L "$APP_URL/_stcore/health" || echo "000")
+            echo "  attempt $attempt: HTTP $code"
+            if [ "$code" = "200" ]; then
+              echo "App viva."
+              exit 0
+            fi
+            sleep 20
+          done
+          # Se dopo 4 tentativi non è viva, provo l'URL principale (a volte
+          # /_stcore/health può essere disabilitato)
+          echo "Provo endpoint principale..."
+          code=$(curl -s -o /dev/null -w "%{http_code}" -L "$APP_URL" || echo "000")
+          echo "  root: HTTP $code"
+          # Non fallisco il workflow anche se lo status non è 200: l'importante
+          # è aver mandato la richiesta, che è quello che "sveglia" Streamlit.
