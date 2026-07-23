@@ -5,17 +5,19 @@
     "coeff_perdita_BT": 0.1,
     "coeff_perdita_MT": 0.038,
     "top_n": 10,
-    "n_offerte_totali": 26,
-    "n_offerte_ele": 14,
+    "n_offerte_totali": 25,
+    "n_offerte_ele": 13,
     "n_offerte_gas": 12,
-    "data_estrazione": "2026-05-29",
+    "data_estrazione": "2026-07-23",
     "pdf_offerte_disponibile": true,
     "pdf_offerte_path": "offerte_riservate.pdf"
   },
   "mesi_disponibili": [
     "2026-01",
     "2026-02",
-    "2026-03"
+    "2026-03",
+    "2026-04",
+    "2026-05"
   ],
   "dati_per_mese": {
     "2026-01": {
@@ -23,17 +25,12 @@
         "mese": "2026-01",
         "PUN_eur_kWh": 0.132665,
         "PSV_eur_Smc": 0.403934,
-        "generazione_BT": 140.6815090031482,
-        "perdite_BT": 14.06812363331577,
-        "mp_conv_BT": 154.74963263646396,
-        "generazione_MT": 142.2339075793999,
-        "perdite_MT": 5.958944555070627,
-        "mp_conv_MT": 148.1928521344705,
-        "consumo_ele_totale_kwh": 2952042.0,
-        "consumo_gas_totale_smc": 478750.0,
-        "PUN_TOT_eur_kWh": 0.1401968772445145,
+        "PUN_TOT_eur_kWh": 0.14019185240058027,
         "PUN_BT_eur_kWh": 0.13958378727576698,
         "PUN_MT_eur_kWh": 0.14101448869299357,
+        "PUN_F1_eur_kWh": 0.151261,
+        "PUN_F2_eur_kWh": 0.137405,
+        "PUN_F3_eur_kWh": 0.118292,
         "pesi_fasce_BT": [
           0.5397809825765166,
           0.1828989724900227,
@@ -44,142 +41,147 @@
           0.2734228106564664,
           0.1958799127225709
         ],
-        "PUN_F1_eur_kWh": 0.151261,
-        "PUN_F2_eur_kWh": 0.137405,
-        "PUN_F3_eur_kWh": 0.118292
+        "generazione_BT": 140.7652447259113,
+        "perdite_BT": 14.07648909580875,
+        "mp_conv_BT": 154.84173382172003,
+        "generazione_MT": 142.2844212958918,
+        "perdite_MT": 5.727876541502922,
+        "mp_conv_MT": 148.01229783739473,
+        "consumo_ele_totale_kwh": 3097158.0,
+        "consumo_gas_totale_smc": 1464492.0
       },
       "confronto": [
+        {
+          "commodity": "ELE",
+          "tipologia": "BT <=6 kW",
+          "generazione_conv": 136.64125795923957,
+          "perdite_conv": 13.663190086039666,
+          "materia_prima_conv": 150.3,
+          "unita_mp": "€/MWh",
+          "consumo_mese": 87634.0,
+          "n_utenze": 383,
+          "benchmark_mercato": 250.62,
+          "n_offerte_usate": 10,
+          "delta_mercato_vs_conv": 100.32,
+          "delta_%": 66.7
+        },
+        {
+          "commodity": "ELE",
+          "tipologia": "BT 6-50 kW",
+          "generazione_conv": 141.12031874714663,
+          "perdite_conv": 14.112170219830393,
+          "materia_prima_conv": 155.23,
+          "unita_mp": "€/MWh",
+          "consumo_mese": 361415.0,
+          "n_utenze": 125,
+          "benchmark_mercato": 192.13,
+          "n_offerte_usate": 10,
+          "delta_mercato_vs_conv": 36.9,
+          "delta_%": 23.8
+        },
+        {
+          "commodity": "ELE",
+          "tipologia": "BT >50 kW",
+          "generazione_conv": 140.94025289462223,
+          "perdite_conv": 14.094002012344378,
+          "materia_prima_conv": 155.03,
+          "unita_mp": "€/MWh",
+          "consumo_mese": 1331780.0,
+          "n_utenze": 93,
+          "benchmark_mercato": 188.12,
+          "n_offerte_usate": 10,
+          "delta_mercato_vs_conv": 33.08,
+          "delta_%": 21.3
+        },
+        {
+          "commodity": "ELE",
+          "tipologia": "MT",
+          "generazione_conv": 142.28442129589183,
+          "perdite_conv": 5.727876541502922,
+          "materia_prima_conv": 148.01,
+          "unita_mp": "€/MWh",
+          "consumo_mese": 1316329.0,
+          "n_utenze": 32,
+          "benchmark_mercato": 178.4,
+          "n_offerte_usate": 10,
+          "delta_mercato_vs_conv": 30.38,
+          "delta_%": 20.5
+        },
         {
           "commodity": "GAS",
           "tipologia": "Acqua Calda",
           "generazione_conv": NaN,
           "perdite_conv": NaN,
-          "materia_prima_conv": 46.07,
+          "materia_prima_conv": 45.66,
           "unita_mp": "c€/Smc",
-          "consumo_mese": 2113.0,
+          "consumo_mese": 6339.0,
           "n_utenze": 4,
-          "benchmark_mercato": 54.08,
+          "benchmark_mercato": 52.2,
           "n_offerte_usate": 10,
-          "delta_mercato_vs_conv": 8.01,
-          "delta_%": 17.4
+          "delta_mercato_vs_conv": 6.54,
+          "delta_%": 14.3
         },
         {
           "commodity": "GAS",
           "tipologia": "Riscaldamento",
           "generazione_conv": NaN,
           "perdite_conv": NaN,
-          "materia_prima_conv": 45.17,
+          "materia_prima_conv": 44.76,
           "unita_mp": "c€/Smc",
-          "consumo_mese": 263728.0,
+          "consumo_mese": 798323.0,
           "n_utenze": 52,
-          "benchmark_mercato": 51.58,
+          "benchmark_mercato": 51.37,
           "n_offerte_usate": 10,
-          "delta_mercato_vs_conv": 6.41,
-          "delta_%": 14.2
+          "delta_mercato_vs_conv": 6.61,
+          "delta_%": 14.8
         },
         {
           "commodity": "GAS",
           "tipologia": "Riscaldamento + Acqua Calda",
           "generazione_conv": NaN,
           "perdite_conv": NaN,
-          "materia_prima_conv": 45.72,
+          "materia_prima_conv": 45.29,
           "unita_mp": "c€/Smc",
-          "consumo_mese": 20013.0,
+          "consumo_mese": 60279.0,
           "n_utenze": 21,
-          "benchmark_mercato": 52.84,
+          "benchmark_mercato": 51.79,
           "n_offerte_usate": 10,
-          "delta_mercato_vs_conv": 7.12,
-          "delta_%": 15.6
+          "delta_mercato_vs_conv": 6.49,
+          "delta_%": 14.3
         },
         {
           "commodity": "GAS",
           "tipologia": "Uso Tecnologico + Riscaldamento",
           "generazione_conv": NaN,
           "perdite_conv": NaN,
-          "materia_prima_conv": 44.89,
+          "materia_prima_conv": 44.44,
           "unita_mp": "c€/Smc",
-          "consumo_mese": 192896.0,
+          "consumo_mese": 599551.0,
           "n_utenze": 23,
-          "benchmark_mercato": 51.47,
+          "benchmark_mercato": 51.33,
           "n_offerte_usate": 10,
-          "delta_mercato_vs_conv": 6.58,
-          "delta_%": 14.7
-        },
-        {
-          "commodity": "ELE",
-          "tipologia": "BT <=6 kW",
-          "generazione_conv": 136.4139040951061,
-          "perdite_conv": 13.640603340929916,
-          "materia_prima_conv": 150.05,
-          "unita_mp": "€/MWh",
-          "consumo_mese": 85126.0,
-          "n_utenze": 373,
-          "benchmark_mercato": 250.96,
-          "n_offerte_usate": 10,
-          "delta_mercato_vs_conv": 100.91,
-          "delta_%": 67.3
-        },
-        {
-          "commodity": "ELE",
-          "tipologia": "BT 6-50 kW",
-          "generazione_conv": 141.0253275459251,
-          "perdite_conv": 14.102627238994,
-          "materia_prima_conv": 155.13,
-          "unita_mp": "€/MWh",
-          "consumo_mese": 349264.0,
-          "n_utenze": 125,
-          "benchmark_mercato": 192.48,
-          "n_offerte_usate": 10,
-          "delta_mercato_vs_conv": 37.35,
-          "delta_%": 24.1
-        },
-        {
-          "commodity": "ELE",
-          "tipologia": "BT >50 kW",
-          "generazione_conv": 140.8756609089189,
-          "perdite_conv": 14.087556511055526,
-          "materia_prima_conv": 154.96,
-          "unita_mp": "€/MWh",
-          "consumo_mese": 1252631.0,
-          "n_utenze": 91,
-          "benchmark_mercato": 188.33,
-          "n_offerte_usate": 10,
-          "delta_mercato_vs_conv": 33.37,
-          "delta_%": 21.5
-        },
-        {
-          "commodity": "ELE",
-          "tipologia": "MT",
-          "generazione_conv": 142.23390757939987,
-          "perdite_conv": 5.9589445550706275,
-          "materia_prima_conv": 148.19,
-          "unita_mp": "€/MWh",
-          "consumo_mese": 1265021.0,
-          "n_utenze": 32,
-          "benchmark_mercato": 178.58,
-          "n_offerte_usate": 10,
-          "delta_mercato_vs_conv": 30.39,
-          "delta_%": 20.5
+          "delta_mercato_vs_conv": 6.89,
+          "delta_%": 15.5
         }
       ],
       "generale": [
         {
           "commodity": "ELE",
           "unita": "€/MWh",
-          "MP_convenzione": 151.94,
-          "benchmark_mercato": 170.99,
-          "criterio": "media ponderata sui consumi — benchmark con PUN TOT, utenza media, coeff. perdite ponderato BT/MT, top 5",
-          "delta": 19.05,
-          "delta_%": 12.5
+          "MP_convenzione": 152.14,
+          "benchmark_mercato": 202.32,
+          "criterio": "media semplice 4 fasce (BT/MT equo)",
+          "delta": 50.18,
+          "delta_%": 33.0
         },
         {
           "commodity": "GAS",
           "unita": "c€/Smc",
-          "MP_convenzione": 45.08,
-          "benchmark_mercato": 49.1,
-          "criterio": "media ponderata sui consumi — benchmark con PSV, utenza media, top 5",
-          "delta": 4.02,
-          "delta_%": 8.9
+          "MP_convenzione": 44.65,
+          "benchmark_mercato": 51.37,
+          "criterio": "media ponderata sui consumi",
+          "delta": 6.72,
+          "delta_%": 15.0
         }
       ],
       "sensitivity": {
@@ -198,117 +200,117 @@
           6.0
         ],
         "per_fascia": {
-          "GAS|Acqua Calda": [
-            79.156,
-            62.438,
-            56.866,
-            55.008,
-            54.08,
-            53.522,
-            53.151,
-            52.687,
-            52.408,
-            52.222,
-            51.99,
-            51.758
-          ],
-          "GAS|Riscaldamento": [
-            54.195,
-            52.454,
-            51.874,
-            51.68,
-            51.584,
-            51.526,
-            51.487,
-            51.439,
-            51.409,
-            51.39,
-            51.366,
-            51.342
-          ],
-          "GAS|Riscaldamento + Acqua Calda": [
-            66.738,
-            57.471,
-            54.382,
-            53.353,
-            52.838,
-            52.529,
-            52.323,
-            52.066,
-            51.911,
-            51.808,
-            51.68,
-            51.551
-          ],
-          "GAS|Uso Tecnologico + Riscaldamento": [
-            53.048,
-            51.995,
-            51.644,
-            51.527,
-            51.469,
-            51.434,
-            51.41,
-            51.381,
-            51.364,
-            51.352,
-            51.337,
-            51.323
+          "ELE|BT 6-50 kW": [
+            237.372,
+            207.21,
+            197.157,
+            193.805,
+            192.13,
+            191.124,
+            190.454,
+            189.616,
+            189.114,
+            188.779,
+            188.36,
+            187.941
           ],
           "ELE|BT <=6 kW": [
-            823.716,
-            442.022,
-            314.65,
-            272.193,
-            250.965,
-            238.227,
-            229.736,
-            219.122,
-            212.753,
-            208.508,
-            203.2,
-            197.893
-          ],
-          "ELE|BT 6-50 kW": [
-            239.297,
-            208.086,
-            197.682,
-            194.215,
-            192.481,
-            191.44,
-            190.747,
-            189.88,
-            189.36,
-            189.013,
-            188.579,
-            188.146
+            822.131,
+            441.189,
+            314.146,
+            271.798,
+            250.625,
+            237.92,
+            229.451,
+            218.864,
+            212.512,
+            208.277,
+            202.983,
+            197.69
           ],
           "ELE|BT >50 kW": [
-            197.838,
-            191.502,
-            189.391,
-            188.687,
-            188.335,
-            188.124,
-            187.983,
-            187.807,
-            187.701,
-            187.631,
-            187.543,
-            187.455
+            197.252,
+            191.163,
+            189.133,
+            188.456,
+            188.118,
+            187.915,
+            187.78,
+            187.61,
+            187.509,
+            187.441,
+            187.357,
+            187.272
           ],
           "ELE|MT": [
-            181.885,
-            179.679,
-            178.944,
-            178.699,
-            178.576,
-            178.502,
-            178.453,
-            178.392,
-            178.355,
-            178.331,
-            178.3,
-            178.27
+            181.576,
+            179.456,
+            178.749,
+            178.513,
+            178.396,
+            178.325,
+            178.278,
+            178.219,
+            178.184,
+            178.16,
+            178.131,
+            178.101
+          ],
+          "GAS|Acqua Calda": [
+            60.562,
+            54.989,
+            53.132,
+            52.513,
+            52.203,
+            52.017,
+            51.894,
+            51.739,
+            51.646,
+            51.584,
+            51.507,
+            51.429
+          ],
+          "GAS|Riscaldamento": [
+            52.233,
+            51.658,
+            51.466,
+            51.402,
+            51.37,
+            51.351,
+            51.338,
+            51.322,
+            51.313,
+            51.306,
+            51.298,
+            51.29
+          ],
+          "GAS|Riscaldamento + Acqua Calda": [
+            56.402,
+            53.325,
+            52.3,
+            51.958,
+            51.787,
+            51.685,
+            51.616,
+            51.531,
+            51.48,
+            51.445,
+            51.403,
+            51.36
+          ],
+          "GAS|Uso Tecnologico + Riscaldamento": [
+            51.839,
+            51.5,
+            51.387,
+            51.35,
+            51.331,
+            51.32,
+            51.312,
+            51.303,
+            51.297,
+            51.293,
+            51.289,
+            51.284
           ]
         }
       }
@@ -318,17 +320,12 @@
         "mese": "2026-02",
         "PUN_eur_kWh": 0.114405,
         "PSV_eur_Smc": 0.376788,
-        "generazione_BT": 119.5623546249,
-        "perdite_BT": 11.95609994636716,
-        "mp_conv_BT": 131.51845457126717,
-        "generazione_MT": 120.0574022553218,
-        "perdite_MT": 5.04017122736835,
-        "mp_conv_MT": 125.09757348269015,
-        "consumo_ele_totale_kwh": 2650542.0,
-        "consumo_gas_totale_smc": 322499.0,
-        "PUN_TOT_eur_kWh": 0.11784357906031373,
+        "PUN_TOT_eur_kWh": 0.11783919071069307,
         "PUN_BT_eur_kWh": 0.1175016571909349,
         "PUN_MT_eur_kWh": 0.11822328872045706,
+        "PUN_F1_eur_kWh": 0.12228,
+        "PUN_F2_eur_kWh": 0.119837,
+        "PUN_F3_eur_kWh": 0.105296,
         "pesi_fasce_BT": [
           0.5498425711468181,
           0.19717563871654958,
@@ -339,142 +336,147 @@
           0.2623898223361694,
           0.2011123965835875
         ],
-        "PUN_F1_eur_kWh": 0.12228,
-        "PUN_F2_eur_kWh": 0.119837,
-        "PUN_F3_eur_kWh": 0.105296
+        "generazione_BT": 119.6223732336388,
+        "perdite_BT": 11.96209493474417,
+        "mp_conv_BT": 131.58446816838295,
+        "generazione_MT": 120.042358661755,
+        "perdite_MT": 4.850665751301823,
+        "mp_conv_MT": 124.89302441305682,
+        "consumo_ele_totale_kwh": 2784073.0,
+        "consumo_gas_totale_smc": 698845.0
       },
       "confronto": [
+        {
+          "commodity": "ELE",
+          "tipologia": "BT <=6 kW",
+          "generazione_conv": 117.63977773519832,
+          "perdite_conv": 11.760362777032636,
+          "materia_prima_conv": 129.4,
+          "unita_mp": "€/MWh",
+          "consumo_mese": 78285.0,
+          "n_utenze": 385,
+          "benchmark_mercato": 234.29,
+          "n_offerte_usate": 10,
+          "delta_mercato_vs_conv": 104.89,
+          "delta_%": 81.1
+        },
+        {
+          "commodity": "ELE",
+          "tipologia": "BT 6-50 kW",
+          "generazione_conv": 119.63599191309832,
+          "perdite_conv": 11.963673949645385,
+          "materia_prima_conv": 131.6,
+          "unita_mp": "€/MWh",
+          "consumo_mese": 307658.0,
+          "n_utenze": 125,
+          "benchmark_mercato": 168.72,
+          "n_offerte_usate": 10,
+          "delta_mercato_vs_conv": 37.12,
+          "delta_%": 28.2
+        },
+        {
+          "commodity": "ELE",
+          "tipologia": "BT >50 kW",
+          "generazione_conv": 119.7601734437918,
+          "perdite_conv": 11.976062055794372,
+          "materia_prima_conv": 131.74,
+          "unita_mp": "€/MWh",
+          "consumo_mese": 1095917.0,
+          "n_utenze": 94,
+          "benchmark_mercato": 164.06,
+          "n_offerte_usate": 10,
+          "delta_mercato_vs_conv": 32.32,
+          "delta_%": 24.5
+        },
+        {
+          "commodity": "ELE",
+          "tipologia": "MT",
+          "generazione_conv": 120.04235866175503,
+          "perdite_conv": 4.850665751301823,
+          "materia_prima_conv": 124.89,
+          "unita_mp": "€/MWh",
+          "consumo_mese": 1302213.0,
+          "n_utenze": 32,
+          "benchmark_mercato": 154.74,
+          "n_offerte_usate": 10,
+          "delta_mercato_vs_conv": 29.85,
+          "delta_%": 23.9
+        },
         {
           "commodity": "GAS",
           "tipologia": "Acqua Calda",
           "generazione_conv": NaN,
           "perdite_conv": NaN,
-          "materia_prima_conv": 43.58,
+          "materia_prima_conv": 43.74,
           "unita_mp": "c€/Smc",
-          "consumo_mese": 1727.0,
+          "consumo_mese": 3549.0,
           "n_utenze": 4,
-          "benchmark_mercato": 51.99,
+          "benchmark_mercato": 50.22,
           "n_offerte_usate": 10,
-          "delta_mercato_vs_conv": 8.41,
-          "delta_%": 19.3
+          "delta_mercato_vs_conv": 6.48,
+          "delta_%": 14.8
         },
         {
           "commodity": "GAS",
           "tipologia": "Riscaldamento",
           "generazione_conv": NaN,
           "perdite_conv": NaN,
-          "materia_prima_conv": 42.47,
+          "materia_prima_conv": 42.45,
           "unita_mp": "c€/Smc",
-          "consumo_mese": 182914.0,
+          "consumo_mese": 369224.0,
           "n_utenze": 52,
-          "benchmark_mercato": 49.0,
+          "benchmark_mercato": 48.77,
           "n_offerte_usate": 10,
-          "delta_mercato_vs_conv": 6.53,
-          "delta_%": 15.4
+          "delta_mercato_vs_conv": 6.32,
+          "delta_%": 14.9
         },
         {
           "commodity": "GAS",
           "tipologia": "Riscaldamento + Acqua Calda",
           "generazione_conv": NaN,
           "perdite_conv": NaN,
-          "materia_prima_conv": 43.25,
+          "materia_prima_conv": 43.29,
           "unita_mp": "c€/Smc",
-          "consumo_mese": 13543.0,
+          "consumo_mese": 27370.0,
           "n_utenze": 21,
-          "benchmark_mercato": 50.86,
+          "benchmark_mercato": 49.69,
           "n_offerte_usate": 10,
-          "delta_mercato_vs_conv": 7.61,
-          "delta_%": 17.6
+          "delta_mercato_vs_conv": 6.4,
+          "delta_%": 14.8
         },
         {
           "commodity": "GAS",
           "tipologia": "Uso Tecnologico + Riscaldamento",
           "generazione_conv": NaN,
           "perdite_conv": NaN,
-          "materia_prima_conv": 42.18,
+          "materia_prima_conv": 37.76,
           "unita_mp": "c€/Smc",
-          "consumo_mese": 124315.0,
+          "consumo_mese": 298702.0,
           "n_utenze": 23,
-          "benchmark_mercato": 48.85,
+          "benchmark_mercato": 48.67,
           "n_offerte_usate": 10,
-          "delta_mercato_vs_conv": 6.67,
-          "delta_%": 15.8
-        },
-        {
-          "commodity": "ELE",
-          "tipologia": "BT <=6 kW",
-          "generazione_conv": 117.54052278996454,
-          "perdite_conv": 11.750295547090502,
-          "materia_prima_conv": 129.29,
-          "unita_mp": "€/MWh",
-          "consumo_mese": 76130.0,
-          "n_utenze": 373,
-          "benchmark_mercato": 234.2,
-          "n_offerte_usate": 10,
-          "delta_mercato_vs_conv": 104.91,
-          "delta_%": 81.1
-        },
-        {
-          "commodity": "ELE",
-          "tipologia": "BT 6-50 kW",
-          "generazione_conv": 119.55927204815393,
-          "perdite_conv": 11.956017896490568,
-          "materia_prima_conv": 131.52,
-          "unita_mp": "€/MWh",
-          "consumo_mese": 297712.0,
-          "n_utenze": 125,
-          "benchmark_mercato": 169.09,
-          "n_offerte_usate": 10,
-          "delta_mercato_vs_conv": 37.57,
-          "delta_%": 28.6
-        },
-        {
-          "commodity": "ELE",
-          "tipologia": "BT >50 kW",
-          "generazione_conv": 119.71403549674481,
-          "perdite_conv": 11.97147212159565,
-          "materia_prima_conv": 131.69,
-          "unita_mp": "€/MWh",
-          "consumo_mese": 1020826.0,
-          "n_utenze": 91,
-          "benchmark_mercato": 164.28,
-          "n_offerte_usate": 10,
-          "delta_mercato_vs_conv": 32.59,
-          "delta_%": 24.7
-        },
-        {
-          "commodity": "ELE",
-          "tipologia": "MT",
-          "generazione_conv": 120.0574022553218,
-          "perdite_conv": 5.04017122736835,
-          "materia_prima_conv": 125.1,
-          "unita_mp": "€/MWh",
-          "consumo_mese": 1255874.0,
-          "n_utenze": 32,
-          "benchmark_mercato": 154.92,
-          "n_offerte_usate": 10,
-          "delta_mercato_vs_conv": 29.82,
-          "delta_%": 23.8
+          "delta_mercato_vs_conv": 10.91,
+          "delta_%": 28.9
         }
       ],
       "generale": [
         {
           "commodity": "ELE",
           "unita": "€/MWh",
-          "MP_convenzione": 128.48,
-          "benchmark_mercato": 146.96,
-          "criterio": "media ponderata sui consumi — benchmark con PUN TOT, utenza media, coeff. perdite ponderato BT/MT, top 5",
-          "delta": 18.48,
-          "delta_%": 14.4
+          "MP_convenzione": 129.41,
+          "benchmark_mercato": 180.45,
+          "criterio": "media semplice 4 fasce (BT/MT equo)",
+          "delta": 51.04,
+          "delta_%": 39.4
         },
         {
           "commodity": "GAS",
           "unita": "c€/Smc",
-          "MP_convenzione": 42.4,
-          "benchmark_mercato": 46.54,
-          "criterio": "media ponderata sui consumi — benchmark con PSV, utenza media, top 5",
-          "delta": 4.14,
-          "delta_%": 9.8
+          "MP_convenzione": 40.48,
+          "benchmark_mercato": 48.77,
+          "criterio": "media ponderata sui consumi",
+          "delta": 8.29,
+          "delta_%": 20.5
         }
       ],
       "sensitivity": {
@@ -493,117 +495,117 @@
           6.0
         ],
         "per_fascia": {
-          "GAS|Acqua Calda": [
-            82.669,
-            62.215,
-            55.397,
-            53.124,
-            51.988,
-            51.306,
-            50.851,
-            50.283,
-            49.942,
-            49.715,
-            49.431,
-            49.147
-          ],
-          "GAS|Riscaldamento": [
-            52.763,
-            50.252,
-            49.416,
-            49.137,
-            48.997,
-            48.914,
-            48.858,
-            48.788,
-            48.746,
-            48.718,
-            48.683,
-            48.649
-          ],
-          "GAS|Riscaldamento + Acqua Calda": [
-            71.401,
-            57.708,
-            53.143,
-            51.622,
-            50.861,
-            50.405,
-            50.1,
-            49.72,
-            49.492,
-            49.34,
-            49.149,
-            48.959
-          ],
-          "GAS|Uso Tecnologico + Riscaldamento": [
-            51.302,
-            49.668,
-            49.123,
-            48.942,
-            48.851,
-            48.797,
-            48.76,
-            48.715,
-            48.688,
-            48.67,
-            48.647,
-            48.624
+          "ELE|BT 6-50 kW": [
+            221.865,
+            186.434,
+            174.623,
+            170.686,
+            168.718,
+            167.537,
+            166.749,
+            165.765,
+            165.175,
+            164.781,
+            164.289,
+            163.797
           ],
           "ELE|BT <=6 kW": [
-            874.111,
-            447.833,
-            305.411,
-            257.937,
-            234.2,
-            219.958,
-            210.463,
-            198.594,
-            191.473,
-            186.726,
-            180.791,
-            174.857
-          ],
-          "ELE|BT 6-50 kW": [
-            224.014,
-            187.399,
-            175.194,
-            171.125,
-            169.091,
-            167.871,
-            167.057,
-            166.04,
-            165.43,
-            165.023,
-            164.514,
-            164.006
+            876.811,
+            448.728,
+            305.77,
+            258.118,
+            234.291,
+            219.996,
+            210.465,
+            198.552,
+            191.404,
+            186.639,
+            180.682,
+            174.726
           ],
           "ELE|BT >50 kW": [
-            175.945,
-            168.171,
-            165.58,
-            164.716,
-            164.284,
-            164.025,
-            163.852,
-            163.636,
-            163.507,
-            163.42,
-            163.313,
-            163.205
+            175.279,
+            167.799,
+            165.306,
+            164.475,
+            164.059,
+            163.81,
+            163.644,
+            163.436,
+            163.311,
+            163.228,
+            163.124,
+            163.02
           ],
           "ELE|MT": [
-            158.254,
-            156.032,
-            155.292,
-            155.045,
-            154.921,
-            154.847,
-            154.798,
-            154.736,
-            154.699,
-            154.674,
-            154.644,
-            154.613
+            157.957,
+            155.814,
+            155.099,
+            154.861,
+            154.742,
+            154.671,
+            154.623,
+            154.564,
+            154.528,
+            154.504,
+            154.474,
+            154.444
+          ],
+          "GAS|Acqua Calda": [
+            65.149,
+            55.195,
+            51.878,
+            50.772,
+            50.219,
+            49.887,
+            49.666,
+            49.389,
+            49.223,
+            49.113,
+            48.975,
+            48.836
+          ],
+          "GAS|Riscaldamento": [
+            50.633,
+            49.389,
+            48.974,
+            48.836,
+            48.767,
+            48.726,
+            48.698,
+            48.663,
+            48.643,
+            48.629,
+            48.612,
+            48.594
+          ],
+          "GAS|Riscaldamento + Acqua Calda": [
+            59.853,
+            53.077,
+            50.818,
+            50.066,
+            49.689,
+            49.463,
+            49.313,
+            49.124,
+            49.012,
+            48.936,
+            48.842,
+            48.748
+          ],
+          "GAS|Uso Tecnologico + Riscaldamento": [
+            49.693,
+            49.013,
+            48.786,
+            48.711,
+            48.673,
+            48.65,
+            48.635,
+            48.616,
+            48.605,
+            48.598,
+            48.588,
+            48.579
           ]
         }
       }
@@ -613,17 +615,12 @@
         "mese": "2026-03",
         "PUN_eur_kWh": 0.1434,
         "PSV_eur_Smc": 0.557699,
-        "generazione_BT": 146.409993359168,
-        "perdite_BT": 14.6409390332426,
-        "mp_conv_BT": 161.0509323924106,
-        "generazione_MT": 146.6051221430504,
-        "perdite_MT": 6.165303962085071,
-        "mp_conv_MT": 152.77042610513547,
-        "consumo_ele_totale_kwh": 2605715.0,
-        "consumo_gas_totale_smc": 240682.0,
-        "PUN_TOT_eur_kWh": 0.1444511984341752,
+        "PUN_TOT_eur_kWh": 0.1444390535557185,
         "PUN_BT_eur_kWh": 0.14392321877702458,
         "PUN_MT_eur_kWh": 0.14499881292742733,
+        "PUN_F1_eur_kWh": 0.143021,
+        "PUN_F2_eur_kWh": 0.153908,
+        "PUN_F3_eur_kWh": 0.138088,
         "pesi_fasce_BT": [
           0.522436829625159,
           0.20594424124422706,
@@ -634,142 +631,147 @@
           0.2766882951619127,
           0.2097086036895239
         ],
-        "PUN_F1_eur_kWh": 0.143021,
-        "PUN_F2_eur_kWh": 0.153908,
-        "PUN_F3_eur_kWh": 0.138088
+        "generazione_BT": 146.4641263808687,
+        "perdite_BT": 14.6463550543429,
+        "mp_conv_BT": 161.1104814352116,
+        "generazione_MT": 146.5995336325604,
+        "perdite_MT": 5.927995001028751,
+        "mp_conv_MT": 152.52752863358916,
+        "consumo_ele_totale_kwh": 2736283.0,
+        "consumo_gas_totale_smc": 511228.0
       },
       "confronto": [
+        {
+          "commodity": "ELE",
+          "tipologia": "BT <=6 kW",
+          "generazione_conv": 146.17267509693235,
+          "perdite_conv": 14.616807891294359,
+          "materia_prima_conv": 160.79,
+          "unita_mp": "€/MWh",
+          "consumo_mese": 84853.0,
+          "n_utenze": 386,
+          "benchmark_mercato": 257.99,
+          "n_offerte_usate": 10,
+          "delta_mercato_vs_conv": 97.2,
+          "delta_%": 60.5
+        },
+        {
+          "commodity": "ELE",
+          "tipologia": "BT 6-50 kW",
+          "generazione_conv": 146.27004683390857,
+          "perdite_conv": 14.62695168886916,
+          "materia_prima_conv": 160.9,
+          "unita_mp": "€/MWh",
+          "consumo_mese": 301918.0,
+          "n_utenze": 125,
+          "benchmark_mercato": 197.89,
+          "n_offerte_usate": 10,
+          "delta_mercato_vs_conv": 37.0,
+          "delta_%": 23.0
+        },
+        {
+          "commodity": "ELE",
+          "tipologia": "BT >50 kW",
+          "generazione_conv": 146.54446117685168,
+          "perdite_conv": 14.654420087115641,
+          "materia_prima_conv": 161.2,
+          "unita_mp": "€/MWh",
+          "consumo_mese": 1037242.0,
+          "n_utenze": 95,
+          "benchmark_mercato": 193.21,
+          "n_offerte_usate": 10,
+          "delta_mercato_vs_conv": 32.01,
+          "delta_%": 19.9
+        },
+        {
+          "commodity": "ELE",
+          "tipologia": "MT",
+          "generazione_conv": 146.59953363256037,
+          "perdite_conv": 5.927995001028752,
+          "materia_prima_conv": 152.53,
+          "unita_mp": "€/MWh",
+          "consumo_mese": 1312270.0,
+          "n_utenze": 32,
+          "benchmark_mercato": 182.53,
+          "n_offerte_usate": 10,
+          "delta_mercato_vs_conv": 30.0,
+          "delta_%": 19.7
+        },
         {
           "commodity": "GAS",
           "tipologia": "Acqua Calda",
           "generazione_conv": NaN,
           "perdite_conv": NaN,
-          "materia_prima_conv": 62.67,
+          "materia_prima_conv": 62.68,
           "unita_mp": "c€/Smc",
-          "consumo_mese": 1339.0,
+          "consumo_mese": 2668.0,
           "n_utenze": 4,
-          "benchmark_mercato": 71.07,
+          "benchmark_mercato": 68.86,
           "n_offerte_usate": 10,
-          "delta_mercato_vs_conv": 8.4,
-          "delta_%": 13.4
+          "delta_mercato_vs_conv": 6.17,
+          "delta_%": 9.9
         },
         {
           "commodity": "GAS",
           "tipologia": "Riscaldamento",
           "generazione_conv": NaN,
           "perdite_conv": NaN,
-          "materia_prima_conv": 61.06,
+          "materia_prima_conv": 58.84,
           "unita_mp": "c€/Smc",
-          "consumo_mese": 133866.0,
+          "consumo_mese": 279691.0,
           "n_utenze": 52,
-          "benchmark_mercato": 67.24,
+          "benchmark_mercato": 66.92,
           "n_offerte_usate": 10,
-          "delta_mercato_vs_conv": 6.18,
-          "delta_%": 10.1
+          "delta_mercato_vs_conv": 8.09,
+          "delta_%": 13.7
         },
         {
           "commodity": "GAS",
           "tipologia": "Riscaldamento + Acqua Calda",
           "generazione_conv": NaN,
           "perdite_conv": NaN,
-          "materia_prima_conv": 62.19,
+          "materia_prima_conv": 62.22,
           "unita_mp": "c€/Smc",
-          "consumo_mese": 10733.0,
+          "consumo_mese": 21478.0,
           "n_utenze": 21,
-          "benchmark_mercato": 69.55,
+          "benchmark_mercato": 68.09,
           "n_offerte_usate": 10,
-          "delta_mercato_vs_conv": 7.36,
-          "delta_%": 11.8
+          "delta_mercato_vs_conv": 5.87,
+          "delta_%": 9.4
         },
         {
           "commodity": "GAS",
           "tipologia": "Uso Tecnologico + Riscaldamento",
           "generazione_conv": NaN,
           "perdite_conv": NaN,
-          "materia_prima_conv": 60.76,
+          "materia_prima_conv": 54.78,
           "unita_mp": "c€/Smc",
-          "consumo_mese": 94744.0,
+          "consumo_mese": 207391.0,
           "n_utenze": 23,
-          "benchmark_mercato": 67.03,
+          "benchmark_mercato": 66.81,
           "n_offerte_usate": 10,
-          "delta_mercato_vs_conv": 6.27,
-          "delta_%": 10.3
-        },
-        {
-          "commodity": "ELE",
-          "tipologia": "BT <=6 kW",
-          "generazione_conv": 146.14919306056282,
-          "perdite_conv": 14.614314403929443,
-          "materia_prima_conv": 160.76,
-          "unita_mp": "€/MWh",
-          "consumo_mese": 82658.0,
-          "n_utenze": 373,
-          "benchmark_mercato": 257.64,
-          "n_offerte_usate": 10,
-          "delta_mercato_vs_conv": 96.88,
-          "delta_%": 60.3
-        },
-        {
-          "commodity": "ELE",
-          "tipologia": "BT 6-50 kW",
-          "generazione_conv": 146.245221162365,
-          "perdite_conv": 14.624466959228625,
-          "materia_prima_conv": 160.87,
-          "unita_mp": "€/MWh",
-          "consumo_mese": 290081.0,
-          "n_utenze": 124,
-          "benchmark_mercato": 198.27,
-          "n_offerte_usate": 10,
-          "delta_mercato_vs_conv": 37.4,
-          "delta_%": 23.2
-        },
-        {
-          "commodity": "ELE",
-          "tipologia": "BT >50 kW",
-          "generazione_conv": 146.48269948065945,
-          "perdite_conv": 14.64825527150588,
-          "materia_prima_conv": 161.13,
-          "unita_mp": "€/MWh",
-          "consumo_mese": 953902.0,
-          "n_utenze": 91,
-          "benchmark_mercato": 193.44,
-          "n_offerte_usate": 10,
-          "delta_mercato_vs_conv": 32.31,
-          "delta_%": 20.1
-        },
-        {
-          "commodity": "ELE",
-          "tipologia": "MT",
-          "generazione_conv": 146.60512214305035,
-          "perdite_conv": 6.165303962085071,
-          "materia_prima_conv": 152.77,
-          "unita_mp": "€/MWh",
-          "consumo_mese": 1279074.0,
-          "n_utenze": 32,
-          "benchmark_mercato": 182.71,
-          "n_offerte_usate": 10,
-          "delta_mercato_vs_conv": 29.94,
-          "delta_%": 19.6
+          "delta_mercato_vs_conv": 12.03,
+          "delta_%": 22.0
         }
       ],
       "generale": [
         {
           "commodity": "ELE",
           "unita": "€/MWh",
-          "MP_convenzione": 156.99,
-          "benchmark_mercato": 175.33,
-          "criterio": "media ponderata sui consumi — benchmark con PUN TOT, utenza media, coeff. perdite ponderato BT/MT, top 5",
-          "delta": 18.34,
-          "delta_%": 11.7
+          "MP_convenzione": 158.85,
+          "benchmark_mercato": 207.91,
+          "criterio": "media semplice 4 fasce (BT/MT equo)",
+          "delta": 49.05,
+          "delta_%": 30.9
         },
         {
           "commodity": "GAS",
           "unita": "c€/Smc",
-          "MP_convenzione": 61.0,
-          "benchmark_mercato": 64.78,
-          "criterio": "media ponderata sui consumi — benchmark con PSV, utenza media, top 5",
-          "delta": 3.78,
-          "delta_%": 6.2
+          "MP_convenzione": 57.36,
+          "benchmark_mercato": 66.93,
+          "criterio": "media ponderata sui consumi",
+          "delta": 9.58,
+          "delta_%": 16.7
         }
       ],
       "sensitivity": {
@@ -788,122 +790,839 @@
           6.0
         ],
         "per_fascia": {
-          "GAS|Acqua Calda": [
-            110.638,
-            84.257,
-            75.464,
-            72.532,
-            71.067,
-            70.187,
-            69.601,
-            68.868,
-            68.429,
-            68.136,
-            67.769,
-            67.403
-          ],
-          "GAS|Riscaldamento": [
-            72.387,
-            68.957,
-            67.813,
-            67.432,
-            67.242,
-            67.127,
-            67.051,
-            66.956,
-            66.899,
-            66.86,
-            66.813,
-            66.765
-          ],
-          "GAS|Riscaldamento + Acqua Calda": [
-            95.468,
-            78.189,
-            72.429,
-            70.51,
-            69.55,
-            68.974,
-            68.59,
-            68.11,
-            67.822,
-            67.63,
-            67.39,
-            67.15
-          ],
-          "GAS|Uso Tecnologico + Riscaldamento": [
-            70.243,
-            68.099,
-            67.385,
-            67.146,
-            67.027,
-            66.956,
-            66.908,
-            66.849,
-            66.813,
-            66.789,
-            66.759,
-            66.729
+          "ELE|BT 6-50 kW": [
+            252.051,
+            215.946,
+            203.911,
+            199.9,
+            197.894,
+            196.69,
+            195.888,
+            194.885,
+            194.283,
+            193.882,
+            193.381,
+            192.879
           ],
           "ELE|BT <=6 kW": [
-            847.36,
-            454.401,
-            323.227,
-            279.502,
-            257.64,
-            244.522,
-            235.777,
-            224.846,
-            218.287,
+            852.666,
+            456.346,
+            324.111,
+            280.033,
+            257.994,
+            244.77,
+            235.955,
+            224.935,
+            218.323,
             213.915,
-            208.449,
-            202.984
-          ],
-          "ELE|BT 6-50 kW": [
-            254.182,
-            216.904,
-            204.478,
-            200.336,
-            198.265,
-            197.023,
-            196.194,
-            195.159,
-            194.537,
-            194.123,
-            193.606,
-            193.088
+            208.406,
+            202.896
           ],
           "ELE|BT >50 kW": [
-            205.918,
-            197.598,
-            194.825,
-            193.901,
-            193.439,
-            193.162,
-            192.977,
-            192.746,
-            192.607,
-            192.515,
-            192.399,
-            192.283
+            205.188,
+            197.201,
+            194.539,
+            193.651,
+            193.208,
+            192.941,
+            192.764,
+            192.542,
+            192.409,
+            192.32,
+            192.209,
+            192.098
           ],
           "ELE|MT": [
-            185.98,
-            183.799,
-            183.071,
-            182.829,
-            182.708,
-            182.635,
-            182.586,
-            182.526,
-            182.489,
-            182.465,
-            182.435,
-            182.405
+            185.722,
+            183.596,
+            182.887,
+            182.651,
+            182.532,
+            182.461,
+            182.414,
+            182.355,
+            182.32,
+            182.296,
+            182.267,
+            182.237
+          ],
+          "GAS|Acqua Calda": [
+            88.717,
+            75.477,
+            71.064,
+            69.593,
+            68.858,
+            68.416,
+            68.122,
+            67.754,
+            67.534,
+            67.386,
+            67.203,
+            67.019
+          ],
+          "GAS|Riscaldamento": [
+            69.387,
+            67.745,
+            67.198,
+            67.016,
+            66.925,
+            66.87,
+            66.833,
+            66.788,
+            66.76,
+            66.742,
+            66.719,
+            66.697
+          ],
+          "GAS|Riscaldamento + Acqua Calda": [
+            81.042,
+            72.407,
+            69.529,
+            68.57,
+            68.09,
+            67.802,
+            67.61,
+            67.37,
+            67.227,
+            67.131,
+            67.011,
+            66.891
+          ],
+          "GAS|Uso Tecnologico + Riscaldamento": [
+            68.283,
+            67.304,
+            66.977,
+            66.869,
+            66.814,
+            66.781,
+            66.76,
+            66.733,
+            66.716,
+            66.705,
+            66.692,
+            66.678
+          ]
+        }
+      }
+    },
+    "2026-04": {
+      "meta_mese": {
+        "mese": "2026-04",
+        "PUN_eur_kWh": 0.119466,
+        "PSV_eur_Smc": 0.492325,
+        "PUN_TOT_eur_kWh": 0.11901767137123745,
+        "PUN_BT_eur_kWh": 0.11816790790586831,
+        "PUN_MT_eur_kWh": 0.11990715122541565,
+        "PUN_F1_eur_kWh": 0.111138,
+        "PUN_F2_eur_kWh": 0.138261,
+        "PUN_F3_eur_kWh": 0.116632,
+        "pesi_fasce_BT": [
+          0.5074500997055442,
+          0.19990932329976333,
+          0.2926405769946925
+        ],
+        "pesi_fasce_MT": [
+          0.5201766839182805,
+          0.2835545761182986,
+          0.19626873996342092
+        ],
+        "generazione_BT": 120.5478882704784,
+        "perdite_BT": 12.05469832794529,
+        "mp_conv_BT": 132.6025865984237,
+        "generazione_MT": 120.7901089031099,
+        "perdite_MT": 4.590016981026158,
+        "mp_conv_MT": 125.38012588413605,
+        "consumo_ele_totale_kwh": 2333478.0,
+        "consumo_gas_totale_smc": 158788.0
+      },
+      "confronto": [
+        {
+          "commodity": "ELE",
+          "tipologia": "BT <=6 kW",
+          "generazione_conv": 121.99831992110934,
+          "perdite_conv": 12.199198918905756,
+          "materia_prima_conv": 134.2,
+          "unita_mp": "€/MWh",
+          "consumo_mese": 82139.0,
+          "n_utenze": 387,
+          "benchmark_mercato": 232.02,
+          "n_offerte_usate": 10,
+          "delta_mercato_vs_conv": 97.83,
+          "delta_%": 72.9
+        },
+        {
+          "commodity": "ELE",
+          "tipologia": "BT 6-50 kW",
+          "generazione_conv": 120.18375374574944,
+          "perdite_conv": 12.01850460797855,
+          "materia_prima_conv": 132.2,
+          "unita_mp": "€/MWh",
+          "consumo_mese": 247614.0,
+          "n_utenze": 127,
+          "benchmark_mercato": 171.0,
+          "n_offerte_usate": 10,
+          "delta_mercato_vs_conv": 38.8,
+          "delta_%": 29.3
+        },
+        {
+          "commodity": "ELE",
+          "tipologia": "BT >50 kW",
+          "generazione_conv": 120.51434122754098,
+          "perdite_conv": 12.051332227148462,
+          "materia_prima_conv": 132.57,
+          "unita_mp": "€/MWh",
+          "consumo_mese": 863629.0,
+          "n_utenze": 96,
+          "benchmark_mercato": 165.16,
+          "n_offerte_usate": 10,
+          "delta_mercato_vs_conv": 32.6,
+          "delta_%": 24.6
+        },
+        {
+          "commodity": "ELE",
+          "tipologia": "MT",
+          "generazione_conv": 120.79010890310991,
+          "perdite_conv": 4.590016981026159,
+          "materia_prima_conv": 125.38,
+          "unita_mp": "€/MWh",
+          "consumo_mese": 1140096.0,
+          "n_utenze": 32,
+          "benchmark_mercato": 156.54,
+          "n_offerte_usate": 10,
+          "delta_mercato_vs_conv": 31.16,
+          "delta_%": 24.9
+        },
+        {
+          "commodity": "GAS",
+          "tipologia": "Acqua Calda",
+          "generazione_conv": NaN,
+          "perdite_conv": NaN,
+          "materia_prima_conv": 67.53,
+          "unita_mp": "c€/Smc",
+          "consumo_mese": 418.0,
+          "n_utenze": 4,
+          "benchmark_mercato": 74.2,
+          "n_offerte_usate": 10,
+          "delta_mercato_vs_conv": 6.67,
+          "delta_%": 9.9
+        },
+        {
+          "commodity": "GAS",
+          "tipologia": "Riscaldamento",
+          "generazione_conv": NaN,
+          "perdite_conv": NaN,
+          "materia_prima_conv": 55.07,
+          "unita_mp": "c€/Smc",
+          "consumo_mese": 86059.0,
+          "n_utenze": 52,
+          "benchmark_mercato": 61.0,
+          "n_offerte_usate": 10,
+          "delta_mercato_vs_conv": 5.93,
+          "delta_%": 10.8
+        },
+        {
+          "commodity": "GAS",
+          "tipologia": "Riscaldamento + Acqua Calda",
+          "generazione_conv": NaN,
+          "perdite_conv": NaN,
+          "materia_prima_conv": 58.9,
+          "unita_mp": "c€/Smc",
+          "consumo_mese": 6195.0,
+          "n_utenze": 21,
+          "benchmark_mercato": 65.1,
+          "n_offerte_usate": 10,
+          "delta_mercato_vs_conv": 6.21,
+          "delta_%": 10.5
+        },
+        {
+          "commodity": "GAS",
+          "tipologia": "Uso Tecnologico + Riscaldamento",
+          "generazione_conv": NaN,
+          "perdite_conv": NaN,
+          "materia_prima_conv": 53.61,
+          "unita_mp": "c€/Smc",
+          "consumo_mese": 66116.0,
+          "n_utenze": 23,
+          "benchmark_mercato": 60.63,
+          "n_offerte_usate": 10,
+          "delta_mercato_vs_conv": 7.01,
+          "delta_%": 13.1
+        }
+      ],
+      "generale": [
+        {
+          "commodity": "ELE",
+          "unita": "€/MWh",
+          "MP_convenzione": 131.09,
+          "benchmark_mercato": 181.18,
+          "criterio": "media semplice 4 fasce (BT/MT equo)",
+          "delta": 50.09,
+          "delta_%": 38.2
+        },
+        {
+          "commodity": "GAS",
+          "unita": "c€/Smc",
+          "MP_convenzione": 54.64,
+          "benchmark_mercato": 61.04,
+          "criterio": "media ponderata sui consumi",
+          "delta": 6.4,
+          "delta_%": 11.7
+        }
+      ],
+      "sensitivity": {
+        "fattori": [
+          0.1,
+          0.25,
+          0.5,
+          0.75,
+          1.0,
+          1.25,
+          1.5,
+          2.0,
+          2.5,
+          3.0,
+          4.0,
+          6.0
+        ],
+        "per_fascia": {
+          "ELE|BT 6-50 kW": [
+            238.091,
+            193.364,
+            178.455,
+            173.485,
+            171.0,
+            169.509,
+            168.515,
+            167.273,
+            166.527,
+            166.03,
+            165.409,
+            164.788
+          ],
+          "ELE|BT <=6 kW": [
+            847.772,
+            437.461,
+            300.503,
+            254.851,
+            232.024,
+            218.329,
+            209.198,
+            197.785,
+            190.937,
+            186.372,
+            180.665,
+            174.959
+          ],
+          "ELE|BT >50 kW": [
+            179.702,
+            170.008,
+            166.777,
+            165.7,
+            165.161,
+            164.838,
+            164.623,
+            164.353,
+            164.192,
+            164.084,
+            163.949,
+            163.815
+          ],
+          "ELE|MT": [
+            160.212,
+            157.765,
+            156.949,
+            156.677,
+            156.541,
+            156.459,
+            156.405,
+            156.337,
+            156.296,
+            156.269,
+            156.235,
+            156.201
+          ],
+          "GAS|Acqua Calda": [
+            200.959,
+            116.452,
+            88.283,
+            78.893,
+            74.198,
+            71.381,
+            69.503,
+            67.156,
+            65.747,
+            64.808,
+            63.635,
+            62.461
+          ],
+          "GAS|Riscaldamento": [
+            69.007,
+            63.671,
+            61.892,
+            61.299,
+            61.003,
+            60.825,
+            60.706,
+            60.558,
+            60.469,
+            60.41,
+            60.336,
+            60.262
+          ],
+          "GAS|Riscaldamento + Acqua Calda": [
+            110.006,
+            80.071,
+            70.092,
+            66.766,
+            65.103,
+            64.105,
+            63.44,
+            62.608,
+            62.109,
+            61.777,
+            61.361,
+            60.945
+          ],
+          "GAS|Uso Tecnologico + Riscaldamento": [
+            65.234,
+            62.162,
+            61.138,
+            60.796,
+            60.626,
+            60.523,
+            60.455,
+            60.37,
+            60.318,
+            60.284,
+            60.242,
+            60.199
+          ]
+        }
+      }
+    },
+    "2026-05": {
+      "meta_mese": {
+        "mese": "2026-05",
+        "PUN_eur_kWh": 0.119351,
+        "PSV_eur_Smc": 0.501752,
+        "PUN_TOT_eur_kWh": 0.11627384764989071,
+        "PUN_BT_eur_kWh": 0.1156053668181461,
+        "PUN_MT_eur_kWh": 0.11698643143437827,
+        "PUN_F1_eur_kWh": 0.107174,
+        "PUN_F2_eur_kWh": 0.131438,
+        "PUN_F3_eur_kWh": 0.120815,
+        "pesi_fasce_BT": [
+          0.53550271652181,
+          0.19722859589759056,
+          0.26726868758059935
+        ],
+        "pesi_fasce_MT": [
+          0.5015827375381788,
+          0.2836789567105863,
+          0.21473830575123493
+        ],
+        "generazione_BT": 119.1125678371547,
+        "perdite_BT": 11.91140685635534,
+        "mp_conv_BT": 131.02397469351004,
+        "generazione_MT": 118.8215147060922,
+        "perdite_MT": 4.515224039468084,
+        "mp_conv_MT": 123.33673874556028,
+        "consumo_ele_totale_kwh": 2461074.0,
+        "consumo_gas_totale_smc": 47136.0
+      },
+      "confronto": [
+        {
+          "commodity": "ELE",
+          "tipologia": "BT <=6 kW",
+          "generazione_conv": 121.63091724570657,
+          "perdite_conv": 12.16390509167809,
+          "materia_prima_conv": 133.79,
+          "unita_mp": "€/MWh",
+          "consumo_mese": 86062.0,
+          "n_utenze": 388,
+          "benchmark_mercato": 226.25,
+          "n_offerte_usate": 10,
+          "delta_mercato_vs_conv": 92.46,
+          "delta_%": 69.1
+        },
+        {
+          "commodity": "ELE",
+          "tipologia": "BT 6-50 kW",
+          "generazione_conv": 118.6341751312397,
+          "perdite_conv": 11.863603889044203,
+          "materia_prima_conv": 130.5,
+          "unita_mp": "€/MWh",
+          "consumo_mese": 257544.0,
+          "n_utenze": 126,
+          "benchmark_mercato": 167.84,
+          "n_offerte_usate": 10,
+          "delta_mercato_vs_conv": 37.34,
+          "delta_%": 28.6
+        },
+        {
+          "commodity": "ELE",
+          "tipologia": "BT >50 kW",
+          "generazione_conv": 119.00373234639025,
+          "perdite_conv": 11.90044125252233,
+          "materia_prima_conv": 130.9,
+          "unita_mp": "€/MWh",
+          "consumo_mese": 926227.0,
+          "n_utenze": 96,
+          "benchmark_mercato": 162.23,
+          "n_offerte_usate": 10,
+          "delta_mercato_vs_conv": 31.33,
+          "delta_%": 23.9
+        },
+        {
+          "commodity": "ELE",
+          "tipologia": "MT",
+          "generazione_conv": 118.82151470609222,
+          "perdite_conv": 4.515224039468083,
+          "materia_prima_conv": 123.34,
+          "unita_mp": "€/MWh",
+          "consumo_mese": 1191241.0,
+          "n_utenze": 32,
+          "benchmark_mercato": 153.49,
+          "n_offerte_usate": 10,
+          "delta_mercato_vs_conv": 30.15,
+          "delta_%": 24.4
+        },
+        {
+          "commodity": "GAS",
+          "tipologia": "Acqua Calda",
+          "generazione_conv": NaN,
+          "perdite_conv": NaN,
+          "materia_prima_conv": 174.29,
+          "unita_mp": "c€/Smc",
+          "consumo_mese": 24.0,
+          "n_utenze": 4,
+          "benchmark_mercato": 306.36,
+          "n_offerte_usate": 10,
+          "delta_mercato_vs_conv": 132.07,
+          "delta_%": 75.8
+        },
+        {
+          "commodity": "GAS",
+          "tipologia": "Riscaldamento",
+          "generazione_conv": NaN,
+          "perdite_conv": NaN,
+          "materia_prima_conv": 57.09,
+          "unita_mp": "c€/Smc",
+          "consumo_mese": 19406.0,
+          "n_utenze": 52,
+          "benchmark_mercato": 65.0,
+          "n_offerte_usate": 10,
+          "delta_mercato_vs_conv": 7.91,
+          "delta_%": 13.8
+        },
+        {
+          "commodity": "GAS",
+          "tipologia": "Riscaldamento + Acqua Calda",
+          "generazione_conv": NaN,
+          "perdite_conv": NaN,
+          "materia_prima_conv": 76.0,
+          "unita_mp": "c€/Smc",
+          "consumo_mese": 721.0,
+          "n_utenze": 21,
+          "benchmark_mercato": 103.93,
+          "n_offerte_usate": 10,
+          "delta_mercato_vs_conv": 27.92,
+          "delta_%": 36.7
+        },
+        {
+          "commodity": "GAS",
+          "tipologia": "Uso Tecnologico + Riscaldamento",
+          "generazione_conv": NaN,
+          "perdite_conv": NaN,
+          "materia_prima_conv": 55.73,
+          "unita_mp": "c€/Smc",
+          "consumo_mese": 26985.0,
+          "n_utenze": 22,
+          "benchmark_mercato": 62.26,
+          "n_offerte_usate": 10,
+          "delta_mercato_vs_conv": 6.53,
+          "delta_%": 11.7
+        }
+      ],
+      "generale": [
+        {
+          "commodity": "ELE",
+          "unita": "€/MWh",
+          "MP_convenzione": 129.63,
+          "benchmark_mercato": 177.45,
+          "criterio": "media semplice 4 fasce (BT/MT equo)",
+          "delta": 47.82,
+          "delta_%": 36.9
+        },
+        {
+          "commodity": "GAS",
+          "unita": "c€/Smc",
+          "MP_convenzione": 56.66,
+          "benchmark_mercato": 64.15,
+          "criterio": "media ponderata sui consumi",
+          "delta": 7.49,
+          "delta_%": 13.2
+        }
+      ],
+      "sensitivity": {
+        "fattori": [
+          0.1,
+          0.25,
+          0.5,
+          0.75,
+          1.0,
+          1.25,
+          1.5,
+          2.0,
+          2.5,
+          3.0,
+          4.0,
+          6.0
+        ],
+        "per_fascia": {
+          "ELE|BT 6-50 kW": [
+            231.834,
+            189.17,
+            174.948,
+            170.208,
+            167.837,
+            166.415,
+            165.467,
+            164.282,
+            163.571,
+            163.097,
+            162.504,
+            161.912
+          ],
+          "ELE|BT <=6 kW": [
+            815.65,
+            422.832,
+            291.779,
+            248.095,
+            226.253,
+            213.148,
+            204.411,
+            193.49,
+            186.937,
+            182.569,
+            177.108,
+            171.648
+          ],
+          "ELE|BT >50 kW": [
+            175.791,
+            166.752,
+            163.74,
+            162.735,
+            162.233,
+            161.932,
+            161.731,
+            161.48,
+            161.329,
+            161.229,
+            161.103,
+            160.978
+          ],
+          "ELE|MT": [
+            157.005,
+            154.663,
+            153.882,
+            153.622,
+            153.492,
+            153.413,
+            153.361,
+            153.296,
+            153.257,
+            153.231,
+            153.199,
+            153.166
+          ],
+          "GAS|Acqua Calda": [
+            2486.947,
+            1034.514,
+            550.37,
+            388.114,
+            306.362,
+            257.301,
+            224.593,
+            183.709,
+            159.178,
+            142.825,
+            122.383,
+            101.94
+          ],
+          "GAS|Riscaldamento": [
+            100.495,
+            76.832,
+            68.944,
+            66.315,
+            65.0,
+            64.211,
+            63.685,
+            63.028,
+            62.634,
+            62.371,
+            62.042,
+            61.714
+          ],
+          "GAS|Riscaldamento + Acqua Calda": [
+            489.149,
+            232.532,
+            146.794,
+            118.215,
+            103.925,
+            95.351,
+            89.635,
+            82.491,
+            78.204,
+            75.346,
+            71.773,
+            68.201
+          ],
+          "GAS|Uso Tecnologico + Riscaldamento": [
+            73.056,
+            65.856,
+            63.456,
+            62.656,
+            62.256,
+            62.016,
+            61.856,
+            61.656,
+            61.536,
+            61.456,
+            61.356,
+            61.256
           ]
         }
       }
     }
   },
+  "offerte_anonime": [
+    {
+      "commodity": "ELE",
+      "spread": 0.0112,
+      "quota_eur_anno": 192.0
+    },
+    {
+      "commodity": "ELE",
+      "spread": 0.0132,
+      "quota_eur_anno": 160.0
+    },
+    {
+      "commodity": "ELE",
+      "spread": 0.0176,
+      "quota_eur_anno": 150.0
+    },
+    {
+      "commodity": "ELE",
+      "spread": 0.0198,
+      "quota_eur_anno": 180.0
+    },
+    {
+      "commodity": "ELE",
+      "spread": 0.019998,
+      "quota_eur_anno": 180.0
+    },
+    {
+      "commodity": "ELE",
+      "spread": 0.025,
+      "quota_eur_anno": 144.0
+    },
+    {
+      "commodity": "ELE",
+      "spread": 0.0253,
+      "quota_eur_anno": 192.0
+    },
+    {
+      "commodity": "ELE",
+      "spread": 0.05,
+      "quota_eur_anno": 171.0
+    },
+    {
+      "commodity": "GAS",
+      "spread": 0.05,
+      "quota_eur_anno": 171.0
+    },
+    {
+      "commodity": "ELE",
+      "spread": 0.055,
+      "quota_eur_anno": 181.92
+    },
+    {
+      "commodity": "ELE",
+      "spread": 0.068,
+      "quota_eur_anno": 193.20000000000002
+    },
+    {
+      "commodity": "GAS",
+      "spread": 0.0681,
+      "quota_eur_anno": 193.20000000000002
+    },
+    {
+      "commodity": "GAS",
+      "spread": 0.08,
+      "quota_eur_anno": 160.0
+    },
+    {
+      "commodity": "GAS",
+      "spread": 0.11,
+      "quota_eur_anno": 180.0
+    },
+    {
+      "commodity": "ELE",
+      "spread": 0.11,
+      "quota_eur_anno": 180.0
+    },
+    {
+      "commodity": "GAS",
+      "spread": 0.11,
+      "quota_eur_anno": 180.0
+    },
+    {
+      "commodity": "GAS",
+      "spread": 0.115,
+      "quota_eur_anno": 192.0
+    },
+    {
+      "commodity": "GAS",
+      "spread": 0.115,
+      "quota_eur_anno": 150.0
+    },
+    {
+      "commodity": "GAS",
+      "spread": 0.14,
+      "quota_eur_anno": 180.0
+    },
+    {
+      "commodity": "ELE",
+      "spread": 0.14,
+      "quota_eur_anno": 180.0
+    },
+    {
+      "commodity": "GAS",
+      "spread": 0.14,
+      "quota_eur_anno": 180.0
+    },
+    {
+      "commodity": "GAS",
+      "spread": 0.16,
+      "quota_eur_anno": 180.0
+    },
+    {
+      "commodity": "ELE",
+      "spread": 0.16,
+      "quota_eur_anno": 180.0
+    },
+    {
+      "commodity": "GAS",
+      "spread": 0.3,
+      "quota_eur_anno": 181.92
+    },
+    {
+      "commodity": "GAS",
+      "spread": 0.4,
+      "quota_eur_anno": 180.0
+    }
+  ],
   "fornitori": [
     {
       "nome": "AGSM / Magis Energia",
@@ -986,138 +1705,6 @@
     {
       "nome": "bolletta-energia.it",
       "url": "https://bolletta-energia.it/comparazione/offerte-business-luce-gas"
-    }
-  ],
-  "offerte_anonime": [
-    {
-      "commodity": "ELE",
-      "spread": 0.0108,
-      "quota_eur_anno": 192.0
-    },
-    {
-      "commodity": "ELE",
-      "spread": 0.0132,
-      "quota_eur_anno": 160.0
-    },
-    {
-      "commodity": "ELE",
-      "spread": 0.0176,
-      "quota_eur_anno": 150.0
-    },
-    {
-      "commodity": "ELE",
-      "spread": 0.0198,
-      "quota_eur_anno": 180.0
-    },
-    {
-      "commodity": "ELE",
-      "spread": 0.019998,
-      "quota_eur_anno": 180.0
-    },
-    {
-      "commodity": "ELE",
-      "spread": 0.025,
-      "quota_eur_anno": 144.0
-    },
-    {
-      "commodity": "ELE",
-      "spread": 0.0253,
-      "quota_eur_anno": 192.0
-    },
-    {
-      "commodity": "ELE",
-      "spread": 0.05,
-      "quota_eur_anno": 171.0
-    },
-    {
-      "commodity": "GAS",
-      "spread": 0.05,
-      "quota_eur_anno": 171.0
-    },
-    {
-      "commodity": "ELE",
-      "spread": 0.055,
-      "quota_eur_anno": 181.92
-    },
-    {
-      "commodity": "GAS",
-      "spread": 0.07,
-      "quota_eur_anno": 193.20000000000002
-    },
-    {
-      "commodity": "ELE",
-      "spread": 0.07,
-      "quota_eur_anno": 193.20000000000002
-    },
-    {
-      "commodity": "GAS",
-      "spread": 0.08,
-      "quota_eur_anno": 160.0
-    },
-    {
-      "commodity": "GAS",
-      "spread": 0.11,
-      "quota_eur_anno": 180.0
-    },
-    {
-      "commodity": "ELE",
-      "spread": 0.11,
-      "quota_eur_anno": 180.0
-    },
-    {
-      "commodity": "GAS",
-      "spread": 0.11,
-      "quota_eur_anno": 180.0
-    },
-    {
-      "commodity": "GAS",
-      "spread": 0.115,
-      "quota_eur_anno": 192.0
-    },
-    {
-      "commodity": "GAS",
-      "spread": 0.115,
-      "quota_eur_anno": 150.0
-    },
-    {
-      "commodity": "ELE",
-      "spread": 0.12,
-      "quota_eur_anno": 192.0
-    },
-    {
-      "commodity": "GAS",
-      "spread": 0.14,
-      "quota_eur_anno": 180.0
-    },
-    {
-      "commodity": "ELE",
-      "spread": 0.14,
-      "quota_eur_anno": 180.0
-    },
-    {
-      "commodity": "GAS",
-      "spread": 0.14,
-      "quota_eur_anno": 180.0
-    },
-    {
-      "commodity": "GAS",
-      "spread": 0.16,
-      "quota_eur_anno": 180.0
-    },
-    {
-      "commodity": "ELE",
-      "spread": 0.16,
-      "quota_eur_anno": 180.0
-    },
-    {
-      "commodity": "GAS",
-      "spread": 0.3,
-      "quota_eur_anno": 181.92
-    },
-    {
-      "commodity": "GAS",
-      "spread": 0.4,
-      "quota_eur_anno": 180.0
     }
   ]
 }
