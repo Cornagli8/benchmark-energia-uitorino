@@ -33,9 +33,8 @@ CHART_CONFIG_NO_TOUCH = {
 # ------------------------------------------------------------------
 # Config pagina + palette
 # ------------------------------------------------------------------
-_APP_VERSION = "2.0-optA-gas"  # marker versione: se lo vedi nella tab del browser, il codice e' aggiornato
 st.set_page_config(
-    page_title=f"Benchmark UI Torino [{_APP_VERSION}]",
+    page_title="Benchmark Materia Prima Gas&Power — Unione Industriali Torino",
     page_icon="⚡",
     layout="wide",
     initial_sidebar_state="collapsed",
