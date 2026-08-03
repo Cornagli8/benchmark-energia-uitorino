@@ -560,7 +560,7 @@ TOP_N_GENERALE = 5
 
 def _prezzi_offerte_mese(commodity: str, base_price: float,
                           cons_singolo: float, coeff_perdita: float,
-                          cons_singolo_annuo: float | None = None):
+                          cons_singolo_annuo=None):
     """Ricostruisce i prezzi mensili di CIASCUNA offerta (non ordinati, con
     indice globale preservato). Ritorna una lista [(idx, prezzo €/kWh o €/Smc), ...].
     Se cons_singolo non è positivo o non ci sono offerte, ritorna [].
