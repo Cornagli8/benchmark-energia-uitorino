@@ -545,18 +545,30 @@ if len(df_conf) == 0:
 
 # ------------------------------------------------------------------
 # Helper benchmark: ricalcola live il prezzo "all-in" delle offerte
-#   p = base + spread + (base+spread)*coeff_perdita + (quota_anno/12)/cons_singolo
-# ordina le 14 (ELE) / 12 (GAS) e restituisce la media delle prime top_n.
+# ELE:  p = base + spread + (base+spread)*coeff_perdita + (quota_anno/12)/cons_singolo
+# GAS:  p = base + spread + quota_anno / cons_singolo_annuo   (Opt.4)
+#
+# La formula GAS applica il metodo Opt.4: la quota fissa dell'offerta
+# (€/PDR/anno) e' ripartita sul consumo aggregato annuale per PDR della
+# tipologia (Smc/PDR/anno) invece che sul consumo mensile. Questo evita
+# valori artefatti nei mesi con consumo trascurabile (es. Acqua Calda
+# estiva) dove la vecchia formula spalmata mensile esplodeva.
 # ------------------------------------------------------------------
 offerte_anon = D.get("offerte_anonime", [])
 TOP_N_GENERALE = 5
 
 
 def _prezzi_offerte_mese(commodity: str, base_price: float,
-                          cons_singolo: float, coeff_perdita: float):
+                          cons_singolo: float, coeff_perdita: float,
+                          cons_singolo_annuo: float | None = None):
     """Ricostruisce i prezzi mensili di CIASCUNA offerta (non ordinati, con
     indice globale preservato). Ritorna una lista [(idx, prezzo €/kWh o €/Smc), ...].
     Se cons_singolo non è positivo o non ci sono offerte, ritorna [].
+
+    cons_singolo_annuo: per il gas (Opt.4), rappresenta il consumo aggregato
+    annuo per PDR della tipologia sul periodo di osservazione (Smc/PDR/anno).
+    Se non fornito o non positivo, il gas fa fallback alla formula mensile
+    (comportamento pre-Opt.4).
     """
     if cons_singolo <= 0 or not offerte_anon:
         return []
@@ -566,7 +578,11 @@ def _prezzi_offerte_mese(commodity: str, base_price: float,
             continue
         spread = float(o["spread"])
         quota = float(o["quota_eur_anno"])
-        quota_unit = (quota / 12.0) / cons_singolo if cons_singolo else 0.0
+        # Opt.4 per il gas: quota fissa ripartita su consumo annuo aggregato
+        if commodity == "GAS" and cons_singolo_annuo and cons_singolo_annuo > 0:
+            quota_unit = quota / cons_singolo_annuo
+        else:
+            quota_unit = (quota / 12.0) / cons_singolo if cons_singolo else 0.0
         p = base_price + spread + (base_price + spread) * coeff_perdita + quota_unit
         out.append((i, p))
     return out
@@ -597,6 +613,27 @@ def _bench_periodo(commodity: str, tipologia=None, top_n: int = 10) -> float:
     mesi_iter = list(mesi_disp) if _is_aggregato else [mese_sel]
     cb_default = float(D.get("meta", {}).get("coeff_perdita_BT", 0.10))
     cm_default = float(D.get("meta", {}).get("coeff_perdita_MT", 0.038))
+
+    # Opt.4 per il gas: precalcolo il consumo annuo aggregato per PDR della
+    # tipologia (o del totale gas se tipologia=None) su TUTTI i mesi disponibili.
+    # Questo valore e' stabile (non dipende dal mese selezionato) ed e' usato
+    # per ripartire la quota fissa annua di ciascuna offerta.
+    cons_singolo_annuo_gas = None
+    if commodity == "GAS":
+        _cons_ann_tot = 0.0
+        _n_ut_max = 0
+        for _m in mesi_disp:
+            _dm = D.get("dati_per_mese", {}).get(_m)
+            if not _dm:
+                continue
+            _recs = [r for r in _dm["confronto"] if r["commodity"] == "GAS"]
+            if tipologia is not None:
+                _recs = [r for r in _recs if r["tipologia"] == tipologia]
+            for _r in _recs:
+                _cons_ann_tot += float(_r["consumo_mese"])
+                _n_ut_max = max(_n_ut_max, int(_r["n_utenze"]))
+        if _n_ut_max > 0 and _cons_ann_tot > 0:
+            cons_singolo_annuo_gas = _cons_ann_tot / _n_ut_max
 
     # Per ogni mese: prezzi di ciascuna offerta + consumo totale del mese
     # per la classe/tipologia richiesta.
@@ -640,7 +677,8 @@ def _bench_periodo(commodity: str, tipologia=None, top_n: int = 10) -> float:
             base = float(meta_m.get("PSV_eur_Smc", 0))
             coeff = 0.0
 
-        prezzi_mese = _prezzi_offerte_mese(commodity, base, cons_singolo, coeff)
+        prezzi_mese = _prezzi_offerte_mese(commodity, base, cons_singolo, coeff,
+                                            cons_singolo_annuo=cons_singolo_annuo_gas)
         if not prezzi_mese:
             continue
         for offer_idx, p in prezzi_mese:
