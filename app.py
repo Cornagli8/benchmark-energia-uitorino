@@ -578,8 +578,10 @@ def _prezzi_offerte_mese(commodity: str, base_price: float,
             continue
         spread = float(o["spread"])
         quota = float(o["quota_eur_anno"])
-        # Opt.4 per il gas: quota fissa ripartita su consumo annuo aggregato
-        if commodity == "GAS" and cons_singolo_annuo and cons_singolo_annuo > 0:
+        # Opt.4 (GAS e ELE): quota fissa ripartita sul consumo annuo aggregato
+        # della classe/tipologia. Riflette la struttura contrattuale reale
+        # delle offerte PLACET (spread €/kWh|Smc + quota fissa €/POD|PDR/anno).
+        if cons_singolo_annuo and cons_singolo_annuo > 0:
             quota_unit = quota / cons_singolo_annuo
         else:
             quota_unit = (quota / 12.0) / cons_singolo if cons_singolo else 0.0
@@ -614,26 +616,26 @@ def _bench_periodo(commodity: str, tipologia=None, top_n: int = 10) -> float:
     cb_default = float(D.get("meta", {}).get("coeff_perdita_BT", 0.10))
     cm_default = float(D.get("meta", {}).get("coeff_perdita_MT", 0.038))
 
-    # Opt.4 per il gas: precalcolo il consumo annuo aggregato per PDR della
-    # tipologia (o del totale gas se tipologia=None) su TUTTI i mesi disponibili.
-    # Questo valore e' stabile (non dipende dal mese selezionato) ed e' usato
-    # per ripartire la quota fissa annua di ciascuna offerta.
+    # Opt.4 (GAS e ELE): precalcolo il consumo annuo aggregato per POD/PDR
+    # della classe/tipologia (o del totale commodity se tipologia=None) su
+    # TUTTI i mesi disponibili. Questo valore e' stabile (non dipende dal
+    # mese selezionato) ed e' usato per ripartire la quota fissa annua di
+    # ciascuna offerta.
     cons_singolo_annuo_gas = None
-    if commodity == "GAS":
-        _cons_ann_tot = 0.0
-        _n_ut_max = 0
-        for _m in mesi_disp:
-            _dm = D.get("dati_per_mese", {}).get(_m)
-            if not _dm:
-                continue
-            _recs = [r for r in _dm["confronto"] if r["commodity"] == "GAS"]
-            if tipologia is not None:
-                _recs = [r for r in _recs if r["tipologia"] == tipologia]
-            for _r in _recs:
-                _cons_ann_tot += float(_r["consumo_mese"])
-                _n_ut_max = max(_n_ut_max, int(_r["n_utenze"]))
-        if _n_ut_max > 0 and _cons_ann_tot > 0:
-            cons_singolo_annuo_gas = _cons_ann_tot / _n_ut_max
+    _cons_ann_tot = 0.0
+    _n_ut_max = 0
+    for _m in mesi_disp:
+        _dm = D.get("dati_per_mese", {}).get(_m)
+        if not _dm:
+            continue
+        _recs = [r for r in _dm["confronto"] if r["commodity"] == commodity]
+        if tipologia is not None:
+            _recs = [r for r in _recs if r["tipologia"] == tipologia]
+        for _r in _recs:
+            _cons_ann_tot += float(_r["consumo_mese"])
+            _n_ut_max = max(_n_ut_max, int(_r["n_utenze"]))
+    if _n_ut_max > 0 and _cons_ann_tot > 0:
+        cons_singolo_annuo_gas = _cons_ann_tot / _n_ut_max
 
     # Per ogni mese: prezzi di ciascuna offerta + consumo totale del mese
     # per la classe/tipologia richiesta.

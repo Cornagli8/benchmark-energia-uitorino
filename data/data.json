@@ -5,10 +5,10 @@
     "coeff_perdita_BT": 0.1,
     "coeff_perdita_MT": 0.038,
     "top_n": 10,
-    "n_offerte_totali": 51,
-    "n_offerte_ele": 29,
-    "n_offerte_gas": 22,
-    "data_estrazione": "2026-08-03",
+    "n_offerte_totali": 53,
+    "n_offerte_ele": 30,
+    "n_offerte_gas": 23,
+    "data_estrazione": "2026-09-01",
     "pdf_offerte_disponibile": true,
     "pdf_offerte_path": "offerte_riservate.pdf"
   },
@@ -64,10 +64,10 @@
           "materia_prima_conv_orig": NaN,
           "mp_var_conv_c_smc": NaN,
           "mp_fix_conv_c_smc": NaN,
-          "benchmark_mercato": 231.31,
+          "benchmark_mercato": 171.44,
           "n_offerte_usate": 10,
-          "delta_mercato_vs_conv": 81.01,
-          "delta_%": 53.9
+          "delta_mercato_vs_conv": 21.13,
+          "delta_%": 14.1
         },
         {
           "commodity": "ELE",
@@ -81,10 +81,10 @@
           "materia_prima_conv_orig": NaN,
           "mp_var_conv_c_smc": NaN,
           "mp_fix_conv_c_smc": NaN,
-          "benchmark_mercato": 176.26,
+          "benchmark_mercato": 171.44,
           "n_offerte_usate": 10,
-          "delta_mercato_vs_conv": 21.03,
-          "delta_%": 13.5
+          "delta_mercato_vs_conv": 16.21,
+          "delta_%": 10.4
         },
         {
           "commodity": "ELE",
@@ -98,10 +98,10 @@
           "materia_prima_conv_orig": NaN,
           "mp_var_conv_c_smc": NaN,
           "mp_fix_conv_c_smc": NaN,
-          "benchmark_mercato": 172.4,
+          "benchmark_mercato": 171.44,
           "n_offerte_usate": 10,
-          "delta_mercato_vs_conv": 17.37,
-          "delta_%": 11.2
+          "delta_mercato_vs_conv": 16.4,
+          "delta_%": 10.6
         },
         {
           "commodity": "ELE",
@@ -115,10 +115,10 @@
           "materia_prima_conv_orig": NaN,
           "mp_var_conv_c_smc": NaN,
           "mp_fix_conv_c_smc": NaN,
-          "benchmark_mercato": 163.59,
+          "benchmark_mercato": 163.26,
           "n_offerte_usate": 10,
-          "delta_mercato_vs_conv": 15.58,
-          "delta_%": 10.5
+          "delta_mercato_vs_conv": 15.25,
+          "delta_%": 10.3
         },
         {
           "commodity": "GAS",
@@ -194,10 +194,10 @@
           "commodity": "ELE",
           "unita": "€/MWh",
           "MP_convenzione": 152.14,
-          "benchmark_mercato": 185.89,
+          "benchmark_mercato": 169.39,
           "criterio": "media semplice 4 fasce (BT/MT equo)",
-          "delta": 33.75,
-          "delta_%": 22.2
+          "delta": 17.25,
+          "delta_%": 11.3
         },
         {
           "commodity": "GAS",
@@ -226,64 +226,64 @@
         ],
         "per_fascia": {
           "ELE|BT 6-50 kW": [
-            218.974,
-            190.578,
-            181.101,
-            177.876,
-            176.264,
-            175.297,
-            174.652,
-            173.846,
-            173.362,
-            173.04,
-            172.637,
-            172.234
+            171.439,
+            171.439,
+            171.439,
+            171.439,
+            171.439,
+            171.439,
+            171.439,
+            171.439,
+            171.439,
+            171.439,
+            171.439,
+            171.439
           ],
           "ELE|BT <=6 kW": [
-            713.514,
-            396.094,
-            287.104,
-            249.909,
-            231.312,
-            219.49,
-            211.516,
-            201.549,
-            195.569,
-            191.582,
-            186.599,
-            181.614
+            171.439,
+            171.439,
+            171.439,
+            171.439,
+            171.439,
+            171.439,
+            171.439,
+            171.439,
+            171.439,
+            171.439,
+            171.439,
+            171.439
           ],
           "ELE|BT >50 kW": [
-            181.193,
-            175.334,
-            173.381,
-            172.73,
-            172.404,
-            172.209,
-            172.079,
-            171.916,
-            171.819,
-            171.753,
-            171.672,
-            171.591
+            171.439,
+            171.439,
+            171.439,
+            171.439,
+            171.439,
+            171.439,
+            171.439,
+            171.439,
+            171.439,
+            171.439,
+            171.439,
+            171.439
           ],
           "ELE|MT": [
-            166.65,
-            164.61,
-            163.931,
-            163.704,
-            163.591,
-            163.523,
-            163.477,
-            163.421,
-            163.387,
-            163.364,
-            163.336,
-            163.307
+            163.261,
+            163.261,
+            163.261,
+            163.261,
+            163.261,
+            163.261,
+            163.261,
+            163.261,
+            163.261,
+            163.261,
+            163.261,
+            163.261
           ],
           "GAS|Acqua Calda": [
-            103.255,
-            71.217,
+            103.097,
+            71.213,
             60.363,
             56.618,
             54.746,
@@ -310,7 +310,7 @@
             49.228
           ],
           "GAS|Riscaldamento + Acqua Calda": [
-            80.917,
+            80.867,
             62.183,
             55.656,
             53.48,
@@ -383,10 +383,10 @@
           "materia_prima_conv_orig": NaN,
           "mp_var_conv_c_smc": NaN,
           "mp_fix_conv_c_smc": NaN,
-          "benchmark_mercato": 214.01,
+          "benchmark_mercato": 147.15,
           "n_offerte_usate": 10,
-          "delta_mercato_vs_conv": 84.61,
-          "delta_%": 65.4
+          "delta_mercato_vs_conv": 17.75,
+          "delta_%": 13.7
         },
         {
           "commodity": "ELE",
@@ -400,10 +400,10 @@
           "materia_prima_conv_orig": NaN,
           "mp_var_conv_c_smc": NaN,
           "mp_fix_conv_c_smc": NaN,
-          "benchmark_mercato": 152.82,
+          "benchmark_mercato": 147.15,
           "n_offerte_usate": 10,
-          "delta_mercato_vs_conv": 21.22,
-          "delta_%": 16.1
+          "delta_mercato_vs_conv": 15.55,
+          "delta_%": 11.8
         },
         {
           "commodity": "ELE",
@@ -417,10 +417,10 @@
           "materia_prima_conv_orig": NaN,
           "mp_var_conv_c_smc": NaN,
           "mp_fix_conv_c_smc": NaN,
-          "benchmark_mercato": 148.34,
+          "benchmark_mercato": 147.15,
           "n_offerte_usate": 10,
-          "delta_mercato_vs_conv": 16.6,
-          "delta_%": 12.6
+          "delta_mercato_vs_conv": 15.41,
+          "delta_%": 11.7
         },
         {
           "commodity": "ELE",
@@ -434,10 +434,10 @@
           "materia_prima_conv_orig": NaN,
           "mp_var_conv_c_smc": NaN,
           "mp_fix_conv_c_smc": NaN,
-          "benchmark_mercato": 139.94,
+          "benchmark_mercato": 139.6,
           "n_offerte_usate": 10,
-          "delta_mercato_vs_conv": 15.04,
-          "delta_%": 12.0
+          "delta_mercato_vs_conv": 14.71,
+          "delta_%": 11.8
         },
         {
           "commodity": "GAS",
@@ -513,10 +513,10 @@
           "commodity": "ELE",
           "unita": "€/MWh",
           "MP_convenzione": 129.41,
-          "benchmark_mercato": 163.78,
+          "benchmark_mercato": 145.26,
           "criterio": "media semplice 4 fasce (BT/MT equo)",
-          "delta": 34.37,
-          "delta_%": 26.6
+          "delta": 15.86,
+          "delta_%": 12.3
         },
         {
           "commodity": "GAS",
@@ -545,64 +545,64 @@
         ],
         "per_fascia": {
           "ELE|BT 6-50 kW": [
-            202.953,
-            169.596,
-            158.477,
-            154.713,
-            152.819,
-            151.683,
-            150.925,
-            149.978,
-            149.41,
-            149.031,
-            148.558,
-            148.084
+            147.149,
+            147.149,
+            147.149,
+            147.149,
+            147.149,
+            147.149,
+            147.149,
+            147.149,
+            147.149,
+            147.149,
+            147.149,
+            147.149
           ],
           "ELE|BT <=6 kW": [
-            755.281,
-            398.884,
-            276.791,
-            234.937,
-            214.01,
-            201.193,
-            192.22,
-            181.005,
-            174.275,
-            169.789,
-            164.181,
-            158.573
+            147.149,
+            147.149,
+            147.149,
+            147.149,
+            147.149,
+            147.149,
+            147.149,
+            147.149,
+            147.149,
+            147.149,
+            147.149,
+            147.149
           ],
           "ELE|BT >50 kW": [
-            159.094,
-            151.935,
-            149.536,
-            148.737,
-            148.337,
-            148.097,
-            147.937,
-            147.737,
-            147.617,
-            147.537,
-            147.437,
-            147.338
+            147.149,
+            147.149,
+            147.149,
+            147.149,
+            147.149,
+            147.149,
+            147.149,
+            147.149,
+            147.149,
+            147.149,
+            147.149,
+            147.149
           ],
           "ELE|MT": [
-            143.03,
-            140.968,
-            140.281,
-            140.052,
-            139.937,
-            139.868,
-            139.823,
-            139.765,
-            139.731,
-            139.708,
-            139.679,
-            139.651
+            139.604,
+            139.604,
+            139.604,
+            139.604,
+            139.604,
+            139.604,
+            139.604,
+            139.604,
+            139.604,
+            139.604,
+            139.604,
+            139.604
           ],
           "GAS|Acqua Calda": [
-            100.541,
-            68.502,
+            100.383,
+            68.499,
             57.649,
             53.904,
             52.031,
@@ -629,7 +629,7 @@
             46.513
           ],
           "GAS|Riscaldamento + Acqua Calda": [
-            78.202,
+            78.153,
             59.469,
             52.941,
             50.765,
@@ -702,10 +702,10 @@
           "materia_prima_conv_orig": NaN,
           "mp_var_conv_c_smc": NaN,
           "mp_fix_conv_c_smc": NaN,
-          "benchmark_mercato": 238.37,
+          "benchmark_mercato": 176.21,
           "n_offerte_usate": 10,
-          "delta_mercato_vs_conv": 77.58,
-          "delta_%": 48.2
+          "delta_mercato_vs_conv": 15.42,
+          "delta_%": 9.6
         },
         {
           "commodity": "ELE",
@@ -719,10 +719,10 @@
           "materia_prima_conv_orig": NaN,
           "mp_var_conv_c_smc": NaN,
           "mp_fix_conv_c_smc": NaN,
-          "benchmark_mercato": 181.99,
+          "benchmark_mercato": 176.21,
           "n_offerte_usate": 10,
-          "delta_mercato_vs_conv": 21.09,
-          "delta_%": 13.1
+          "delta_mercato_vs_conv": 15.32,
+          "delta_%": 9.5
         },
         {
           "commodity": "ELE",
@@ -736,10 +736,10 @@
           "materia_prima_conv_orig": NaN,
           "mp_var_conv_c_smc": NaN,
           "mp_fix_conv_c_smc": NaN,
-          "benchmark_mercato": 177.48,
+          "benchmark_mercato": 176.21,
           "n_offerte_usate": 10,
-          "delta_mercato_vs_conv": 16.28,
-          "delta_%": 10.1
+          "delta_mercato_vs_conv": 15.01,
+          "delta_%": 9.3
         },
         {
           "commodity": "ELE",
@@ -753,10 +753,10 @@
           "materia_prima_conv_orig": NaN,
           "mp_var_conv_c_smc": NaN,
           "mp_fix_conv_c_smc": NaN,
-          "benchmark_mercato": 167.73,
+          "benchmark_mercato": 167.4,
           "n_offerte_usate": 10,
-          "delta_mercato_vs_conv": 15.2,
-          "delta_%": 10.0
+          "delta_mercato_vs_conv": 14.87,
+          "delta_%": 9.7
         },
         {
           "commodity": "GAS",
@@ -832,10 +832,10 @@
           "commodity": "ELE",
           "unita": "€/MWh",
           "MP_convenzione": 158.85,
-          "benchmark_mercato": 191.39,
+          "benchmark_mercato": 174.01,
           "criterio": "media semplice 4 fasce (BT/MT equo)",
-          "delta": 32.54,
-          "delta_%": 20.5
+          "delta": 15.15,
+          "delta_%": 9.5
         },
         {
           "commodity": "GAS",
@@ -864,64 +864,64 @@
         ],
         "per_fascia": {
           "ELE|BT 6-50 kW": [
-            233.073,
-            199.082,
-            187.752,
-            183.92,
-            181.991,
-            180.833,
-            180.061,
-            179.096,
-            178.517,
-            178.131,
-            177.649,
-            177.166
+            176.212,
+            176.212,
+            176.212,
+            176.212,
+            176.212,
+            176.212,
+            176.212,
+            176.212,
+            176.212,
+            176.212,
+            176.212,
+            176.212
           ],
           "ELE|BT <=6 kW": [
-            739.836,
-            409.701,
-            296.437,
-            257.722,
-            238.365,
-            226.218,
-            217.919,
-            207.545,
-            201.32,
-            197.17,
-            191.983,
-            186.796
+            176.212,
+            176.212,
+            176.212,
+            176.212,
+            176.212,
+            176.212,
+            176.212,
+            176.212,
+            176.212,
+            176.212,
+            176.212,
+            176.212
           ],
           "ELE|BT >50 kW": [
-            188.954,
-            181.324,
-            178.763,
-            177.909,
-            177.482,
-            177.226,
-            177.055,
-            176.842,
-            176.714,
-            176.628,
-            176.522,
-            176.415
+            176.212,
+            176.212,
+            176.212,
+            176.212,
+            176.212,
+            176.212,
+            176.212,
+            176.212,
+            176.212,
+            176.212,
+            176.212,
+            176.212
           ],
           "ELE|MT": [
-            170.796,
-            168.75,
-            168.068,
-            167.841,
-            167.727,
-            167.659,
-            167.614,
-            167.557,
-            167.523,
-            167.5,
-            167.472,
-            167.443
+            167.397,
+            167.397,
+            167.397,
+            167.397,
+            167.397,
+            167.397,
+            167.397,
+            167.397,
+            167.397,
+            167.397,
+            167.397,
+            167.397
           ],
           "GAS|Acqua Calda": [
-            118.632,
-            86.593,
+            118.474,
+            86.59,
             75.74,
             71.995,
             70.122,
@@ -948,7 +948,7 @@
             64.604
           ],
           "GAS|Riscaldamento + Acqua Calda": [
-            96.294,
+            96.244,
             77.56,
             71.032,
             68.857,
@@ -1021,10 +1021,10 @@
           "materia_prima_conv_orig": NaN,
           "mp_var_conv_c_smc": NaN,
           "mp_fix_conv_c_smc": NaN,
-          "benchmark_mercato": 212.11,
+          "benchmark_mercato": 147.88,
           "n_offerte_usate": 10,
-          "delta_mercato_vs_conv": 77.91,
-          "delta_%": 58.1
+          "delta_mercato_vs_conv": 13.68,
+          "delta_%": 10.2
         },
         {
           "commodity": "ELE",
@@ -1038,10 +1038,10 @@
           "materia_prima_conv_orig": NaN,
           "mp_var_conv_c_smc": NaN,
           "mp_fix_conv_c_smc": NaN,
-          "benchmark_mercato": 155.04,
+          "benchmark_mercato": 147.88,
           "n_offerte_usate": 10,
-          "delta_mercato_vs_conv": 22.84,
-          "delta_%": 17.3
+          "delta_mercato_vs_conv": 15.68,
+          "delta_%": 11.9
         },
         {
           "commodity": "ELE",
@@ -1055,10 +1055,10 @@
           "materia_prima_conv_orig": NaN,
           "mp_var_conv_c_smc": NaN,
           "mp_fix_conv_c_smc": NaN,
-          "benchmark_mercato": 149.42,
+          "benchmark_mercato": 147.88,
           "n_offerte_usate": 10,
-          "delta_mercato_vs_conv": 16.86,
-          "delta_%": 12.7
+          "delta_mercato_vs_conv": 15.32,
+          "delta_%": 11.6
         },
         {
           "commodity": "ELE",
@@ -1072,10 +1072,10 @@
           "materia_prima_conv_orig": NaN,
           "mp_var_conv_c_smc": NaN,
           "mp_fix_conv_c_smc": NaN,
-          "benchmark_mercato": 141.73,
+          "benchmark_mercato": 141.35,
           "n_offerte_usate": 10,
-          "delta_mercato_vs_conv": 16.35,
-          "delta_%": 13.0
+          "delta_mercato_vs_conv": 15.97,
+          "delta_%": 12.7
         },
         {
           "commodity": "GAS",
@@ -1151,10 +1151,10 @@
           "commodity": "ELE",
           "unita": "€/MWh",
           "MP_convenzione": 131.09,
-          "benchmark_mercato": 164.57,
+          "benchmark_mercato": 146.25,
           "criterio": "media semplice 4 fasce (BT/MT equo)",
-          "delta": 33.49,
-          "delta_%": 25.5
+          "delta": 15.16,
+          "delta_%": 11.6
         },
         {
           "commodity": "GAS",
@@ -1183,64 +1183,64 @@
         ],
         "per_fascia": {
           "ELE|BT 6-50 kW": [
-            217.437,
-            176.163,
-            162.127,
-            157.433,
-            155.042,
-            153.608,
-            152.652,
-            151.456,
-            150.739,
-            150.261,
-            149.663,
-            149.066
+            147.881,
+            147.881,
+            147.881,
+            147.881,
+            147.881,
+            147.881,
+            147.881,
+            147.881,
+            147.881,
+            147.881,
+            147.881,
+            147.881
           ],
           "ELE|BT <=6 kW": [
-            731.11,
-            389.407,
-            272.254,
-            232.157,
-            212.108,
-            199.666,
-            191.07,
-            180.325,
-            173.878,
-            169.58,
-            164.208,
-            158.836
+            147.881,
+            147.881,
+            147.881,
+            147.881,
+            147.881,
+            147.881,
+            147.881,
+            147.881,
+            147.881,
+            147.881,
+            147.881,
+            147.881
           ],
           "ELE|BT >50 kW": [
-            163.301,
-            154.088,
-            150.979,
-            149.943,
-            149.425,
-            149.114,
-            148.907,
-            148.648,
-            148.492,
-            148.389,
-            148.259,
-            148.13
+            147.881,
+            147.881,
+            147.881,
+            147.881,
+            147.881,
+            147.881,
+            147.881,
+            147.881,
+            147.881,
+            147.881,
+            147.881,
+            147.881
           ],
           "ELE|MT": [
-            145.266,
-            142.911,
-            142.126,
-            141.865,
-            141.734,
-            141.655,
-            141.603,
-            141.538,
-            141.498,
-            141.472,
-            141.439,
-            141.407
+            141.352,
+            141.352,
+            141.352,
+            141.352,
+            141.352,
+            141.352,
+            141.352,
+            141.352,
+            141.352,
+            141.352,
+            141.352,
+            141.352
           ],
           "GAS|Acqua Calda": [
-            112.094,
-            80.056,
+            111.936,
+            80.052,
             69.203,
             65.458,
             63.585,
@@ -1267,7 +1267,7 @@
             58.067
           ],
           "GAS|Riscaldamento + Acqua Calda": [
-            89.756,
+            89.706,
             71.022,
             64.495,
             62.319,
@@ -1340,10 +1340,10 @@
           "materia_prima_conv_orig": NaN,
           "mp_var_conv_c_smc": NaN,
           "mp_fix_conv_c_smc": NaN,
-          "benchmark_mercato": 206.7,
+          "benchmark_mercato": 145.06,
           "n_offerte_usate": 10,
-          "delta_mercato_vs_conv": 72.9,
-          "delta_%": 54.5
+          "delta_mercato_vs_conv": 11.27,
+          "delta_%": 8.4
         },
         {
           "commodity": "ELE",
@@ -1357,10 +1357,10 @@
           "materia_prima_conv_orig": NaN,
           "mp_var_conv_c_smc": NaN,
           "mp_fix_conv_c_smc": NaN,
-          "benchmark_mercato": 151.89,
+          "benchmark_mercato": 145.06,
           "n_offerte_usate": 10,
-          "delta_mercato_vs_conv": 21.4,
-          "delta_%": 16.4
+          "delta_mercato_vs_conv": 14.56,
+          "delta_%": 11.2
         },
         {
           "commodity": "ELE",
@@ -1374,10 +1374,10 @@
           "materia_prima_conv_orig": NaN,
           "mp_var_conv_c_smc": NaN,
           "mp_fix_conv_c_smc": NaN,
-          "benchmark_mercato": 146.5,
+          "benchmark_mercato": 145.06,
           "n_offerte_usate": 10,
-          "delta_mercato_vs_conv": 15.6,
-          "delta_%": 11.9
+          "delta_mercato_vs_conv": 14.16,
+          "delta_%": 10.8
         },
         {
           "commodity": "ELE",
@@ -1391,10 +1391,10 @@
           "materia_prima_conv_orig": NaN,
           "mp_var_conv_c_smc": NaN,
           "mp_fix_conv_c_smc": NaN,
-          "benchmark_mercato": 138.69,
+          "benchmark_mercato": 138.32,
           "n_offerte_usate": 10,
-          "delta_mercato_vs_conv": 15.35,
-          "delta_%": 12.4
+          "delta_mercato_vs_conv": 14.98,
+          "delta_%": 12.1
         },
         {
           "commodity": "GAS",
@@ -1470,10 +1470,10 @@
           "commodity": "ELE",
           "unita": "€/MWh",
           "MP_convenzione": 129.63,
-          "benchmark_mercato": 160.94,
+          "benchmark_mercato": 143.38,
           "criterio": "media semplice 4 fasce (BT/MT equo)",
-          "delta": 31.31,
-          "delta_%": 24.2
+          "delta": 13.74,
+          "delta_%": 10.6
         },
         {
           "commodity": "GAS",
@@ -1502,64 +1502,64 @@
         ],
         "per_fascia": {
           "ELE|BT 6-50 kW": [
-            211.598,
-            172.049,
-            158.661,
-            154.173,
-            151.893,
-            150.525,
-            149.612,
-            148.472,
-            147.788,
-            147.332,
-            146.762,
-            146.192
+            145.063,
+            145.063,
+            145.063,
+            145.063,
+            145.063,
+            145.063,
+            145.063,
+            145.063,
+            145.063,
+            145.063,
+            145.063,
+            145.063
           ],
           "ELE|BT <=6 kW": [
-            703.78,
-            376.54,
-            264.249,
-            225.88,
-            206.696,
-            194.624,
-            186.398,
-            176.117,
-            169.948,
-            165.835,
-            160.694,
-            155.554
+            145.063,
+            145.063,
+            145.063,
+            145.063,
+            145.063,
+            145.063,
+            145.063,
+            145.063,
+            145.063,
+            145.063,
+            145.063,
+            145.063
           ],
           "ELE|BT >50 kW": [
-            159.454,
-            150.849,
-            147.95,
-            146.984,
-            146.501,
-            146.211,
-            146.018,
-            145.776,
-            145.631,
-            145.535,
-            145.414,
-            145.293
+            145.063,
+            145.063,
+            145.063,
+            145.063,
+            145.063,
+            145.063,
+            145.063,
+            145.063,
+            145.063,
+            145.063,
+            145.063,
+            145.063
           ],
           "ELE|MT": [
-            142.066,
-            139.812,
-            139.061,
-            138.81,
-            138.685,
-            138.61,
-            138.56,
-            138.497,
-            138.46,
-            138.435,
-            138.403,
-            138.372
+            138.32,
+            138.32,
+            138.32,
+            138.32,
+            138.32,
+            138.32,
+            138.32,
+            138.32,
+            138.32,
+            138.32,
+            138.32,
+            138.32
           ],
           "GAS|Acqua Calda": [
-            113.037,
-            80.998,
+            112.879,
+            80.995,
             70.145,
             66.4,
             64.528,
@@ -1586,7 +1586,7 @@
             59.01
           ],
           "GAS|Riscaldamento + Acqua Calda": [
-            90.699,
+            90.649,
             71.965,
             65.438,
             63.262,
@@ -1659,10 +1659,10 @@
           "materia_prima_conv_orig": NaN,
           "mp_var_conv_c_smc": NaN,
           "mp_fix_conv_c_smc": NaN,
-          "benchmark_mercato": 223.02,
+          "benchmark_mercato": 162.75,
           "n_offerte_usate": 10,
-          "delta_mercato_vs_conv": 74.58,
-          "delta_%": 50.2
+          "delta_mercato_vs_conv": 14.31,
+          "delta_%": 9.6
         },
         {
           "commodity": "ELE",
@@ -1676,10 +1676,10 @@
           "materia_prima_conv_orig": NaN,
           "mp_var_conv_c_smc": NaN,
           "mp_fix_conv_c_smc": NaN,
-          "benchmark_mercato": 168.37,
+          "benchmark_mercato": 162.75,
           "n_offerte_usate": 10,
-          "delta_mercato_vs_conv": 21.3,
-          "delta_%": 14.5
+          "delta_mercato_vs_conv": 15.69,
+          "delta_%": 10.7
         },
         {
           "commodity": "ELE",
@@ -1693,10 +1693,10 @@
           "materia_prima_conv_orig": NaN,
           "mp_var_conv_c_smc": NaN,
           "mp_fix_conv_c_smc": NaN,
-          "benchmark_mercato": 163.81,
+          "benchmark_mercato": 162.75,
           "n_offerte_usate": 10,
-          "delta_mercato_vs_conv": 16.23,
-          "delta_%": 11.0
+          "delta_mercato_vs_conv": 15.17,
+          "delta_%": 10.3
         },
         {
           "commodity": "ELE",
@@ -1710,10 +1710,10 @@
           "materia_prima_conv_orig": NaN,
           "mp_var_conv_c_smc": NaN,
           "mp_fix_conv_c_smc": NaN,
-          "benchmark_mercato": 156.16,
+          "benchmark_mercato": 155.84,
           "n_offerte_usate": 10,
-          "delta_mercato_vs_conv": 16.82,
-          "delta_%": 12.1
+          "delta_mercato_vs_conv": 16.51,
+          "delta_%": 11.9
         },
         {
           "commodity": "GAS",
@@ -1789,10 +1789,10 @@
           "commodity": "ELE",
           "unita": "€/MWh",
           "MP_convenzione": 145.6,
-          "benchmark_mercato": 177.84,
+          "benchmark_mercato": 161.02,
           "criterio": "media semplice 4 fasce (BT/MT equo)",
-          "delta": 32.24,
-          "delta_%": 22.1
+          "delta": 15.42,
+          "delta_%": 10.6
         },
         {
           "commodity": "GAS",
@@ -1821,64 +1821,64 @@
         ],
         "per_fascia": {
           "ELE|BT 6-50 kW": [
-            218.013,
-            184.982,
-            173.972,
-            170.243,
-            168.368,
-            167.243,
-            166.492,
-            165.555,
-            164.992,
-            164.617,
-            164.148,
-            163.68
+            162.753,
+            162.753,
+            162.753,
+            162.753,
+            162.753,
+            162.753,
+            162.753,
+            162.753,
+            162.753,
+            162.753,
+            162.753,
+            162.753
           ],
           "ELE|BT <=6 kW": [
-            708.519,
-            388.921,
-            279.199,
-            241.744,
-            223.016,
-            211.139,
-            203.109,
-            193.073,
-            187.051,
-            183.036,
-            178.017,
-            172.999
+            162.753,
+            162.753,
+            162.753,
+            162.753,
+            162.753,
+            162.753,
+            162.753,
+            162.753,
+            162.753,
+            162.753,
+            162.753,
+            162.753
           ],
           "ELE|BT >50 kW": [
-            173.424,
-            167.018,
-            164.88,
-            164.167,
-            163.811,
-            163.597,
-            163.455,
-            163.276,
-            163.17,
-            163.098,
-            163.009,
-            162.92
+            162.753,
+            162.753,
+            162.753,
+            162.753,
+            162.753,
+            162.753,
+            162.753,
+            162.753,
+            162.753,
+            162.753,
+            162.753,
+            162.753
           ],
           "ELE|MT": [
-            159.067,
-            157.126,
-            156.479,
-            156.263,
-            156.155,
-            156.09,
-            156.047,
-            155.993,
-            155.961,
-            155.939,
-            155.912,
-            155.885
+            155.842,
+            155.842,
+            155.842,
+            155.842,
+            155.842,
+            155.842,
+            155.842,
+            155.842,
+            155.842,
+            155.842,
+            155.842,
+            155.842
           ],
           "GAS|Acqua Calda": [
-            113.349,
-            81.31,
+            113.191,
+            81.307,
             70.457,
             66.712,
             64.84,
@@ -1905,7 +1905,7 @@
             59.322
           ],
           "GAS|Riscaldamento + Acqua Calda": [
-            91.011,
+            90.961,
             72.277,
             65.75,
             63.574,
@@ -1939,7 +1939,7 @@
   "offerte_anonime": [
     {
       "commodity": "ELE",
-      "spread": 0.01,
+      "spread": 0.0101,
       "quota_eur_anno": 192.0
     },
     {
@@ -1950,12 +1950,12 @@
     {
       "commodity": "ELE",
       "spread": 0.0132,
-      "quota_eur_anno": 160.0
+      "quota_eur_anno": 144.0
     },
     {
       "commodity": "ELE",
       "spread": 0.0132,
-      "quota_eur_anno": 144.0
+      "quota_eur_anno": 160.0
     },
     {
       "commodity": "ELE",
@@ -1995,12 +1995,17 @@
     {
       "commodity": "ELE",
       "spread": 0.02,
+      "quota_eur_anno": 171.60000000000002
+    },
+    {
+      "commodity": "ELE",
+      "spread": 0.02,
       "quota_eur_anno": 264.0
     },
     {
       "commodity": "ELE",
       "spread": 0.022,
-      "quota_eur_anno": 144.0
+      "quota_eur_anno": 156.0
     },
     {
       "commodity": "ELE",
@@ -2035,12 +2040,12 @@
     {
       "commodity": "ELE",
       "spread": 0.05,
-      "quota_eur_anno": 192.0
+      "quota_eur_anno": 144.0
     },
     {
       "commodity": "ELE",
       "spread": 0.05,
-      "quota_eur_anno": 144.0
+      "quota_eur_anno": 192.0
     },
     {
       "commodity": "ELE",
@@ -2050,20 +2055,15 @@
     {
       "commodity": "ELE",
       "spread": 0.055,
-      "quota_eur_anno": 69.88
+      "quota_eur_anno": 192.0
     },
     {
       "commodity": "ELE",
       "spread": 0.055,
-      "quota_eur_anno": 192.0
+      "quota_eur_anno": 69.88
     },
     {
       "commodity": "GAS",
-      "spread": 0.062,
-      "quota_eur_anno": 193.20000000000002
-    },
-    {
-      "commodity": "ELE",
       "spread": 0.062,
       "quota_eur_anno": 193.20000000000002
     },
@@ -2128,17 +2128,27 @@
       "quota_eur_anno": 180.0
     },
     {
+      "commodity": "ELE",
+      "spread": 0.14,
+      "quota_eur_anno": 180.0
+    },
+    {
       "commodity": "GAS",
       "spread": 0.14,
       "quota_eur_anno": 180.0
     },
     {
       "commodity": "ELE",
-      "spread": 0.14,
-      "quota_eur_anno": 180.0
+      "spread": 0.15,
+      "quota_eur_anno": 171.60000000000002
     },
     {
-      "commodity": "ELE",
+      "commodity": "GAS",
+      "spread": 0.15,
+      "quota_eur_anno": 171.60000000000002
+    },
+    {
+      "commodity": "GAS",
       "spread": 0.16,
       "quota_eur_anno": 180.0
     },
@@ -2148,7 +2158,7 @@
       "quota_eur_anno": 180.0
     },
     {
-      "commodity": "GAS",
+      "commodity": "ELE",
       "spread": 0.16,
       "quota_eur_anno": 180.0
     },
@@ -2252,12 +2262,12 @@
     "Enel Energia",
     "Eni Plenitude",
     "Hera Comm",
-    "Iren Mercato"
+    "Iren Mercato",
+    "Sorgenia"
   ],
   "fornitori_senza_offerte": [
     "Engie Italia",
-    "Repower Italia",
-    "Sorgenia"
+    "Repower Italia"
   ],
   "portali": [
     {
